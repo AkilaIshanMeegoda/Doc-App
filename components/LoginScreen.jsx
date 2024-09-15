@@ -5,7 +5,6 @@ import React from 'react'
 
 export default function Page() {
   const { signIn, setActive, isLoaded } = useSignIn()
-  const router = useRouter()
 
   const [emailAddress, setEmailAddress] = React.useState('')
   const [password, setPassword] = React.useState('')
@@ -23,7 +22,6 @@ export default function Page() {
 
       if (signInAttempt.status === 'complete') {
         await setActive({ session: signInAttempt.createdSessionId })
-        router.replace('/')
       } else {
         // See https://clerk.com/docs/custom-flows/error-handling
         // for more info on error handling
