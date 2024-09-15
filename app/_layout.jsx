@@ -1,11 +1,9 @@
 import { Stack } from "expo-router";
 import * as SecureStore from 'expo-secure-store';
-import { ClerkProvider, SignedIn, SignedOut,useSession } from "@clerk/clerk-expo";
-import { useAuth } from "@clerk/clerk-expo"; // Importing useAuth
-import { useEffect } from 'react';
+import { ClerkProvider, SignedIn, SignedOut, useSession, useUser } from "@clerk/clerk-expo"; // Use Clerk hooks
+import { useEffect, useState } from 'react';
 import { Text } from "react-native";
 import LoginScreen from '../components/LoginScreen';
-import useUserRole from '../hooks/useUserRole'; // Importing the custom hook
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
@@ -55,13 +53,25 @@ export default function RootLayout() {
 
 // Separated the authenticated stack logic into a new component
 function AuthenticatedStack() {
-  const { session } = useSession(); // Now we're using useAuth inside the SignedIn component
-  const role = useUserRole(session); // Using the custom hook to get the user's role
-  console.log(role);
+  const { session } = useSession(); // Get the session data using useSession
+  const { user } = useUser(); // Get the user information using useUser
+  const [role, setRole] = useState(null);
+
+  useEffect(() => {
+    if (user) {
+      // Assuming you store roles in user metadata
+      const userRole = user?.publicMetadata?.role || 'user'; // Example of how to access the role
+      setRole(userRole);
+    }
+  }, [user]);
+
+  if (!role) {
+    return <Text>Loading...</Text>; // Loader while role is determined
+  }
 
   return (
     <>
-      {role === 'Admin' ? (
+      {role === 'admin' ? (
         <Stack>
           <Stack.Screen name="(adminTabs)" options={{ headerShown: false }} />
         </Stack>
