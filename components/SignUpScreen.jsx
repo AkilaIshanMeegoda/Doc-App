@@ -64,7 +64,7 @@ export default function SignUpScreen() {
   }
 
   return (
-    <View className="items-center flex-1 mt-96">
+    <View style={{ alignItems: "center", flex: 1, marginTop: 96 }}>
       {!pendingVerification && (
         <>
           <TextInput
@@ -72,12 +72,14 @@ export default function SignUpScreen() {
             value={emailAddress}
             placeholder="Email..."
             onChangeText={(email) => setEmailAddress(email)}
+            style={{ height:40,marginBottom: 10, borderBottomWidth: 1, width: '80%' }}
           />
           <TextInput
             value={password}
             placeholder="Password..."
             secureTextEntry={true}
             onChangeText={(password) => setPassword(password)}
+            style={{ height:40,marginBottom: 10, borderBottomWidth: 1, width: '80%' }}
           />
           <Button title="Sign Up" onPress={onSignUpPress} />
           <TouchableOpacity
