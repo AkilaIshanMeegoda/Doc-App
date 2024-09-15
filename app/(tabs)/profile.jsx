@@ -1,12 +1,22 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { Button } from 'react-native';
+import { useAuth } from '@clerk/clerk-expo';
+import { useNavigation } from '@react-navigation/native';
 
 const profile = () => {
-  return (
-    <View>
-      <Text>profile</Text>
-    </View>
-  )
-}
+  const { signOut } = useAuth();
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
+  return (
+    <Button
+      title="Sign out"
+      onPress={handleSignOut}
+    />
+  );
+};
 export default profile
