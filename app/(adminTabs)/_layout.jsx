@@ -4,7 +4,7 @@ import { Tabs } from "expo-router";
 import Feather from "@expo/vector-icons/Feather";
 import {Colors} from "../../constants/Colors"
 
-const TabLayout = () => {
+const AdminTabLayout = () => {
   return (
     <Tabs>
       <Tabs.Screen
@@ -16,30 +16,13 @@ const TabLayout = () => {
           ),
         }}
       />
-      <Tabs.Screen
+     
+     <Tabs.Screen
         name="patientPortal"
         options={{
           tabBarLabel: "Patient Portal",
           tabBarIcon: () => (
             <Feather name="grid" size={24} color={Colors.PRIMARY} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="emergency"
-        options={{
-          tabBarLabel: "Emergency",
-          tabBarIcon: () => (
-            <Feather name="headphones" size={24} color={Colors.PRIMARY} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="remind"
-        options={{
-          tabBarLabel: "Remind",
-          tabBarIcon: () => (
-            <Feather name="bell" size={24} color={Colors.PRIMARY} />
           ),
         }}
       />
@@ -56,4 +39,4 @@ const TabLayout = () => {
   );
 };
 
-export default TabLayout;
+export default AdminTabLayout;
