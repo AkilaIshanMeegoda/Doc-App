@@ -5,6 +5,7 @@ import {
   TextInput,
   ScrollView,
   TouchableOpacity,
+  ToastAndroid,
 } from "react-native";
 import React, { useState } from "react";
 import RNPickerSelect from "react-native-picker-select";
@@ -99,42 +100,38 @@ const addDoctor = () => {
     setImage(result?.assets[0].uri);
   };
 
-  // const onAddNewBusiness = async () => {
-  //   setLoading(true);
-  //   const fileName = Date.now().toString() + ".jpg";
-  //   const resp = await fetch(image);
-  //   const blob = await resp.blob();
+  const onAddDoctor = async () => {
+    const fileName = Date.now().toString() + ".jpg";
+    const resp = await fetch(image);
+    const blob = await resp.blob();
 
-  //   const imageRef = ref(storage, "business-app/" + fileName);
-  //   uploadBytes(imageRef, blob)
-  //     .then((snapshot) => {
-  //       console.log("File Uploaded...");
-  //     })
-  //     .then((resp) => {
-  //       getDownloadURL(imageRef).then(async (downloadUrl) => {
-  //         console.log(downloadUrl);
-  //         saveBusinessDetail(downloadUrl);
-  //       });
-  //     });
-  //   setLoading(false);
-  // };
+    const imageRef = ref(storage, "Doc-App/" + fileName);
+    uploadBytes(imageRef, blob)
+      .then((snapshot) => {
+        console.log("File Uploaded...");
+      })
+      .then((resp) => {
+        getDownloadURL(imageRef).then(async (downloadUrl) => {
+          console.log(downloadUrl);
+          saveDoctorDetails(downloadUrl);
+        });
+      });
+  };
 
-  // const saveBusinessDetail = async (imageUrl) => {
-  //   await setDoc(doc(db, "BusinessList", Date.now().toString()), {
-  //     name: name,
-  //     address: address,
-  //     contact: contact,
-  //     about: about,
-  //     website: website,
-  //     category: category,
-  //     username: user?.fullName,
-  //     userEmail: user?.primaryEmailAddress?.emailAddress,
-  //     userImage: user?.imageUrl,
-  //     imageUrl: imageUrl,
-  //   });
-  //   setLoading(false);
-  //   ToastAndroid.show("New business added...", ToastAndroid.LONG);
-  // };
+  const saveDoctorDetails = async (imageUrl) => {
+    await setDoc(doc(db, "DoctorList", Date.now().toString()), {
+      name: docName,
+      specialization: specialization,
+      hospital: hospital,
+      exp: exp,
+      description: description,
+      times:selected,
+      days:daySelected,
+      userEmail: user?.primaryEmailAddress?.emailAddress,
+      imageUrl: imageUrl,
+    });
+    ToastAndroid.show("New doctor added...", ToastAndroid.LONG);
+  };
 
   return (
     <ScrollView>
