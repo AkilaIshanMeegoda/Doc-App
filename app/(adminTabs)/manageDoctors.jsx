@@ -1,4 +1,4 @@
-import { View, Text, FlatList } from "react-native";
+import { View, Text, FlatList, ScrollView } from "react-native";
 import React, { useState, useCallback } from "react";
 import ManageDoctorHeader from "../../components/Admin/ManageDoctorHeader";
 import Feather from "@expo/vector-icons/Feather";
@@ -34,7 +34,7 @@ const ManageDoctors = () => {
   );
 
   return (
-    <View>
+    <ScrollView>
       <ManageDoctorHeader />
 
       <View className="p-6">
@@ -51,7 +51,7 @@ const ManageDoctors = () => {
           )}
         />
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

@@ -1,10 +1,60 @@
 import EmergencyHeader from "../../components/User/EmergencyHeader";
 import React, { useEffect, useRef } from "react";
-import { View, Animated, Easing, Text, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  Animated,
+  Easing,
+  Text,
+  Image,
+  TouchableOpacity,
+} from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import Entypo from '@expo/vector-icons/Entypo';
+import Entypo from "@expo/vector-icons/Entypo";
+import { Share, Alert ,Linking} from "react-native";
+import * as Location from "expo-location";
+import { useState } from "react";
 
 const emergency = () => {
+  const [location, setLocation] = useState(null);
+
+  const fetchLocation = async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert("Permission to access location was denied");
+      return;
+    }
+
+    const { coords: { latitude, longitude } } = await Location.getCurrentPositionAsync();
+    setLocation({ latitude, longitude });
+  };
+
+  const sendLocationToWhatsApp = async () => {
+    if (!location) {
+      Alert.alert("Location not available", "Please wait for the location to be updated.");
+      return;
+    }
+
+    const message = `Hey, here's my live location: https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}`;
+    
+    const phoneNumber = '+94763899553'; // Replace with the phone number you want to send the message to (in international format, e.g., +1234567890)
+    
+    const url = `whatsapp://send?text=${encodeURIComponent(message)}&phone=${phoneNumber}`;
+
+    // Check if WhatsApp is installed
+    Linking.canOpenURL(url)
+      .then((supported) => {
+        if (!supported) {
+          Alert.alert("WhatsApp is not installed");
+        } else {
+          return Linking.openURL(url);
+        }
+      })
+      .catch((err) => console.error("An error occurred", err));
+  };
+
+  useEffect(() => {
+    fetchLocation();
+  }, []);
   const scaleAnimation = useRef(new Animated.Value(1)).current;
   const opacityAnimation = useRef(new Animated.Value(1)).current;
 
@@ -48,7 +98,7 @@ const emergency = () => {
   }, [scaleAnimation, opacityAnimation]);
 
   return (
-    <View>
+    <View className="flex-1">
       <EmergencyHeader />
 
       <View>
@@ -63,8 +113,9 @@ const emergency = () => {
         </Text>
       </View>
 
-      <View className="mt-48">
+      <View className="mt-40">
         <TouchableOpacity
+          onPress={sendLocationToWhatsApp}
           style={{ justifyContent: "center", alignItems: "center", flex: 1 }}
         >
           <Animated.View
@@ -108,14 +159,22 @@ const emergency = () => {
         </TouchableOpacity>
       </View>
 
-      <View className="flex-row justify-center mt-48">
-        <Text className="font-[poppins-bold] text-xl text-center ">Share your location </Text>
+      <View className="flex-row justify-center mt-40">
+        <Text className="font-[poppins-bold] text-xl text-center ">
+          Share your location{" "}
+        </Text>
         <Entypo name="location" size={24} color="red" />
       </View>
 
-      <View className="flex-row justify-between mx-8 mt-4">
-        <Image className="w-40 h-20 mt-4 rounded-xl" source={require('./../../assets/images/hospital1.jpg')}/>
-        <Image className="w-40 h-20 mt-4 rounded-xl" source={require('./../../assets/images/hospital2.png')}/>
+      <View className="flex-row justify-between mx-4 mt-4">
+        <Image
+          className="w-40 h-20 mt-4 rounded-xl"
+          source={require("./../../assets/images/hospital1.jpg")}
+        />
+        <Image
+          className="w-40 h-20 mt-4 rounded-xl"
+          source={require("./../../assets/images/hospital2.png")}
+        />
       </View>
     </View>
   );

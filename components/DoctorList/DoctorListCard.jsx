@@ -5,7 +5,7 @@ import { Colors } from "../../constants/Colors";
 
 const DoctorListCard = ({ doctor }) => {
   return (
-    <TouchableOpacity className="flex-row items-center justify-between p-2 m-2 mt-4 bg-white shadow-xl h-28 rounded-2xl">
+    <TouchableOpacity className="flex-row items-center justify-between p-2 mt-4 bg-white shadow-xl h-28 rounded-2xl">
       <Image
         source={{ uri: doctor.imageUrl }}
         className="w-20 h-20 ml-4 rounded-full"
@@ -17,19 +17,19 @@ const DoctorListCard = ({ doctor }) => {
             <Text className="text-xl text-center font-[poppins-bold]">
               Dr. {doctor.name}
             </Text>
-            <Text className=" text-center mt-[-8px] mb-2 font-[poppins-medium] text-gray-500">
+            <Text className=" text-center mt-[-4px] mb-2 font-[poppins-medium] text-gray-500">
               {doctor.specialization}
             </Text>
           </View>
         </View>
 
         <View className="flex-row justify-between">
-          <TouchableOpacity className="w-24 bg-blue-500 shadow-2xl rounded-xl">
+          <TouchableOpacity className="w-20 bg-blue-500 shadow-2xl rounded-xl">
             <Text className="text-center text-white font-[poppins-medium]">
               Update
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity className="w-24 mr-4 bg-red-600 shadow-2xl rounded-xl">
+          <TouchableOpacity className="w-20 mr-4 bg-red-600 shadow-2xl rounded-xl">
             <Text className="text-center text-white font-[poppins-medium]">
               Delete
             </Text>
