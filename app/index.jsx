@@ -16,7 +16,7 @@ export default function Index() {
   return (
     <>
       {role === "admin" ? (
-        <Redirect href="/addDoctor" />
+        <Redirect href="/manageDoctors" />
       ) : (
         <Redirect href="/home" />
       )}
