@@ -4,8 +4,11 @@ import { ClerkProvider, SignedIn, SignedOut, useSession, useUser } from "@clerk/
 import { useEffect, useState } from 'react';
 import { Text } from "react-native";
 import LoginScreen from '../components/LoginScreen';
+import { useFonts } from "expo-font";
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
+
 
 const tokenCache = {
   async getToken(key) {
@@ -39,6 +42,15 @@ if (!publishableKey) {
 }
 
 export default function RootLayout() {
+  const [fontsLoaded] = useFonts({
+    'poppins': require('./../assets/fonts/Poppins-Regular.ttf'),
+    'poppins-medium': require('./../assets/fonts/Poppins-Medium.ttf'),
+    'poppins-bold': require('./../assets/fonts/Poppins-Bold.ttf')
+  });
+  
+  if (!fontsLoaded) {
+    return <Text>Loading Fonts...</Text>; 
+  }
   return (
     <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
       <SignedIn>
@@ -72,7 +84,7 @@ function AuthenticatedStack() {
   return (
     <>
       {role === 'admin' ? (
-        <Stack>
+        <Stack >
           <Stack.Screen name="(adminTabs)" options={{ headerShown: false }} />
         </Stack>
       ) : (
