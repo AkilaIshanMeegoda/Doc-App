@@ -1,14 +1,18 @@
 import { Stack } from "expo-router";
-import * as SecureStore from 'expo-secure-store';
-import { ClerkProvider, SignedIn, SignedOut, useSession, useUser } from "@clerk/clerk-expo"; // Use Clerk hooks
-import { useEffect, useState } from 'react';
+import * as SecureStore from "expo-secure-store";
+import {
+  ClerkProvider,
+  SignedIn,
+  SignedOut,
+  useSession,
+  useUser,
+} from "@clerk/clerk-expo"; // Use Clerk hooks
+import { useEffect, useState } from "react";
 import { Text } from "react-native";
-import LoginScreen from '../components/LoginScreen';
+import LoginScreen from "../components/LoginScreen";
 import { useFonts } from "expo-font";
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
-
-
 
 const tokenCache = {
   async getToken(key) {
@@ -43,13 +47,13 @@ if (!publishableKey) {
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
-    'poppins': require('./../assets/fonts/Poppins-Regular.ttf'),
-    'poppins-medium': require('./../assets/fonts/Poppins-Medium.ttf'),
-    'poppins-bold': require('./../assets/fonts/Poppins-Bold.ttf')
+    "poppins": require("./../assets/fonts/Poppins-Regular.ttf"),
+    "poppins-medium": require("./../assets/fonts/Poppins-Medium.ttf"),
+    "poppins-bold": require("./../assets/fonts/Poppins-Bold.ttf"),
   });
-  
+
   if (!fontsLoaded) {
-    return <Text>Loading Fonts...</Text>; 
+    return <Text>Loading Fonts...</Text>;
   }
   return (
     <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
@@ -65,14 +69,13 @@ export default function RootLayout() {
 
 // Separated the authenticated stack logic into a new component
 function AuthenticatedStack() {
-  const { session } = useSession(); // Get the session data using useSession
   const { user } = useUser(); // Get the user information using useUser
   const [role, setRole] = useState(null);
 
   useEffect(() => {
     if (user) {
       // Assuming you store roles in user metadata
-      const userRole = user?.publicMetadata?.role || 'user'; // Example of how to access the role
+      const userRole = user?.publicMetadata?.role || "member"; // Example of how to access the role
       setRole(userRole);
     }
   }, [user]);
@@ -83,13 +86,13 @@ function AuthenticatedStack() {
 
   return (
     <>
-      {role === 'admin' ? (
-        <Stack >
-          <Stack.Screen name="(adminTabs)" options={{ headerShown: false }} />
+      {role == "member" ? (
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         </Stack>
       ) : (
         <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(adminTabs)" options={{ headerShown: false }} />
         </Stack>
       )}
     </>
