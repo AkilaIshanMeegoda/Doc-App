@@ -38,7 +38,7 @@ const ManageDoctors = () => {
       <ManageDoctorHeader />
 
       <View className="p-6">
-        <View className="flex-row px-4 py-3 text-lg bg-white border-2 border-gray-2 00 drop-shadow-2xl rounded-3xl">
+        <View className="flex-row px-4 py-3 text-lg bg-white border-2 border-gray-200 drop-shadow-2xl rounded-3xl">
           <Feather name="search" size={24} color={Colors.PRIMARY} />
           <Text className="ml-2 text-lg text-gray-400">Search Doctor</Text>
         </View>

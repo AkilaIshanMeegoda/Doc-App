@@ -3,6 +3,7 @@ import React from "react";
 import { Tabs, useNavigation } from "expo-router";
 import Feather from "@expo/vector-icons/Feather";
 import {Colors} from "../../constants/Colors"
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 const TabLayout = () => {
   const navigation = useNavigation();
@@ -40,8 +41,9 @@ const TabLayout = () => {
         name="emergency"
         options={{
           tabBarLabel: "Emergency",
+          headerShown:false,
           tabBarIcon: () => (
-            <Feather name="headphones" size={24} color={Colors.PRIMARY} />
+            <MaterialCommunityIcons name="car-emergency" size={24} color={Colors.PRIMARY} />
           ),
         }}
       />
