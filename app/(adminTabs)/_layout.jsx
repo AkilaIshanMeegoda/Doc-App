@@ -13,11 +13,11 @@ const AdminTabLayout = () => {
       }}
     >
       <Tabs.Screen
-        name="addDoctor"
+        name="manageDoctors"
         options={{
-          tabBarLabel: "Add Doctor",
+          tabBarLabel: "Manage Doctor",
           tabBarIcon: () => (
-            <Feather name="plus-square" size={24} color={Colors.PRIMARY} />
+            <Feather name="file-text" size={24} color={Colors.PRIMARY} />
           ),
         }}
       />
@@ -30,12 +30,13 @@ const AdminTabLayout = () => {
           ),
         }}
       />
+
       <Tabs.Screen
-        name="manageDoctors"
+        name="addDoctor"
         options={{
-          tabBarLabel: "Manage Doctor",
+          tabBarLabel: "Add Doctor",
           tabBarIcon: () => (
-            <Feather name="file-text" size={24} color={Colors.PRIMARY} />
+            <Feather name="plus-square" size={24} color={Colors.PRIMARY} />
           ),
         }}
       />

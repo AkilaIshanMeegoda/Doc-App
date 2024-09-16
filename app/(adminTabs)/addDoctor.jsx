@@ -17,7 +17,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useUser } from "@clerk/clerk-expo";
 import AddDoctorHeader from "../../components/Admin/AddDoctorHeader";
 import { Colors } from "../../constants/Colors";
-import { useNavigation } from "expo-router";
+import { useNavigation } from "expo-router"; 
 
 const addDoctor = () => {
   const navigation = useNavigation();
@@ -160,7 +160,8 @@ const addDoctor = () => {
           <TextInput
             placeholder="Enter full name"
             onChangeText={(v) => setDocName(v)}
-            className="p-2 px-4 mt-2 text-lg bg-white border-2 border-gray-200 rounded-md "
+            style={{ placeholderTextColor: 'black' }} 
+            className="p-2 px-4 mt-2 bg-white border-2 border-gray-200 rounded-md text-md font-[poppins-medium]"
           />
           <TextInput
             placeholder="Enter years of experience"
