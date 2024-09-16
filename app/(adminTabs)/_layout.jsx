@@ -13,15 +13,6 @@ const AdminTabLayout = () => {
       }}
     >
       <Tabs.Screen
-        name="addDoctor"
-        options={{
-          tabBarLabel: "Add Doctor",
-          tabBarIcon: () => (
-            <Feather name="plus-square" size={24} color={Colors.PRIMARY} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="adminHome"
         options={{
           tabBarLabel: "Home",
@@ -36,6 +27,16 @@ const AdminTabLayout = () => {
           tabBarLabel: "Manage Doctor",
           tabBarIcon: () => (
             <Feather name="file-text" size={24} color={Colors.PRIMARY} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="addDoctor"
+        options={{
+          tabBarLabel: "Add Doctor",
+          tabBarIcon: () => (
+            <Feather name="plus-square" size={24} color={Colors.PRIMARY} />
           ),
         }}
       />
