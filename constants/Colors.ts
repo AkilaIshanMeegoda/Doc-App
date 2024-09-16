@@ -23,5 +23,13 @@ export const Colors = {
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
   },
+  patientPortal: {
+    background: '#f7f7f7',
+    textPrimary: '#555',
+    textSecondary: '#000',
+    buttonBackground: '#fff',
+    iconColor: '#4A90E2',
+    shadowColor: '#000',
+  },
   PRIMARY:'#607AFB'
 };
