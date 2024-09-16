@@ -1,8 +1,25 @@
+import { useUser } from "@clerk/clerk-expo";
 import { Redirect } from "expo-router";
-import { Text, View } from "react-native";
+import { useEffect, useState } from "react";
 
 export default function Index() {
+  const { user } = useUser(); // Get the user information using useUser
+  const [role, setRole] = useState(null);
+
+  useEffect(() => {
+    if (user) {
+      const userRole = user?.publicMetadata?.role || "member";
+      setRole(userRole);
+    }
+  }, []);
+  
   return (
-    <Redirect href={'/home'}/>
+    <>
+      {role === "admin" ? (
+        <Redirect href="/addDoctor" />
+      ) : (
+        <Redirect href="/home" />
+      )}
+    </>
   );
 }
