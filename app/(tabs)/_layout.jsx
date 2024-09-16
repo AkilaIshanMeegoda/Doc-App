@@ -1,10 +1,11 @@
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import React from "react";
-import { Tabs } from "expo-router";
+import { Tabs, useNavigation } from "expo-router";
 import Feather from "@expo/vector-icons/Feather";
 import {Colors} from "../../constants/Colors"
 
 const TabLayout = () => {
+  const navigation = useNavigation();
   return (
     <Tabs>
       <Tabs.Screen
@@ -22,6 +23,16 @@ const TabLayout = () => {
           tabBarLabel: "Patient Portal",
           tabBarIcon: () => (
             <Feather name="grid" size={24} color={Colors.PRIMARY} />
+          ),
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Feather
+                name="arrow-left"
+                size={24}
+                color={Colors.PRIMARY}
+                style={{ marginLeft: 15 }}
+              />
+            </TouchableOpacity>
           ),
         }}
       />
