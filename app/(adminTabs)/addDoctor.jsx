@@ -17,7 +17,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useUser } from "@clerk/clerk-expo";
 import AddDoctorHeader from "../../components/Admin/AddDoctorHeader";
 import { Colors } from "../../constants/Colors";
-import { useNavigation } from "expo-router"; 
+import { useNavigation } from "expo-router";
 
 const addDoctor = () => {
   const navigation = useNavigation();
@@ -125,12 +125,20 @@ const addDoctor = () => {
       hospital: hospital,
       exp: exp,
       description: description,
-      times:selected,
-      days:daySelected,
+      times: selected,
+      days: daySelected,
       userEmail: user?.primaryEmailAddress?.emailAddress,
       imageUrl: imageUrl,
     });
     ToastAndroid.show("New doctor added...", ToastAndroid.LONG);
+    setDocName(null);
+    setSpecialization(null);
+    setHospital(null);
+    setExp(null);
+    setDescription(null);
+    setSelected([]);
+    setDaySelected([]);
+    setImage(null);
   };
 
   return (
@@ -159,15 +167,17 @@ const addDoctor = () => {
         <View>
           <TextInput
             placeholder="Enter full name"
+            value={docName}
             onChangeText={(v) => setDocName(v)}
-            placeholderTextColor="#C6C6C6" 
+            placeholderTextColor="#C6C6C6"
             className="p-2 px-4 mt-2 text-[16px] bg-white border-2 border-gray-200 rounded-md "
           />
           <TextInput
             placeholder="Enter years of experience"
+            value={exp}
             onChangeText={(v) => setExp(v)}
             keyboardType="numeric"
-            placeholderTextColor="#C6C6C6" 
+            placeholderTextColor="#C6C6C6"
             className="p-2 px-4 mt-2 text-[16px] bg-white border-2 border-gray-200 rounded-md "
           />
           <View className="mt-2 text-black bg-white border-2 border-gray-200 rounded-md text-md ">
@@ -191,6 +201,7 @@ const addDoctor = () => {
                 },
               }}
               onValueChange={(value) => setSpecialization(value)}
+              value={specialization}
               placeholder={{
                 label: "Select Specialization",
                 value: null,
@@ -229,6 +240,7 @@ const addDoctor = () => {
                 },
               }}
               onValueChange={(value) => setHospital(value)}
+              value={hospital}
               placeholder={{
                 label: "Select Hospital",
                 value: null,
@@ -251,8 +263,9 @@ const addDoctor = () => {
           <TextInput
             placeholder="Description"
             onChangeText={(v) => setDescription(v)}
+            value={description}
             numberOfLines={3}
-            placeholderTextColor="#C6C6C6" 
+            placeholderTextColor="#C6C6C6"
             className="text-[16px] p-2 px-4 mt-2 bg-white border-2 border-gray-200 rounded-md "
           />
 

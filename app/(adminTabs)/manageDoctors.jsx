@@ -1,5 +1,12 @@
-import { View, Text, FlatList, ScrollView } from "react-native";
-import React, { useState, useCallback } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  ScrollView,
+  LogBox,
+  RefreshControl,
+} from "react-native";
+import React, { useState, useCallback, useEffect } from "react";
 import ManageDoctorHeader from "../../components/Admin/ManageDoctorHeader";
 import Feather from "@expo/vector-icons/Feather";
 import { Colors } from "../../constants/Colors";
@@ -12,6 +19,7 @@ import { useFocusEffect } from "@react-navigation/native";
 const ManageDoctors = () => {
   const { user } = useUser();
   const [doctorList, setDoctorList] = useState([]);
+  const [refreshing, setRefreshing] = useState(false); // Add refreshing state
 
   const getDoctorList = async () => {
     const q = query(
@@ -27,14 +35,28 @@ const ManageDoctors = () => {
     setDoctorList(newDoctorList);
   };
 
+  const handleRefresh = async () => {
+    setRefreshing(true); // Set refreshing to true
+    await getDoctorList(); // Fetch doctor list again
+    setRefreshing(false); // Set refreshing to false
+  };
+
   useFocusEffect(
     useCallback(() => {
       getDoctorList();
-    }, [user]) 
+    }, [user])
   );
 
+  useEffect(() => {
+    LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
+  }, []);
+
   return (
-    <ScrollView>
+    <ScrollView
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} /> // Add refresh control to ScrollView
+      }
+    >
       <ManageDoctorHeader />
 
       <View className="p-6">
@@ -47,7 +69,11 @@ const ManageDoctors = () => {
           data={doctorList}
           showsVerticalScrollIndicator={false}
           renderItem={({ item, index }) => (
-            <DoctorListCard doctor={item} key={index} />
+            <DoctorListCard
+              doctor={item}
+              key={index}
+              getDoctorList={getDoctorList}
+            />
           )}
         />
       </View>

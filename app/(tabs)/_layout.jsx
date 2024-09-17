@@ -2,8 +2,8 @@ import { View, Text, TouchableOpacity } from "react-native";
 import React from "react";
 import { Tabs, useNavigation } from "expo-router";
 import Feather from "@expo/vector-icons/Feather";
-import {Colors} from "../../constants/Colors"
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { Colors } from "../../constants/Colors";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 const TabLayout = () => {
   const navigation = useNavigation();
@@ -41,9 +41,13 @@ const TabLayout = () => {
         name="emergency"
         options={{
           tabBarLabel: "Emergency",
-          headerShown:false,
+          headerShown: false,
           tabBarIcon: () => (
-            <MaterialCommunityIcons name="car-emergency" size={24} color={Colors.PRIMARY} />
+            <MaterialCommunityIcons
+              name="car-emergency"
+              size={24}
+              color={Colors.PRIMARY}
+            />
           ),
         }}
       />
@@ -51,6 +55,7 @@ const TabLayout = () => {
         name="remind"
         options={{
           tabBarLabel: "Remind",
+          headerShown: false,
           tabBarIcon: () => (
             <Feather name="bell" size={24} color={Colors.PRIMARY} />
           ),
