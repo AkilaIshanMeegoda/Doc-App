@@ -1,6 +1,8 @@
 import { View, Text, Image, ScrollView, StyleSheet } from "react-native";
 import React from 'react'
 import DoctorProfile from "../../components/HospitalProfile/DoctorProfile";
+import HospitalProfile from "../../components/HospitalProfile/HospitalProfile";
+import OptionComponent from "../../components/HospitalProfile/OptionComponent";
 
 const starIcons = [
   require("../../assets/images/star1.png"),
