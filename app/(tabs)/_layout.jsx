@@ -37,11 +37,16 @@ const TabLayout = () => {
           ),
         }}
       />
+
       <Tabs.Screen
         name="emergency"
         options={{
+          headerTitle: "Emergency",
           tabBarLabel: "Emergency",
-          headerShown: false,
+          headerTitleStyle: {
+            fontFamily: "poppins-medium",
+            fontSize: 20,
+          },
           tabBarIcon: () => (
             <MaterialCommunityIcons
               name="car-emergency"
@@ -49,11 +54,24 @@ const TabLayout = () => {
               color={Colors.PRIMARY}
             />
           ),
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Feather
+                name="arrow-left"
+                size={24}
+                color={Colors.PRIMARY}
+                style={{ marginLeft: 15, marginBottom: 4 }}
+              />
+            </TouchableOpacity>
+          ),
         }}
       />
       <Tabs.Screen
         name="remind"
         options={{
+          headerTitleStyle: {
+            fontFamily: "poppins-medium",
+          },
           tabBarLabel: "Remind",
           headerShown: false,
           tabBarIcon: () => (
@@ -64,9 +82,24 @@ const TabLayout = () => {
       <Tabs.Screen
         name="profile"
         options={{
+          headerTitle: "Edit Profile",
+          headerTitleStyle: {
+            fontFamily: "poppins-medium",
+            fontSize: 20,
+          },
           tabBarLabel: "Profile",
           tabBarIcon: () => (
             <Feather name="user" size={24} color={Colors.PRIMARY} />
+          ),
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Feather
+                name="arrow-left"
+                size={24}
+                color={Colors.PRIMARY}
+                style={{ marginLeft: 15, marginBottom: 4 }}
+              />
+            </TouchableOpacity>
           ),
         }}
       />

@@ -30,7 +30,7 @@ const ManageDoctors = () => {
 
     const newDoctorList = [];
     querySnapshot.forEach((doc) => {
-      newDoctorList.push(doc.data());
+      newDoctorList.push({ id: doc.id, ...doc.data()});
     });
     setDoctorList(newDoctorList);
   };
