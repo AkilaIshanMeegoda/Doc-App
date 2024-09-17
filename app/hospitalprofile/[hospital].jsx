@@ -19,6 +19,8 @@ const hospital = () => {
         <HospitalProfile />
         <ScrollView horizontal={true} contentContainerStyle={{ flexDirection: 'row' }}>
          <DoctorProfile />
+         <DoctorProfile />
+         <DoctorProfile />
           {/* Add more DoctorProfile components as needed */}
         </ScrollView>
         <OptionComponent />
