@@ -99,7 +99,6 @@ const emergency = () => {
 
   return (
     <View className="flex-1">
-      <EmergencyHeader />
 
       <View>
         <Text className="font-[poppins-bold] text-xl text-center mt-12">

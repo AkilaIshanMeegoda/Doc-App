@@ -1,11 +1,68 @@
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  ToastAndroid,
+  Alert,
+} from "react-native";
 import React from "react";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Colors } from "../../constants/Colors";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
+import { db } from "../../configs/FirebaseConfig";
+import { useRouter } from "expo-router";
 
-const DoctorListCard = ({ doctor }) => {
+const DoctorListCard = ({ doctor, getDoctorList }) => {
+  const router = useRouter();
+  const OnDelete = () => {
+    Alert.alert(
+      "Do you want to Delete?",
+      "Do you really want to delete this doctor profile?",
+      [
+        {
+          text: "cancel",
+          style: "cancel",
+        },
+        {
+          text: "delete",
+          style: "destructive",
+          onPress: () => deleteDoctor(),
+        },
+      ]
+    );
+  };
+
+  const deleteDoctor = async () => {
+    console.log("Deleted Doctor Profile");
+    const q = query(
+      collection(db, "DoctorList"),
+      where("name", "==", doctor?.name)
+    );
+    const querySnapshot = await getDocs(q);
+
+    querySnapshot.forEach(async (docSnapshot) => {
+      await deleteDoc(doc(db, "DoctorList", docSnapshot.id));
+    });
+
+    console.log(doctor?.name);
+    ToastAndroid.show("Doctor profile Deleted!", ToastAndroid.LONG);
+
+    getDoctorList();
+  };
+
   return (
-    <TouchableOpacity className="flex-row items-center justify-between p-2 mt-4 bg-white shadow-xl h-28 rounded-2xl">
+    <TouchableOpacity
+      onPress={() => router.push("/doctor/" + doctor.id)}
+      className="flex-row items-center justify-between p-2 mt-4 bg-white shadow-xl h-28 rounded-2xl"
+    >
       <Image
         source={{ uri: doctor.imageUrl }}
         className="w-20 h-20 ml-4 rounded-full"
@@ -24,12 +81,18 @@ const DoctorListCard = ({ doctor }) => {
         </View>
 
         <View className="flex-row justify-between">
-          <TouchableOpacity className="w-20 bg-blue-500 shadow-2xl rounded-xl">
+          <TouchableOpacity
+            onPress={() => router.push("/doctor/" + doctor.id)}
+            className="w-20 bg-blue-500 shadow-2xl rounded-xl"
+          >
             <Text className="text-center text-white font-[poppins-medium]">
-              Update
+              View
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity className="w-20 mr-4 bg-red-600 shadow-2xl rounded-xl">
+          <TouchableOpacity
+            onPress={() => OnDelete()}
+            className="w-20 mr-4 bg-red-600 shadow-2xl rounded-xl"
+          >
             <Text className="text-center text-white font-[poppins-medium]">
               Delete
             </Text>
