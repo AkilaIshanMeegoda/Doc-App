@@ -29,7 +29,7 @@ const mappage = () => {
       />
 
       <View style={styles.centerWrapper}>
-        <Link href="/home/hospital">Push Settings</Link>
+        <Link href="/hospitalprofile/hospital">Push Settings</Link>
         <Text style={styles.availableCentres}>Available Centres</Text>
 
         {/* ScrollView added for available centers */}
