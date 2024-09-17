@@ -56,7 +56,9 @@ const patientPortal = () => {
             shadowOpacity: 0.1,
             shadowRadius: 2,
           }}
-          onPress={() => router.push("/components/patientPortal/documentManage")} // Navigate to docManage
+          onPress={() =>
+            router.push("/components/patientPortalComponent/documentManage")
+          } // Navigate to docManage
         >
           <Feather
             name="folder"
@@ -89,7 +91,9 @@ const patientPortal = () => {
             shadowOpacity: 0.1,
             shadowRadius: 2,
           }}
-          onPress={() => router.push("/components/patientPortal/healthMetric")} // Navigate to healthMetric
+          onPress={() =>
+            router.push("/components/patientPortalComponent/healthMetric")
+          } // Navigate to healthMetric
         >
           <Feather
             name="bar-chart"
