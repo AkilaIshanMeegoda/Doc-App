@@ -2,8 +2,10 @@ import { View, Text, TouchableOpacity } from "react-native";
 import React from "react";
 import Feather from "@expo/vector-icons/Feather"; // For icons
 import { Colors } from "../../constants/Colors";
+import { useRouter } from "expo-router"; // Import useRouter
 
 const patientPortal = () => {
+  const router = useRouter(); // Initialize router
   return (
     <View
       style={{
@@ -54,6 +56,7 @@ const patientPortal = () => {
             shadowOpacity: 0.1,
             shadowRadius: 2,
           }}
+          onPress={() => router.push("/components/patientPortal/documentManage")} // Navigate to docManage
         >
           <Feather
             name="folder"
@@ -86,6 +89,7 @@ const patientPortal = () => {
             shadowOpacity: 0.1,
             shadowRadius: 2,
           }}
+          onPress={() => router.push("/components/patientPortal/healthMetric")} // Navigate to healthMetric
         >
           <Feather
             name="bar-chart"
