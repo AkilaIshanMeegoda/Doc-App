@@ -10,6 +10,20 @@ const home = () => {
   const [specialization, setSpecialization] = useState("");
   const [doctorCenter, setDoctorCenter] = useState("");
   const [area, setArea] = useState("");
+
+  const handleSearch = () => {
+    router.push({
+      // navigate to the mappage with the search parameters
+      pathname: '/mappage/[settings]',
+      params: {
+        name,
+        area,
+        specialization,
+        doctorCenter
+      }
+    })
+  }
+
   return (
     <View style={styles.container}>
     <Image
@@ -59,17 +73,13 @@ const home = () => {
     </View>
 
     <TouchableOpacity
-    // onPress={handleSearch}
+    onPress={handleSearch}
      style={styles.frame}
   >
     <Text style={[styles.findMyDoctor, styles.findFlexBox]}>
       Find my Doctor
     </Text>
   </TouchableOpacity>
-
-    <Link href="/mappage/settings" style={styles.link}>
-      Push Settings
-    </Link>
   </View>
   )
 };
