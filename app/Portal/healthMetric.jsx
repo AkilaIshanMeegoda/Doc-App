@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, ScrollView } from "react-native";
 import React, { useState, useEffect } from "react";
 import Feather from "@expo/vector-icons/Feather";
 import { Colors } from "../../constants/Colors";
@@ -6,6 +6,8 @@ import { db } from "./../../configs/FirebaseConfig"; // Import  Firebase configu
 import firebase from "firebase/app"; // Import Firebase
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useUser } from "@clerk/clerk-expo";
+import HealthGraph from "./../../components/Graphs/HealthGraph"; // Import HealthGraph component
+
 
 const HealthMetric = () => {
   const [bloodPressure, setBloodPressure] = useState("");
@@ -14,7 +16,6 @@ const HealthMetric = () => {
   const { user } = useUser(); // Retrieve user from hook
 
   useEffect(() => {
-    console.log("User:", user);
     if (user && user.primaryEmailAddress) {
       setEmail(user.primaryEmailAddress.emailAddress); // Set email when user is available
     }
@@ -44,7 +45,7 @@ const HealthMetric = () => {
   };
 
   return (
-    <View
+    <ScrollView
       style={{
         flex: 1,
         padding: 10,
@@ -121,7 +122,11 @@ const HealthMetric = () => {
           </View>
         </TouchableOpacity>
       </View>
-    </View>
+      {/* Display the health metrics graph */}
+      <View style={{ marginVertical: 20 }}>
+        <HealthGraph />
+      </View>
+    </ScrollView>
   );
 };
 
