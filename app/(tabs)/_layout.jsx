@@ -52,6 +52,17 @@ const TabLayout = () => {
           tabBarIcon: () => (
             <Feather name="bell" size={24} color={Colors.PRIMARY} />
           ),
+          headerTitle: "Medication Reminder",
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Feather
+                name="arrow-left"
+                size={24}
+                color={Colors.PRIMARY}
+                style={{ marginLeft: 15 }}
+              />
+            </TouchableOpacity>
+          ),
         }}
       />
       <Tabs.Screen
