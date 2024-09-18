@@ -31,5 +31,9 @@ export const Colors = {
     iconColor: '#4A90E2',
     shadowColor: '#000',
   },
+  remind: {
+    textSecondary: '#555',
+    background: '#FBFBFB'
+  },
   PRIMARY:'#607AFB'
 };
