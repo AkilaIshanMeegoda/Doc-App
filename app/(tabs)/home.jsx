@@ -3,13 +3,42 @@ import { useEffect, useState } from "react";
 import { useRouter } from 'expo-router';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image } from "react-native";
 import { Link } from "expo-router";
+import { collection, query, getDocs } from "firebase/firestore";
 
+import { db } from "../../configs/FirebaseConfig";
 const home = () => {
   const router = useRouter();
   const [name, setName] = useState("");
   const [specialization, setSpecialization] = useState("");
   const [doctorCenter, setDoctorCenter] = useState("");
   const [area, setArea] = useState("");
+
+  const GetDetails = async () => {
+    try {
+      // Query the Hospital collection
+      const q = query(collection(db, "HospitalList"));
+      // console.log("q", q);
+      const querySnapshot = await getDocs(q);
+    // console.log("querySnapshot", querySnapshot);
+      for (const hospitalDoc of querySnapshot.docs) {
+        console.log("Hospital:", hospitalDoc.data());
+    
+        // Access the doctors subcollection
+        const doctorsRef = collection(db, "HospitalList", hospitalDoc.id, "DoctorList");
+        const doctorsSnapshot = await getDocs(doctorsRef);
+    
+        doctorsSnapshot.forEach((doctorDoc) => {
+          console.log("Doctor:", doctorDoc.data());
+        });
+      }
+    } catch (error) {
+      console.error("Error getting documents: ", error);
+    }
+  };
+
+  useEffect(() => {
+    GetDetails();
+  }, []);
 
   const handleSearch = () => {
     router.push({
