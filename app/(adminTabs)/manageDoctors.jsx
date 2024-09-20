@@ -19,34 +19,41 @@ import { useFocusEffect } from "@react-navigation/native";
 const ManageDoctors = () => {
   const { user } = useUser();
   const [doctorList, setDoctorList] = useState([]);
-  const [refreshing, setRefreshing] = useState(false); // Add refreshing state
+  const [refreshing, setRefreshing] = useState(false); 
 
   const getDoctorList = async () => {
-    const q = query(
-      collection(db, "DoctorList"),
+    const hospitalQuery = query(
+      collection(db, "HospitalList"),
       where("userEmail", "==", user?.primaryEmailAddress?.emailAddress)
     );
-    const querySnapshot = await getDocs(q);
+    const hospitalSnapshot = await getDocs(hospitalQuery);
 
-    const newDoctorList = [];
-    querySnapshot.forEach((doc) => {
-      newDoctorList.push({ id: doc.id, ...doc.data()});
-    });
-    setDoctorList(newDoctorList);
+    if (!hospitalSnapshot.empty) {
+      const hospitalDocRef = hospitalSnapshot.docs[0].ref; 
+      const doctorQuery = collection(hospitalDocRef, "DoctorList"); 
+      const doctorSnapshot = await getDocs(doctorQuery);
+
+      const newDoctorList = [];
+      doctorSnapshot.forEach((doc) => {
+        newDoctorList.push({ id: doc.id, ...doc.data() });
+      });
+      setDoctorList(newDoctorList);
+    }
   };
 
   const handleRefresh = async () => {
-    setRefreshing(true); // Set refreshing to true
-    await getDoctorList(); // Fetch doctor list again
-    setRefreshing(false); // Set refreshing to false
+    setRefreshing(true); 
+    await getDoctorList(); 
+    setRefreshing(false); 
   };
 
   useFocusEffect(
     useCallback(() => {
-      getDoctorList();
+      if (user) {
+        getDoctorList();
+      }
     }, [user])
   );
-
   useEffect(() => {
     LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
   }, []);
@@ -54,7 +61,7 @@ const ManageDoctors = () => {
   return (
     <ScrollView
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} /> // Add refresh control to ScrollView
+        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} /> 
       }
     >
       <ManageDoctorHeader />
@@ -67,13 +74,10 @@ const ManageDoctors = () => {
 
         <FlatList
           data={doctorList}
+          keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
-          renderItem={({ item, index }) => (
-            <DoctorListCard
-              doctor={item}
-              key={index}
-              getDoctorList={getDoctorList}
-            />
+          renderItem={({ item }) => (
+            <DoctorListCard doctor={item} getDoctorList={getDoctorList} />
           )}
         />
       </View>
