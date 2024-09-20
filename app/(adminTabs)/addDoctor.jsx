@@ -7,12 +7,20 @@ import {
   TouchableOpacity,
   ToastAndroid,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import RNPickerSelect from "react-native-picker-select";
 import { MultipleSelectList } from "react-native-dropdown-select-list";
 import * as ImagePicker from "expo-image-picker";
 import { db, storage } from "./../../configs/FirebaseConfig";
-import { collection, doc, getDocs, query, setDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  query,
+  setDoc,
+  where,
+} from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useUser } from "@clerk/clerk-expo";
 import AddDoctorHeader from "../../components/Admin/AddDoctorHeader";
@@ -25,6 +33,8 @@ const addDoctor = () => {
   const [image, setImage] = useState(null);
   const [docName, setDocName] = useState(null);
   const [specialization, setSpecialization] = useState(null);
+  const [specializationOptions, setSpecializationOptions] = useState([]);
+
   const [hospital, setHospital] = useState(null);
   const [exp, setExp] = useState(null);
   const [description, setDescription] = useState(null);
@@ -118,29 +128,56 @@ const addDoctor = () => {
       });
   };
 
-  const saveDoctorDetails = async (imageUrl) => {
-    await setDoc(doc(db, "DoctorList", Date.now().toString()), {
-      name: docName,
-      specialization: specialization,
-      hospital: hospital,
-      exp: exp,
-      description: description,
-      times: selected,
-      days: daySelected,
-      userEmail: user?.primaryEmailAddress?.emailAddress,
-      imageUrl: imageUrl,
-    });
-    ToastAndroid.show("New doctor added...", ToastAndroid.LONG);
-    setDocName(null);
-    setSpecialization(null);
-    setHospital(null);
-    setExp(null);
-    setDescription(null);
-    setSelected([]);
-    setDaySelected([]);
-    setImage(null);
-  };
+  useEffect(() => {
+    const fetchHospitalSpecializations = async () => {
+      const hospitalQuery = query(
+        collection(db, "HospitalList"),
+        where("userEmail", "==", user?.primaryEmailAddress?.emailAddress)
+      );
+      const querySnapshot = await getDocs(hospitalQuery);
+      if (!querySnapshot.empty) {
+        const hospitalData = querySnapshot.docs[0].data();
+        setHospital(hospitalData.name);
+        setSpecializationOptions(hospitalData.specialization || []);
+      }
+    };
+    if (user) {
+      fetchHospitalSpecializations();
+    }
+  }, []);
 
+  const saveDoctorDetails = async (imageUrl) => {
+    const hospitalQuery = query(
+      collection(db, "HospitalList"),
+      where("userEmail", "==", user?.primaryEmailAddress?.emailAddress)
+    );
+    const hospitalSnapshot = await getDocs(hospitalQuery);
+    if (!hospitalSnapshot.empty) {
+      const hospitalDocRef = hospitalSnapshot.docs[0].ref;
+      const doctorCollectionRef = collection(hospitalDocRef, "DoctorList");
+
+      await addDoc(doctorCollectionRef, {
+        name: docName,
+        specialization: specialization,
+        hospital: hospital,
+        exp: exp,
+        description: description,
+        times: selected,
+        days: daySelected,
+        userEmail: user?.primaryEmailAddress?.emailAddress,
+        imageUrl: imageUrl,
+      });
+
+      ToastAndroid.show("New doctor added...", ToastAndroid.LONG);
+      setDocName(null);
+      setSpecialization(null);
+      setExp(null);
+      setDescription(null);
+      setSelected([]);
+      setDaySelected([]);
+      setImage(null);
+    }
+  };
   return (
     <ScrollView>
       <AddDoctorHeader />
@@ -206,57 +243,10 @@ const addDoctor = () => {
                 label: "Select Specialization",
                 value: null,
               }}
-              items={[
-                { label: "Cardiologist", value: "Cardiologist" },
-                { label: "Dermatologist", value: "Dermatologist" },
-                { label: "Endocrinologist", value: "Endocrinologist" },
-                { label: "Gastroenterologist", value: "Gastroenterologist" },
-                { label: "Oncologist", value: "Oncologist" },
-                { label: "Pulmonologist", value: "Pulmonologist" },
-                { label: "Nephrologist", value: "Nephrologist" },
-                { label: "Otolaryngologist", value: "Otolaryngologist" },
-              ]}
-            />
-          </View>
-
-          <View className="mt-2 text-black bg-white border-2 border-gray-200 rounded-md text-md ">
-            <RNPickerSelect
-              style={{
-                inputIOS: {
-                  fontFamily: "poppins-medium",
-                  fontSize: 17,
-                  color: "black",
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  paddingHorizontal: 12,
-                },
-                inputAndroid: {
-                  fontFamily: "poppins-medium",
-                  fontSize: 17,
-                  color: "black",
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  paddingHorizontal: 12,
-                },
-              }}
-              onValueChange={(value) => setHospital(value)}
-              value={hospital}
-              placeholder={{
-                label: "Select Hospital",
-                value: null,
-              }}
-              items={[
-                { label: "Nawaloka Hospital", value: "Nawaloka Hospital" },
-                {
-                  label: "Asiri Central Hospital",
-                  value: "Asiri Central Hospital",
-                },
-                { label: "Hemas Hospital", value: "Hemas Hospital" },
-                { label: "Ninewells Hospital", value: "Ninewells Hospital" },
-                { label: "Durdans Hospital", value: "Durdans Hospital" },
-                { label: "Lanka Hospitals", value: "Lanka Hospitals" },
-                { label: "Golden Key Hospital", value: "Golden Key Hospital" },
-              ]}
+              items={specializationOptions.map((item) => ({
+                label: item,
+                value: item,
+              }))}
             />
           </View>
 

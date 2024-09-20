@@ -22,17 +22,18 @@ import { useRouter } from "expo-router";
 
 const DoctorListCard = ({ doctor, getDoctorList }) => {
   const router = useRouter();
+
   const OnDelete = () => {
     Alert.alert(
       "Do you want to Delete?",
       "Do you really want to delete this doctor profile?",
       [
         {
-          text: "cancel",
+          text: "Cancel",
           style: "cancel",
         },
         {
-          text: "delete",
+          text: "Delete",
           style: "destructive",
           onPress: () => deleteDoctor(),
         },
@@ -41,21 +42,32 @@ const DoctorListCard = ({ doctor, getDoctorList }) => {
   };
 
   const deleteDoctor = async () => {
-    console.log("Deleted Doctor Profile");
-    const q = query(
-      collection(db, "DoctorList"),
-      where("name", "==", doctor?.name)
-    );
-    const querySnapshot = await getDocs(q);
+    try {
+      const hospitalQuery = query(
+        collection(db, "HospitalList"),
+        where("userEmail", "==", doctor.userEmail)
+      );
+      const hospitalSnapshot = await getDocs(hospitalQuery);
 
-    querySnapshot.forEach(async (docSnapshot) => {
-      await deleteDoc(doc(db, "DoctorList", docSnapshot.id));
-    });
+      if (!hospitalSnapshot.empty) {
+        const hospitalDocRef = hospitalSnapshot.docs[0].ref;
 
-    console.log(doctor?.name);
-    ToastAndroid.show("Doctor profile Deleted!", ToastAndroid.LONG);
+        const doctorQuery = query(
+          collection(hospitalDocRef, "DoctorList"),
+          where("name", "==", doctor.name)
+        );
+        const doctorSnapshot = await getDocs(doctorQuery);
 
-    getDoctorList();
+        doctorSnapshot.forEach(async (docSnapshot) => {
+          await deleteDoc(doc(hospitalDocRef, "DoctorList", docSnapshot.id)); 
+        });
+
+        ToastAndroid.show("Doctor profile deleted!", ToastAndroid.LONG);
+        getDoctorList(); 
+      }
+    } catch (error) {
+      console.error("Error deleting doctor: ", error);
+    }
   };
 
   return (
@@ -90,7 +102,7 @@ const DoctorListCard = ({ doctor, getDoctorList }) => {
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => OnDelete()}
+            onPress={OnDelete}
             className="w-20 mr-4 bg-red-600 shadow-2xl rounded-xl"
           >
             <Text className="text-center text-white font-[poppins-medium]">
