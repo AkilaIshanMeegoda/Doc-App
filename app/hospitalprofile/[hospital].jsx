@@ -3,24 +3,47 @@ import React from 'react'
 import DoctorProfile from "../../components/HospitalProfile/DoctorProfile";
 import HospitalProfile from "../../components/HospitalProfile/HospitalProfile";
 import OptionComponent from "../../components/HospitalProfile/OptionComponent";
+import { useLocalSearchParams } from "expo-router";
+import { useState, useEffect } from "react";
+import { fetchDoctorsByFilter } from "../../utils/FetchDoctorsByFilter";
 
-const starIcons = [
-  require("../../assets/images/star1.png"),
-  require("../../assets/images/star1.png"),
-  require("../../assets/images/star1.png"),
-  require("../../assets/images/star1.png"),
-  require("../../assets/images/star1.png"),
-];
 
 const hospital = () => {
+  const { hospitalId, specialization, doctorName } = useLocalSearchParams();
+  const [doctors, setDoctors] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const doctorsData = await fetchDoctorsByFilter({
+        hospitalId,
+        specialization,
+        doctorName,
+      });
+      setDoctors(doctorsData);
+    };
+    fetchData();
+  }, [hospitalId, specialization, doctorName]);
+
+  const starIcons = [
+    require("../../assets/images/star1.png"),
+    require("../../assets/images/star1.png"),
+    require("../../assets/images/star1.png"),
+    require("../../assets/images/star1.png"),
+    require("../../assets/images/star1.png"),
+  ];
+
+  console.log("doctors in hospital page", doctors);
   return (
     <ScrollView>
       <View style={{ flex: 1 }}>
         <HospitalProfile />
-        <ScrollView horizontal={true} contentContainerStyle={{ flexDirection: 'row' }}>
-         <DoctorProfile />
-         <DoctorProfile />
-         <DoctorProfile />
+        <ScrollView
+          horizontal={true}
+          contentContainerStyle={{ flexDirection: "row" }}
+        >
+          {doctors.map((doctor) => (
+            <DoctorProfile key={doctor.id} doctor={doctor} />
+          ))}
           {/* Add more DoctorProfile components as needed */}
         </ScrollView>
         <OptionComponent />

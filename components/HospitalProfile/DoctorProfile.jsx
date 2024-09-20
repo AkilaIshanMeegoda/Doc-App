@@ -21,7 +21,7 @@ const FontSize = {
   bodyBase_size: 16,
 };
 
-const DoctorProfile = () => {
+const DoctorProfile = ({ doctor }) => {
 
   const router = useRouter();
 
@@ -37,8 +37,8 @@ const DoctorProfile = () => {
           contentFit="cover"
           source={require("../../assets/images/doctorimage.png")}
         />
-        <Text style={styles.doctorName}>Dr. Emily Johnson</Text>
-        <Text style={styles.specialization}>Eye Specialist</Text>
+        <Text style={styles.doctorName}>{doctor.name}</Text>
+        <Text style={styles.specialization}>{doctor.specialization}</Text>
         <View style={styles.ratingContainer}>
           <Image
             style={styles.starIcon}
