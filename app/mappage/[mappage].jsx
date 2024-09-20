@@ -1,8 +1,10 @@
 import React from 'react'
-import { View, Text, Image, StyleSheet, ScrollView } from "react-native";
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { Link } from "expo-router";
 import CenterComponent from "../../components/MapPage/CenterComponent";
-import { useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { fetchHospitals } from "../../utils/FetchHospitals";
+import { useState, useEffect } from "react";
 
 const Color = {
   colorRoyalblue: "#4169e1",
@@ -21,6 +23,31 @@ const FontSize = {
 };
 
 const mappage = () => {
+  const router = useRouter();
+
+  const { name, area, specialization, hospitalName } = useLocalSearchParams();
+  console.log("im at setting page", name, area, specialization, hospitalName);
+  const [hospitalIds, setHospitalIds] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const hospitals = await fetchHospitals(area, name, specialization, hospitalName);
+      const hospitalIds = hospitals.map(hospital => hospital.id); // Extract the hospital IDs
+      setHospitalIds(hospitalIds); // Store the hospital IDs in state
+    };
+
+    fetchData();
+  }, [area, name, specialization, hospitalName]);
+  
+  const handleHospitalClick = (hospitalId) => {
+    router.push({
+      pathname: '/hospitalprofile/[hospital]',
+      params: { hospitalId, specialization, doctorName: name },  // Pass data to the hospital page
+    });
+  };
+
+console.log("hospitalIds", hospitalIds);
+
   return (
     <View style={styles.container}>
       <Image
@@ -29,7 +56,7 @@ const mappage = () => {
       />
 
       <View style={styles.centerWrapper}>
-        <Link href="/hospitalprofile/hospital">Push Settings</Link>
+        {/* <Link href="/hospitalprofile/hospital">Push Settings</Link> */}
         <Text style={styles.availableCentres}>Available Centres</Text>
 
         {/* ScrollView added for available centers */}
@@ -37,8 +64,11 @@ const mappage = () => {
           style={styles.scrollView}
           contentContainerStyle={styles.scrollViewContent}
         >
-          <CenterComponent />
-          <CenterComponent />
+           {hospitalIds.map((id) => (
+            <TouchableOpacity key={id} onPress={() => handleHospitalClick(id)}>
+            <CenterComponent key={id} hospitalId={id} /> 
+            </TouchableOpacity>
+          ))}
         </ScrollView>
       </View>
     </View>

@@ -10,7 +10,7 @@ const home = () => {
   const router = useRouter();
   const [name, setName] = useState("");
   const [specialization, setSpecialization] = useState("");
-  const [doctorCenter, setDoctorCenter] = useState("");
+  const [hospitalName, setHospitalName] = useState("");
   const [area, setArea] = useState("");
 
   const GetDetails = async () => {
@@ -48,7 +48,7 @@ const home = () => {
         name,
         area,
         specialization,
-        doctorCenter
+        hospitalName
       }
     })
   }
@@ -88,8 +88,8 @@ const home = () => {
       <View style={styles.input}>
       <TextInput 
         placeholder="Doctor Center"
-        value= {doctorCenter}
-        onChangeText={setDoctorCenter}
+        value= {hospitalName}
+        onChangeText={setHospitalName}
 />
       </View>
       <View style={styles.input}>

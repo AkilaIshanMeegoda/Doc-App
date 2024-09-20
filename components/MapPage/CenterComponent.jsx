@@ -1,5 +1,8 @@
 import { View, Text, StyleSheet, Image } from "react-native";
 import React from "react";
+import { useEffect, useState } from "react";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { db } from "../../configs/FirebaseConfig"; // Import your centralized Firestore instance
 
 const Color = {
     colorRoyalblue: "#4169e1",
@@ -16,7 +19,45 @@ const Color = {
     size_lg: 16,
   };
 
-const CenterComponent = () => {
+const CenterComponent = ({ hospitalId }) => {
+  const [hospital, setHospital] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchHospitalData = async () => {
+      try {
+        const hospitalRef = doc(db, 'HospitalList', hospitalId);
+        const hospitalSnap = await getDoc(hospitalRef);
+
+        if (hospitalSnap.exists()) {
+          setHospital(hospitalSnap.data());
+        } else {
+          setError('Hospital not found');
+        }
+      } catch (err) {
+        setError('Error fetching hospital data');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHospitalData();
+  }, [hospitalId]);
+
+  if (loading) {
+    return <Text>Loading...</Text>;
+  }
+
+  if (error) {
+    return <Text>{error}</Text>;
+  }
+
+  if (!hospital) {
+    return <Text>No hospital data available</Text>;
+  }
+
   return (
     <View style={styles.centerContainer}>
       <View style={styles.centerCard}>
@@ -25,8 +66,8 @@ const CenterComponent = () => {
           source={require("../../assets/images/maphospital.png")}
         />
         <View style={styles.centerDetails}>
-          <Text style={styles.uploadDocument}>Upload Document</Text>
-          <Text style={styles.mainStCityville}>123 Main St, Cityville</Text>
+          <Text style={styles.uploadDocument}>{hospital.name}</Text>
+          <Text style={styles.mainStCityville}>{hospital.area}</Text>
         </View>
         <View style={styles.ratingContainer}>
           <Image
