@@ -33,6 +33,8 @@ const addDoctor = () => {
   const [image, setImage] = useState(null);
   const [docName, setDocName] = useState(null);
   const [specialization, setSpecialization] = useState(null);
+  const [specializationOptions, setSpecializationOptions] = useState([]);
+
   const [hospital, setHospital] = useState(null);
   const [exp, setExp] = useState(null);
   const [description, setDescription] = useState(null);
@@ -127,18 +129,20 @@ const addDoctor = () => {
   };
 
   useEffect(() => {
-    const fetchHospital = async () => {
+    const fetchHospitalSpecializations = async () => {
       const hospitalQuery = query(
         collection(db, "HospitalList"),
         where("userEmail", "==", user?.primaryEmailAddress?.emailAddress)
       );
       const querySnapshot = await getDocs(hospitalQuery);
       if (!querySnapshot.empty) {
-        setHospital(querySnapshot.docs[0].data().name);
+        const hospitalData = querySnapshot.docs[0].data();
+        setHospital(hospitalData.name);
+        setSpecializationOptions(hospitalData.specialization || []);
       }
     };
     if (user) {
-      fetchHospital();
+      fetchHospitalSpecializations();
     }
   }, []);
 
@@ -149,8 +153,8 @@ const addDoctor = () => {
     );
     const hospitalSnapshot = await getDocs(hospitalQuery);
     if (!hospitalSnapshot.empty) {
-      const hospitalDocRef = hospitalSnapshot.docs[0].ref; 
-      const doctorCollectionRef = collection(hospitalDocRef, "DoctorList"); 
+      const hospitalDocRef = hospitalSnapshot.docs[0].ref;
+      const doctorCollectionRef = collection(hospitalDocRef, "DoctorList");
 
       await addDoc(doctorCollectionRef, {
         name: docName,
@@ -239,16 +243,10 @@ const addDoctor = () => {
                 label: "Select Specialization",
                 value: null,
               }}
-              items={[
-                { label: "Cardiologist", value: "Cardiologist" },
-                { label: "Dermatologist", value: "Dermatologist" },
-                { label: "Endocrinologist", value: "Endocrinologist" },
-                { label: "Gastroenterologist", value: "Gastroenterologist" },
-                { label: "Oncologist", value: "Oncologist" },
-                { label: "Pulmonologist", value: "Pulmonologist" },
-                { label: "Nephrologist", value: "Nephrologist" },
-                { label: "Otolaryngologist", value: "Otolaryngologist" },
-              ]}
+              items={specializationOptions.map((item) => ({
+                label: item,
+                value: item,
+              }))}
             />
           </View>
 
