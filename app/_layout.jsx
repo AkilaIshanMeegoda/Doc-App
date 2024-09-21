@@ -67,32 +67,31 @@ export default function RootLayout() {
   );
 }
 
-// Separated the authenticated stack logic into a new component
 function AuthenticatedStack() {
-  const { user } = useUser(); // Get the user information using useUser
+  const { user } = useUser(); 
   const [role, setRole] = useState(null);
 
   useEffect(() => {
     if (user) {
-      // Assuming you store roles in user metadata
-      const userRole = user?.publicMetadata?.role || "member"; // Example of how to access the role
+     
+      const userRole = user?.publicMetadata?.role || "member"; 
       setRole(userRole);
     }
   }, [user]);
 
   if (!role) {
-    return <Text>Loading...</Text>; // Loader while role is determined
+    return <Text>Loading...</Text>; 
   }
 
   return (
     <>
-      {role == "member" ? (
+      {role == "admin" ? (
         <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(adminTabs)" options={{ headerShown: false }} />
         </Stack>
       ) : (
         <Stack>
-          <Stack.Screen name="(adminTabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         </Stack>
       )}
     </>
