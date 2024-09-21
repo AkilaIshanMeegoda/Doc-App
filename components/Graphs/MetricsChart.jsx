@@ -14,7 +14,7 @@ const MetricsChart = ({ metrics }) => {
   // Check if submittedAt exists and convert to readable format, otherwise return an empty string
   const labels = metrics.map((metric) => {
     if (metric.submittedAt && metric.submittedAt.seconds) {
-        const date = new Date(metric.submittedAt.seconds * 1000); // Convert Firestore timestamp
+        const date = new Date(metric.submittedAt.seconds * 1000); // Convert Firestor timestamp
         return `${date.getDate()}/${date.getMonth() + 1}`; // Format as day/month
       } else {
         return ''; // Fallback for missing timestamps
