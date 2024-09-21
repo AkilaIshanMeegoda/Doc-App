@@ -1,5 +1,8 @@
 import * as React from "react";
-import { StyleSheet, View, Text, Image } from "react-native";
+import { StyleSheet, View, Text, Image, ActivityIndicator } from "react-native";
+import { useState, useEffect } from "react";
+import { doc, getDoc } from "firebase/firestore"; // Firestore imports
+import { db } from "../../configs/FirebaseConfig"; // Import Firestore config
 
 const Color = {
   colorBlack: "#000",
@@ -15,60 +18,83 @@ const FontSize = {
   size_mini: 15,
 };
 
-const HospitalProfile = () => {
+const HospitalProfile = ({ hospitalId }) => {
+  const [hospitalData, setHospitalData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Fetch hospital data from Firestore
+    const fetchHospitalData = async () => {
+      try {
+        const docRef = doc(db, "HospitalList", hospitalId); // Get the hospital doc by ID
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          setHospitalData(docSnap.data()); // Store the document data in state
+        } else {
+          console.log("No such document!");
+        }
+      } catch (error) {
+        console.error("Error fetching hospital data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (hospitalId) {
+      fetchHospitalData();
+    }
+  }, [hospitalId]);
+
+  if (loading) {
+    return <ActivityIndicator size="large" color={Color.colorBlack} />;
+  }
+
+  if (!hospitalData) {
+    return <Text>No hospital data available.</Text>;
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.card}>
         <View style={styles.imageContainer}>
-          <Text style={styles.hospitalName}>Central Hospital</Text>
+          <Text style={styles.hospitalName}>{hospitalData.name}</Text>
           <Image
             style={styles.hospitalImage}
             contentFit="cover"
-            source={require("../../assets/images/hospital.png")}
+            source={
+              hospitalData.image
+                ? { uri: hospitalData.image }
+                : require("../../assets/images/hospital.png")
+            }
           />
         </View>
         <View style={styles.detailsContainer}>
           <View style={styles.detailsRow}>
             <Text style={styles.label}>Address:</Text>
-            <Text style={styles.address}>123 Main St, Cityville</Text>
+            <Text style={styles.address}>{hospitalData.address}</Text>
           </View>
           <View style={styles.detailsRow}>
             <Text style={styles.label}>Contact Number:</Text>
-            <Text style={styles.contactNumber}>0766839636</Text>
+            <Text style={styles.contactNumber}>{hospitalData.contact}</Text>
           </View>
           <View style={styles.ratingContainer}>
-            <Image
-              style={styles.starIcon}
-              contentFit="cover"
-              source={require("../../assets/images/star1.png")}
-            />
-            <Image
-              style={styles.starIcon}
-              contentFit="cover"
-              source={require("../../assets/images/star1.png")}
-            />
-            <Image
-              style={styles.starIcon}
-              contentFit="cover"
-              source={require("../../assets/images/star1.png")}
-            />
-            <Image
-              style={styles.starIcon}
-              contentFit="cover"
-              source={require("../../assets/images/star1.png")}
-            />
-            <Image
-              style={styles.starIcon}
-              contentFit="cover"
-              source={require("../../assets/images/star1.png")}
-            />
+            {Array(hospitalData.rating)
+              .fill()
+              .map((_, index) => (
+                <Image
+                  key={index}
+                  style={styles.starIcon}
+                  contentFit="cover"
+                  source={require("../../assets/images/star1.png")}
+                />
+              ))}
           </View>
         </View>
       </View>
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -93,7 +119,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   hospitalName: {
-    fontSize: FontSize.size_l,
+    fontSize: FontSize.size_lg,
     fontFamily: 'poppins-bold',
     fontWeight: "700",
     color: Color.colorBlack,
