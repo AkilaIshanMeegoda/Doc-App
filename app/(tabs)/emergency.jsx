@@ -36,7 +36,7 @@ const emergency = () => {
 
     const message = `Hey, here's my live location: https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}`;
     
-    const phoneNumber = '+94763899553'; // Replace with the phone number you want to send the message to (in international format, e.g., +1234567890)
+    const phoneNumber = '+94779669843'; // Replace with the phone number you want to send the message to (in international format, e.g., +1234567890)
     
     const url = `whatsapp://send?text=${encodeURIComponent(message)}&phone=${phoneNumber}`;
 
