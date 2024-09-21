@@ -18,6 +18,7 @@ import {
   getDocs,
   query,
   orderBy,
+  where
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "./../../configs/FirebaseConfig"; // Import Firebase configuration
@@ -35,7 +36,9 @@ const documentManage = () => {
   const [imageUri, setImageUri] = useState(null); // State for storing image URI
 
   useEffect(() => {
-    fetchImagesFromFirestore(); // Fetch images on component mount
+    if (user && user.primaryEmailAddress) {
+      fetchImagesFromFirestore();
+    } // Fetch images on component mount
   }, []);
 
   // Function to handle picking images from gallery
@@ -109,9 +112,14 @@ const documentManage = () => {
   // Function to fetch images and metadata from Firestore
   const fetchImagesFromFirestore = async () => {
     try {
+      const email = user.primaryEmailAddress.emailAddress; // Get current user's email
+
+         // Query Firestore for images uploaded by the logged-in user, ordered by timestamp
       const q = query(
         collection(db, "Portal-Images"),
-        orderBy("timestamp", "desc")
+        orderBy("timestamp", "desc"),
+        where("email", "==", email) // Filter to get documents only by the logged-in user
+
       ); // Query ordered by timestamp
       const querySnapshot = await getDocs(q);
       const fetchedImages = [];
