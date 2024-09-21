@@ -18,10 +18,11 @@ import {
 } from "firebase/firestore";
 import { db } from "../../configs/FirebaseConfig";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useUser } from "@clerk/clerk-expo";
 
 const Doctor = () => {
+  const navigation = useNavigation();
   const { doctorId } = useLocalSearchParams();
   const [doctor, setDoctor] = useState(null);
   const { user } = useUser();
@@ -29,6 +30,16 @@ const Doctor = () => {
   useEffect(() => {
     getDoctorById();
   }, [doctorId]);
+
+  useEffect(() => {
+    navigation.setOptions({
+      title: `Doctor Profile`,
+      headerTintColor: '#607AFB', 
+      headerTitleStyle: {
+        color: 'black', 
+      },
+    });
+  }, [navigation, doctorId]);
 
   useEffect(() => {
     LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);

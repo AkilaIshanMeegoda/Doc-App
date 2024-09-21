@@ -9,12 +9,12 @@ const AddDoctorHeader = () => {
        <View className="flex-row h-24 bg-white">
         <Text className="ml-6 mt-14 text-xl text-center font-[poppins-medium]">
           <Feather
-            className="pl-8 mt-12 "
+            className="pl-8 mt-16 "
             name="plus-square"
             size={24}
             color={Colors.PRIMARY}
           />
-          <Text className="ml-8 "> </Text>
+          <Text className="ml-8 ">{"   "}  </Text>
           Add New Doctor
         </Text>
       </View>
