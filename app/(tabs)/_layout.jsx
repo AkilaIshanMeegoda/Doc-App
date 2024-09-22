@@ -2,7 +2,8 @@ import { View, Text, TouchableOpacity } from "react-native";
 import React from "react";
 import { Tabs, useNavigation } from "expo-router";
 import Feather from "@expo/vector-icons/Feather";
-import {Colors} from "../../constants/Colors"
+import { Colors } from "../../constants/Colors";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 const TabLayout = () => {
   const navigation = useNavigation();
@@ -36,19 +37,43 @@ const TabLayout = () => {
           ),
         }}
       />
+
       <Tabs.Screen
         name="emergency"
         options={{
+          headerTitle: "Emergency",
           tabBarLabel: "Emergency",
+          headerTitleStyle: {
+            fontFamily: "poppins-medium",
+            fontSize: 20,
+          },
           tabBarIcon: () => (
-            <Feather name="headphones" size={24} color={Colors.PRIMARY} />
+            <MaterialCommunityIcons
+              name="car-emergency"
+              size={24}
+              color={Colors.PRIMARY}
+            />
+          ),
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Feather
+                name="arrow-left"
+                size={24}
+                color={Colors.PRIMARY}
+                style={{ marginLeft: 15, marginBottom: 4 }}
+              />
+            </TouchableOpacity>
           ),
         }}
       />
       <Tabs.Screen
         name="remind"
         options={{
+          headerTitleStyle: {
+            fontFamily: "poppins-medium",
+          },
           tabBarLabel: "Remind",
+          headerShown: false,
           tabBarIcon: () => (
             <Feather name="bell" size={24} color={Colors.PRIMARY} />
           ),
@@ -68,9 +93,24 @@ const TabLayout = () => {
       <Tabs.Screen
         name="profile"
         options={{
+          headerTitle: "Edit Profile",
+          headerTitleStyle: {
+            fontFamily: "poppins-medium",
+            fontSize: 20,
+          },
           tabBarLabel: "Profile",
           tabBarIcon: () => (
             <Feather name="user" size={24} color={Colors.PRIMARY} />
+          ),
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Feather
+                name="arrow-left"
+                size={24}
+                color={Colors.PRIMARY}
+                style={{ marginLeft: 15, marginBottom: 4 }}
+              />
+            </TouchableOpacity>
           ),
         }}
       />
