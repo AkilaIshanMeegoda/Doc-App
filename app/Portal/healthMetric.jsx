@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   ScrollView,
   ToastAndroid,
-  Alert,  // Import Alert for validation alerts
+  Alert, // Import Alert for validation alerts
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import Feather from "@expo/vector-icons/Feather";
@@ -25,7 +25,6 @@ const HealthMetric = () => {
   const navigation = useNavigation(); // Get navigation object
   const [successMessage, setSuccessMessage] = useState(""); // State for success message
 
-
   useEffect(() => {
     if (user && user.primaryEmailAddress) {
       setEmail(user.primaryEmailAddress.emailAddress); // Set email when user is available
@@ -36,7 +35,6 @@ const HealthMetric = () => {
       title: "Health Metrics",
     });
   }, [user]);
-
 
   const validateInputs = () => {
     let error = "";
@@ -126,7 +124,6 @@ const HealthMetric = () => {
           Log Health Metrics
         </Text>
 
-
         <TextInput
           style={{
             backgroundColor: Colors.patientPortal.buttonBackground,
@@ -157,34 +154,41 @@ const HealthMetric = () => {
           onChangeText={setDiabetesLevel}
         />
 
-        <TouchableOpacity
+        <View
           style={{
-            flexDirection: "row",
-            alignItems: "center",
-            backgroundColor: Colors.patientPortal.iconColor,
-            padding: 15,
-            borderRadius: 10,
+            flex: 1, // Make the parent container take up the full available space
+            justifyContent: "center", // Vertically center the button
+            alignItems: "center", // Horizontally center the button
           }}
-          onPress={logMetrics}
         >
-          <Feather
-            name="check-circle"
-            size={24}
-            color={Colors.patientPortal.background}
-
-          />
-          <View style={{ flex: 1, marginLeft: 10 }}>
-            <Text
-              style={{
-                fontSize: 16,
-                fontWeight: "600",
-                color: Colors.patientPortal.background,
-              }}
-            >
-              Log Metrics
-            </Text>
-          </View>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              backgroundColor: Colors.patientPortal.iconColor,
+              padding: 15,
+              borderRadius: 10,
+            }}
+            onPress={logMetrics}
+          >
+            <Feather
+              name="check-circle"
+              size={24}
+              color={Colors.patientPortal.background}
+            />
+            <View style={{ flex: 1, marginLeft: 10 }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "600",
+                  color: Colors.patientPortal.background,
+                }}
+              >
+                Log Metrics
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
       {/* Display the health metrics graph */}
       <View style={{ marginVertical: 20 }}>

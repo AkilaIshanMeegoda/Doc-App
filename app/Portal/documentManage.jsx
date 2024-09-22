@@ -199,7 +199,7 @@ const DocumentManage = () => {
         style={{
           flexDirection: "row",
           alignItems: "center",
-          backgroundColor: Colors.patientPortal.buttonBackground,
+          backgroundColor: Colors.PRIMARY,
           padding: 15,
           marginBottom: 20,
           borderRadius: 10,
@@ -210,10 +210,10 @@ const DocumentManage = () => {
         <Feather
           name="upload"
           size={24}
-          color={Colors.patientPortal.iconColor}
+          color={Colors.patientPortal.buttonBackground}
         />
         <View style={{ flex: 1, marginLeft: 10 }}>
-          <Text style={{ fontSize: 16, fontWeight: "600" }}>Upload Image</Text>
+          <Text style={{ fontSize: 16, fontWeight: "600", color:Colors.patientPortal.buttonBackground }}>Upload Image</Text>
         </View>
       </TouchableOpacity>
 
