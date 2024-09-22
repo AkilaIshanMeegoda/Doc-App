@@ -7,6 +7,7 @@ import {
   Alert,
   TextInput,
   Modal,
+  ToastAndroid,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import Feather from "@expo/vector-icons/Feather";
@@ -18,34 +19,40 @@ import {
   getDocs,
   query,
   orderBy,
-  where
+  where,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage } from "./../../configs/FirebaseConfig"; // Import Firebase configuration
+import { db, storage } from "./../../configs/FirebaseConfig";
 import { useRouter } from "expo-router";
 import { useUser } from "@clerk/clerk-expo";
-import { deleteDoc, doc } from "firebase/firestore"; // Import deleteDoc and doc
+import { deleteDoc, doc } from "firebase/firestore";
+import { useNavigation } from "expo-router";
+import ImageViewer from "react-native-image-zoom-viewer";
 
-
-const documentManage = () => {
+const DocumentManage = () => {
   const router = useRouter();
-  const [images, setImages] = useState([]); // State to store uploaded image details
-  const { user } = useUser(); // Clerk user hook
+  const navigation = useNavigation();
+  const [images, setImages] = useState([]);
+  const { user } = useUser();
   const [modalVisible, setModalVisible] = useState(false);
   const [description, setDescription] = useState("");
-  const [imageUri, setImageUri] = useState(null); // State for storing image URI
+  const [imageUri, setImageUri] = useState(null);
+  const [viewImageUri, setViewImageUri] = useState(null);
 
   useEffect(() => {
     if (user && user.primaryEmailAddress) {
       fetchImagesFromFirestore();
-    } // Fetch images on component mount
-  }, []);
+    }
 
-  // Function to handle picking images from gallery
+    navigation.setOptions({
+      title: "Document Management",
+    });
+  }, [user]);
+
   const pickImageFromGallery = async () => {
     const permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (permissionResult.granted === false) {
+    if (!permissionResult.granted) {
       alert("Permission to access gallery is required!");
       return;
     }
@@ -53,15 +60,14 @@ const documentManage = () => {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
     });
     if (!result.canceled) {
-      setImageUri(result.assets[0].uri); // Set image URI for further use
-      setModalVisible(true); // Open modal for description input
+      setImageUri(result.assets[0].uri);
+      setModalVisible(true);
     }
   };
 
-  // Function to handle capturing images from the camera
   const captureImageFromCamera = async () => {
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-    if (permissionResult.granted === false) {
+    if (!permissionResult.granted) {
       alert("Permission to access camera is required!");
       return;
     }
@@ -74,95 +80,95 @@ const documentManage = () => {
     }
   };
 
-  // Function to handle image upload to Firebase
   const uploadImageToFirebase = async () => {
     try {
-      const email = user.primaryEmailAddress.emailAddress; // Get the user's email from Clerk
-
-      // Create a unique filename and storage reference
+      const email = user.primaryEmailAddress.emailAddress;
       const fileName = `${email}_${new Date().getTime()}.jpg`;
       const storageRef = ref(storage, `images/${fileName}`);
-
-      // Convert image to blob
       const response = await fetch(imageUri);
       const blob = await response.blob();
-
-      // Upload image to Firebase Storage
       await uploadBytes(storageRef, blob);
-
-      // Get the image URL after upload
       const downloadURL = await getDownloadURL(storageRef);
 
-      // Save metadata to Firestore
-      const docRef = await addDoc(collection(db, "Portal-Images"), {
+      await addDoc(collection(db, "Portal-Images"), {
         email,
         description,
         imageUrl: downloadURL,
-        timestamp: new Date(), // Upload timestamp
+        timestamp: new Date(),
       });
 
-      console.log("Document written with ID: ", docRef.id);
-      fetchImagesFromFirestore(); // Refresh image list after upload
-      setModalVisible(false); // Close modal after upload
+      fetchImagesFromFirestore();
+      setModalVisible(false);
+      ToastAndroid.show("Document added successfully!", ToastAndroid.SHORT);
     } catch (error) {
       console.error("Error uploading image: ", error);
     }
   };
 
-  // Function to fetch images and metadata from Firestore
   const fetchImagesFromFirestore = async () => {
     try {
-      const email = user.primaryEmailAddress.emailAddress; // Get current user's email
-
-         // Query Firestore for images uploaded by the logged-in user, ordered by timestamp
+      const email = user.primaryEmailAddress.emailAddress;
       const q = query(
         collection(db, "Portal-Images"),
         orderBy("timestamp", "desc"),
-        where("email", "==", email) // Filter to get documents only by the logged-in user
-
-      ); // Query ordered by timestamp
+        where("email", "==", email)
+      );
       const querySnapshot = await getDocs(q);
       const fetchedImages = [];
       querySnapshot.forEach((doc) => {
         fetchedImages.push({ id: doc.id, ...doc.data() });
       });
-      setImages(fetchedImages); // Update state with retrieved images
+      setImages(fetchedImages);
     } catch (error) {
       console.error("Error fetching images: ", error);
     }
   };
 
-
-  // Function to delete an image document from Firestore
   const deleteImageFromFirestore = async (id) => {
-    try {
-      await deleteDoc(doc(db, "Portal-Images", id)); // Delete the document by ID
-      fetchImagesFromFirestore(); // Refresh the image list after deletion
-      alert("Document deleted successfully.");
-    } catch (error) {
-      console.error("Error deleting document: ", error);
-      alert("Failed to delete the document.");
-    }
+    Alert.alert(
+      "Delete Document",
+      "Are you sure you want to delete this document?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          onPress: async () => {
+            try {
+              await deleteDoc(doc(db, "Portal-Images", id));
+              ToastAndroid.show(
+                "Document deleted successfully!",
+                ToastAndroid.SHORT
+              );
+              fetchImagesFromFirestore();
+            } catch (error) {
+              console.error("Error deleting document: ", error);
+              ToastAndroid.show(
+                "Failed to delete the document.",
+                ToastAndroid.SHORT
+              );
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
-  // Alert to choose between camera or gallery
   const handleImageUpload = () => {
     Alert.alert(
       "Upload Image",
       "Choose an option to upload an image",
       [
-        {
-          text: "Gallery",
-          onPress: pickImageFromGallery,
-        },
-        {
-          text: "Camera",
-          onPress: captureImageFromCamera,
-        },
+        { text: "Gallery", onPress: pickImageFromGallery },
+        { text: "Camera", onPress: captureImageFromCamera },
         { text: "Cancel", style: "cancel" },
       ],
       { cancelable: true }
     );
+  };
+
+  const viewImage = (imageUrl) => {
+    setViewImageUri(imageUrl);
   };
 
   return (
@@ -188,7 +194,7 @@ const documentManage = () => {
           View, upload images with descriptions.
         </Text>
       </View>
-  
+
       <TouchableOpacity
         style={{
           flexDirection: "row",
@@ -198,19 +204,19 @@ const documentManage = () => {
           marginBottom: 20,
           borderRadius: 10,
           elevation: 1,
-          shadowColor: Colors.patientPortal.textSecondary,
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 2,
         }}
         onPress={handleImageUpload}
       >
-        <Feather name="upload" size={24} color={Colors.patientPortal.iconColor} />
+        <Feather
+          name="upload"
+          size={24}
+          color={Colors.patientPortal.iconColor}
+        />
         <View style={{ flex: 1, marginLeft: 10 }}>
           <Text style={{ fontSize: 16, fontWeight: "600" }}>Upload Image</Text>
         </View>
       </TouchableOpacity>
-  
+
       <ScrollView>
         <View style={{ padding: 20 }}>
           <Text
@@ -239,24 +245,14 @@ const documentManage = () => {
                     borderRadius: 15,
                     width: "48%",
                     marginBottom: 20,
-                    overflow: "hidden",
                     elevation: 3,
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 3 },
-                    shadowOpacity: 0.1,
-                    shadowRadius: 10,
                   }}
                 >
-                  {/* Image Section */}
                   <Image
                     source={{ uri: image.imageUrl }}
-                    style={{
-                      width: "100%",
-                      height: 140,
-                    }}
+                    style={{ width: "100%", height: 140 }}
                   />
                   <View style={{ padding: 15 }}>
-                    {/* Title */}
                     <Text
                       style={{
                         fontSize: 16,
@@ -267,30 +263,22 @@ const documentManage = () => {
                     >
                       {image.description}
                     </Text>
-                    {/* Upload Date */}
                     <Text
-                      style={{
-                        fontSize: 13,
-                        color: "#888",
-                        marginBottom: 15,
-                      }}
+                      style={{ fontSize: 13, color: "#888", marginBottom: 15 }}
                     >
                       Uploaded on{" "}
-                      {new Date(image.timestamp.seconds * 1000).toLocaleDateString()}
+                      {new Date(
+                        image.timestamp.seconds * 1000
+                      ).toLocaleDateString()}
                     </Text>
-                    {/* View Button */}
                     <TouchableOpacity
                       style={{
                         backgroundColor: Colors.patientPortal.iconColor,
                         paddingVertical: 12,
                         alignItems: "center",
                         borderRadius: 8,
-                        shadowColor: "#4CAF50",
-                        shadowOffset: { width: 0, height: 2 },
-                        shadowOpacity: 0.3,
-                        shadowRadius: 3,
                       }}
-                      activeOpacity={0.8}
+                      onPress={() => viewImage(image.imageUrl)}
                     >
                       <Text
                         style={{
@@ -302,14 +290,9 @@ const documentManage = () => {
                         View
                       </Text>
                     </TouchableOpacity>
-                    {/* Cancel Icon for Deletion */}
                     <TouchableOpacity
                       onPress={() => deleteImageFromFirestore(image.id)}
-                      style={{
-                        position: 'absolute',
-                        top: 10,
-                        right: 10,
-                      }}
+                      style={{ position: "absolute", top: 10, right: 10 }}
                     >
                       <Feather name="x" size={24} color="red" />
                     </TouchableOpacity>
@@ -324,7 +307,41 @@ const documentManage = () => {
           </View>
         </View>
       </ScrollView>
-  
+
+      {/* Modal for Viewing Image */}
+      <Modal
+        visible={viewImageUri !== null}
+        animationType="slide"
+        transparent={true}
+      >
+        <View style={{ flex: 1, backgroundColor: "rgba(0, 0, 0, 0.8)" }}>
+          {/* Close Button */}
+          <TouchableOpacity
+            style={{
+              padding: 15,
+              position: "absolute",
+              top: 40,
+              right: 20,
+              backgroundColor: "rgba(255, 255, 255, 0.5)",
+              borderRadius: 5,
+              zIndex: 1,
+            }}
+            onPress={() => setViewImageUri(null)}
+          >
+            <Text style={{ color: "#000", fontSize: 18, fontWeight: "bold" }}>
+              Close
+            </Text>
+          </TouchableOpacity>
+
+          <ImageViewer
+            imageUrls={[{ url: viewImageUri }]}
+            enableSwipeDown
+            onSwipeDown={() => setViewImageUri(null)}
+            renderIndicator={() => null}
+          />
+        </View>
+      </Modal>
+
       {/* Modal for Description Input */}
       <Modal visible={modalVisible} animationType="slide" transparent={true}>
         <View
@@ -359,7 +376,11 @@ const documentManage = () => {
             />
             <TouchableOpacity
               onPress={uploadImageToFirebase}
-              style={{ backgroundColor: Colors.patientPortal.iconColor, padding: 10, borderRadius: 5 }}
+              style={{
+                backgroundColor: Colors.patientPortal.iconColor,
+                padding: 10,
+                borderRadius: 5,
+              }}
             >
               <Text style={{ color: "white", textAlign: "center" }}>
                 Upload
@@ -376,7 +397,6 @@ const documentManage = () => {
       </Modal>
     </View>
   );
-  
 };
 
-export default documentManage;
+export default DocumentManage;
