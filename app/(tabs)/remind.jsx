@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { Colors } from '../../constants/Colors';
 import { router } from 'expo-router';
-import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../configs/FirebaseConfig';
 import { useUser } from '@clerk/clerk-expo'; // To get the current user
+import Ionicons from '@expo/vector-icons/Ionicons'; // Importing Ionicons for delete icon
 
 const Remind = () => {
   const [reminders, setReminders] = useState([]);
@@ -28,6 +29,28 @@ const Remind = () => {
       return () => unsubscribe();
     }
   }, [userId]);
+
+  // Function to delete a reminder
+  const handleDeleteReminder = (reminderId) => {
+    Alert.alert(
+      'Delete Reminder',
+      'Are you sure you want to delete this reminder?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Delete', 
+          style: 'destructive', 
+          onPress: async () => {
+            try {
+              await deleteDoc(doc(db, 'reminders', reminderId)); // Delete the reminder from Firestore
+            } catch (error) {
+              console.error('Error deleting reminder: ', error);
+            }
+          },
+        },
+      ]
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -53,11 +76,20 @@ const Remind = () => {
         <ScrollView contentContainerStyle={styles.reminderList}>
           {reminders.map((reminder) => (
             <View key={reminder.id} style={styles.reminderCard}>
-              <Text style={styles.reminderName}>{reminder.reminderName}</Text>
-              <Text style={styles.reminderDates}>
-                {formatReminderDates(reminder.startDate, reminder.endDate)} / {formatReminderTimes(reminder.reminderTimes)}
-              </Text>
-              <Text style={styles.reminderNote}>{reminder.reminderNotes}</Text>
+              <View style={styles.reminderCardContent}>
+                <View>
+                  <Text style={styles.reminderName}>{reminder.reminderName}</Text>
+                  <Text style={styles.reminderDates}>
+                    {formatReminderDates(reminder.startDate, reminder.endDate)} / {formatReminderTimes(reminder.reminderTimes)}
+                  </Text>
+                  <Text style={styles.reminderNote}>{reminder.reminderNotes}</Text>
+                </View>
+
+                {/* Delete Icon */}
+                <TouchableOpacity onPress={() => handleDeleteReminder(reminder.id)}>
+                  <Ionicons name="trash-outline" size={24} color={Colors.error} />
+                </TouchableOpacity>
+              </View>
             </View>
           ))}
         </ScrollView>
@@ -120,6 +152,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 15,
     width: '100%',
+  },
+  reminderCardContent: {
+    flexDirection: 'row',         // Layout the delete icon next to the text
+    justifyContent: 'space-between', // Space between reminder content and delete icon
+    alignItems: 'center',
   },
   reminderName: {
     fontSize: 18,
