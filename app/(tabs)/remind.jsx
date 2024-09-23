@@ -4,8 +4,8 @@ import { Colors } from '../../constants/Colors';
 import { router } from 'expo-router';
 import { collection, query, where, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../configs/FirebaseConfig';
-import { useUser } from '@clerk/clerk-expo'; // To get the current user
-import Ionicons from '@expo/vector-icons/Ionicons'; // Importing Ionicons for delete icon
+import { useUser } from '@clerk/clerk-expo';
+import Feather from "@expo/vector-icons/Feather";
 
 const Remind = () => {
   const [reminders, setReminders] = useState([]);
@@ -15,8 +15,8 @@ const Remind = () => {
   useEffect(() => {
     if (userId) {
       const q = query(
-        collection(db, 'reminders'), // Firestore collection
-        where('userId', '==', userId) // Filter reminders by userId
+        collection(db, 'reminders'),
+        where('userId', '==', userId)
       );
       const unsubscribe = onSnapshot(q, (snapshot) => {
         const userReminders = snapshot.docs.map((doc) => ({
@@ -42,7 +42,7 @@ const Remind = () => {
           style: 'destructive', 
           onPress: async () => {
             try {
-              await deleteDoc(doc(db, 'reminders', reminderId)); // Delete the reminder from Firestore
+              await deleteDoc(doc(db, 'reminders', reminderId));
             } catch (error) {
               console.error('Error deleting reminder: ', error);
             }
@@ -87,7 +87,7 @@ const Remind = () => {
 
                 {/* Delete Icon */}
                 <TouchableOpacity onPress={() => handleDeleteReminder(reminder.id)}>
-                  <Ionicons name="trash-outline" size={24} color={Colors.error} />
+                  <Feather name="trash" size={24} color={Colors.DANGER} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -154,8 +154,8 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   reminderCardContent: {
-    flexDirection: 'row',         // Layout the delete icon next to the text
-    justifyContent: 'space-between', // Space between reminder content and delete icon
+    flexDirection: 'row',         
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
   reminderName: {
