@@ -5,6 +5,7 @@ import CenterComponent from "../../components/MapPage/CenterComponent";
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { fetchHospitals } from "../../utils/FetchHospitals";
 import { useState, useEffect } from "react";
+import MapComponent from '../../components/MapPage/MapComponent';
 
 const Color = {
   colorRoyalblue: "#4169e1",
@@ -47,13 +48,16 @@ const mappage = () => {
   };
 
 console.log("hospitalIds", hospitalIds);
-
+console.log("hospitalIds in MapComponent", hospitalIds);
   return (
     <View style={styles.container}>
-      <Image
+      {/* <Image
         style={styles.mapMakerStandard}
         source={require("../../assets/images/map.png")}
-      />
+      /> */}
+      
+      <MapComponent hospitalIds={hospitalIds} style={styles.mapMakerStandard} />
+
 
       <View style={styles.centerWrapper}>
         {/* <Link href="/hospitalprofile/hospital">Push Settings</Link> */}

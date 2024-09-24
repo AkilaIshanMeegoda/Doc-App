@@ -14,7 +14,7 @@ const ManageDoctorHeader = () => {
             size={24}
             color={Colors.PRIMARY}
           />
-          <Text className="ml-8 "> </Text>
+          <Text className="ml-8 ">{"   "} </Text>
           Manage Doctor
         </Text>
       </View>
