@@ -73,7 +73,6 @@ const TabLayout = () => {
             fontFamily: "poppins-medium",
           },
           tabBarLabel: "Remind",
-          headerShown: false,
           tabBarIcon: () => (
             <Feather name="bell" size={24} color={Colors.PRIMARY} />
           ),
