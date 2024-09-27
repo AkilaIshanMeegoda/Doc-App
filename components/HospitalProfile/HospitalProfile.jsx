@@ -1,33 +1,29 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, Image, ActivityIndicator } from "react-native";
-import { useState, useEffect } from "react";
-import { doc, getDoc } from "firebase/firestore"; // Firestore imports
-import { db } from "../../configs/FirebaseConfig"; // Import Firestore config
-
-const Color = {
-  colorBlack: "#000",
-  backgroundDefaultDefault: "#fff",
-};
-
-const Border = {
-  br_3xs: 10,
-};
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../configs/FirebaseConfig";
 
 const HospitalProfile = ({ hospitalId }) => {
   const [hospitalData, setHospitalData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [averageRating, setAverageRating] = useState(0);
 
   useEffect(() => {
-    // Fetch hospital data from Firestore
     const fetchHospitalData = async () => {
       try {
-        const docRef = doc(db, "HospitalList", hospitalId); // Get the hospital doc by ID
+        const docRef = doc(db, "HospitalList", hospitalId);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          setHospitalData(docSnap.data()); // Store the document data in state
-        } else {
-          console.log("No such document!");
+          const data = docSnap.data();
+          setHospitalData(data);
+
+          const reviews = data.reviews || [];
+          if (Array.isArray(reviews)) {
+            const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
+            const avgRating = reviews.length > 0 ? (totalRating / reviews.length).toFixed(1) : 0;
+            setAverageRating(avgRating);
+          }
         }
       } catch (error) {
         console.error("Error fetching hospital data:", error);
@@ -42,7 +38,7 @@ const HospitalProfile = ({ hospitalId }) => {
   }, [hospitalId]);
 
   if (loading) {
-    return <ActivityIndicator size="large" color={Color.colorBlack} />;
+    return <ActivityIndicator size="large" color="#000" />;
   }
 
   if (!hospitalData) {
@@ -53,11 +49,9 @@ const HospitalProfile = ({ hospitalId }) => {
     <View style={styles.container}>
       <Text style={styles.hospitalName}>{hospitalData.name}</Text>
       <View style={styles.card}>
-        {/* Image and Hospital Name */}
         <View style={styles.imageContainer}>
           <Image
             style={styles.hospitalImage}
-            contentFit="cover"
             source={
               hospitalData.image
                 ? { uri: hospitalData.image }
@@ -66,7 +60,6 @@ const HospitalProfile = ({ hospitalId }) => {
           />
         </View>
 
-        {/* Details: Address and Contact */}
         <View style={styles.detailsContainer}>
           <View style={styles.detailsRow}>
             <Text style={styles.label}>Address</Text>
@@ -78,20 +71,15 @@ const HospitalProfile = ({ hospitalId }) => {
           </View>
         </View>
 
-        {/* Star Rating aligned bottom-right with ash-colored frame */}
         <View style={styles.ratingContainer}>
           <View style={styles.ratingFrame}>
-            {Array(hospitalData.rating)
-              .fill()
-              .map((_, index) => (
-                <Image
-                  key={index}
-                  style={styles.starIcon}
-                  contentFit="cover"
-                  source={require("../../assets/images/star1.png")}
-                />
-              ))}
-            <Text style={styles.ratingText}>{hospitalData.rating}</Text>
+            <Image
+              style={styles.starIcon}
+              source={require("../../assets/images/star1.png")}
+            />
+            <Text style={styles.ratingText}>
+              {averageRating !== undefined ? averageRating.toString() : "0.0"}
+            </Text>
           </View>
         </View>
       </View>
@@ -103,7 +91,6 @@ const styles = StyleSheet.create({
   container: {
     marginTop: 10,
     marginHorizontal: 10,
-    width: "100%",
   },
   hospitalName: {
     fontSize: 24,
@@ -118,8 +105,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     overflow: "hidden",
     padding: 10,
-    elevation: 3, // Shadow effect for Android
-    shadowColor: '#000', // Shadow effect for iOS
+    elevation: 3,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
