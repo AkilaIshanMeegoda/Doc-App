@@ -1,5 +1,7 @@
-import React from "react";
-import { Image, TouchableOpacity, StyleSheet, View, Text, Linking } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Image, TouchableOpacity, StyleSheet, View, Text, Linking, ActivityIndicator, Share } from "react-native";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../configs/FirebaseConfig";
 
 const Color = {
   colorBlack: "#000",
@@ -15,25 +17,63 @@ const FontSize = {
   size_mini: 15,
 };
 
-const OptionComponent = () => {
+const OptionComponent = ({ hospitalId }) => {
+  const [hospitalData, setHospitalData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const phoneUrl = 'tel:+1234567890'; // Placeholder for phone URL
-  const messageUrl = 'sms:+1234567890'; // Placeholder for message URL
-  const websiteUrl = 'https://www.google.com'; // Open Google for checking purposes
-  const shareUrl = 'https://www.google.com'; // Open Google for checking purposes
+  // Fetch hospital data from Firestore
+  useEffect(() => {
+    const fetchHospitalData = async () => {
+      try {
+        const docRef = doc(db, "HospitalList", hospitalId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          setHospitalData(docSnap.data());
+        } else {
+          console.log("No such hospital!");
+        }
+      } catch (error) {
+        console.error("Error fetching hospital data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (hospitalId) {
+      fetchHospitalData();
+    }
+  }, [hospitalId]);
+
+  if (loading) {
+    return <ActivityIndicator size="large" color={Color.colorBlack} />;
+  }
+
+  if (!hospitalData) {
+    return <Text>No hospital data available.</Text>;
+  }
 
   const handlePress = async (url) => {
     try {
-      // Open the URL or handle the action
       await Linking.openURL(url);
     } catch (error) {
-      console.error('Failed to open URL:', error);
+      console.error("Failed to open URL:", error);
+    }
+  };
+
+  const shareWebsite = async () => {
+    try {
+      await Share.share({
+        message: `Check out the website of ${hospitalData.name}: ${hospitalData.website}`,
+      });
+    } catch (error) {
+      console.error("Failed to share:", error);
     }
   };
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.iconContainer} onPress={() => handlePress(phoneUrl)}>
+      <TouchableOpacity style={styles.iconContainer} onPress={() => handlePress(`tel:${hospitalData.contact}`)}>
         <Image
           style={styles.icon}
           contentFit="cover"
@@ -41,7 +81,8 @@ const OptionComponent = () => {
         />
         <Text style={styles.label}>Phone</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.iconContainer} onPress={() => handlePress(messageUrl)}>
+
+      <TouchableOpacity style={styles.iconContainer} onPress={() => handlePress(`sms:${hospitalData.contact}`)}>
         <Image
           style={styles.icon}
           contentFit="cover"
@@ -49,7 +90,8 @@ const OptionComponent = () => {
         />
         <Text style={styles.label}>Message</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.iconContainer} onPress={() => handlePress(websiteUrl)}>
+
+      <TouchableOpacity style={styles.iconContainer} onPress={() => handlePress(hospitalData.website)}>
         <Image
           style={styles.icon}
           contentFit="cover"
@@ -57,7 +99,8 @@ const OptionComponent = () => {
         />
         <Text style={styles.label}>Website</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.iconContainer} onPress={() => handlePress(shareUrl)}>
+
+      <TouchableOpacity style={styles.iconContainer} onPress={shareWebsite}>
         <Image
           style={styles.icon}
           contentFit="cover"
@@ -66,18 +109,18 @@ const OptionComponent = () => {
         <Text style={styles.label}>Share</Text>
       </TouchableOpacity>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     paddingHorizontal: 10,
     paddingVertical: 20,
   },
   iconContainer: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   icon: {
     width: 45,
@@ -87,11 +130,11 @@ const styles = StyleSheet.create({
   label: {
     marginTop: 5,
     fontSize: FontSize.size_xs,
-    fontFamily: 'poppins-medium',
-    fontWeight: '500',
+    fontFamily: "poppins-medium",
+    fontWeight: "500",
     color: Color.colorBlack,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });
 
-export default OptionComponent
+export default OptionComponent;

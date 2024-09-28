@@ -36,7 +36,7 @@ const hospital = () => {
   return (
     <ScrollView>
       <View style={{ flex: 1 }}>
-        <HospitalProfile />
+      <HospitalProfile hospitalId={hospitalId} />
         <ScrollView
           horizontal={true}
           contentContainerStyle={{ flexDirection: "row" }}
@@ -46,7 +46,7 @@ const hospital = () => {
           ))}
           {/* Add more DoctorProfile components as needed */}
         </ScrollView>
-        <OptionComponent />
+        <OptionComponent hospitalId={hospitalId} />
         
         <View style={styles.reviewSection}>
           <Text style={styles.addAReview}>Add a Review</Text>

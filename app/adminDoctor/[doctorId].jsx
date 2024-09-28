@@ -157,13 +157,6 @@ const Doctor = () => {
               <Text className="font-[poppins] text-[14px]">
                 {doctor.description || "No description available."}
               </Text>
-              <TouchableOpacity
-                onPress={() => alert("Appointment request initiated!")}
-              >
-                <Text className="bg-[#607AFB] mt-4 p-3 text-white text-center rounded-lg font-[poppins-bold]">
-                  Make an appointment
-                </Text>
-              </TouchableOpacity>
             </View>
           </View>
         </View>
