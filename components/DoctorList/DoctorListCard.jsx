@@ -72,7 +72,7 @@ const DoctorListCard = ({ doctor, getDoctorList }) => {
 
   return (
     <TouchableOpacity
-      onPress={() => router.push("/doctor/" + doctor.id)}
+      onPress={() => router.push("/adminDoctor/" + doctor.id)}
       className="flex-row items-center justify-between p-2 mt-4 bg-white shadow-xl h-28 rounded-2xl"
     >
       <Image
