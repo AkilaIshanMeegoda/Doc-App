@@ -8,6 +8,10 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useNavigation } from 'expo-router';
 import { useUser } from "@clerk/clerk-expo"; // Import Clerk's useUser hook
 
+// Import the notification scheduling functions
+import { scheduleReminderNotification, requestNotificationPermissions, defineNotificationActions } from '../../utils/ReminderNotification';
+import { scheduleReminderNotifications } from "../../utils/RemindNotificationPermission";
+
 const ReminderDetails = () => {
   const [reminderName, setReminderName] = useState('');
   const [reminderNotes, setReminderNotes] = useState('');
@@ -52,13 +56,23 @@ const ReminderDetails = () => {
     }
   };
 
-  // Function to handle setting the reminder
+  // Function to handle setting the reminder and scheduling notifications
   const handleSetReminder = async () => {
     if (!user) {
       console.error("User not authenticated");
       return;
     }
 
+    // Check notification permissions
+    const permissionGranted = await requestNotificationPermissions();
+    if (!permissionGranted) {
+      alert('Notification permissions are required for reminders.');
+      return;
+    }
+
+    defineNotificationActions(); // Define the action button ('Okay') for the notification
+
+    // Create reminder data object
     const reminderData = {
       reminderName,
       reminderNotes,
@@ -67,8 +81,17 @@ const ReminderDetails = () => {
       reminderTimes,
     };
 
+    // Save the reminder in Firestore
     await addReminder(reminderData);
-    navigation.goBack(); // Ensure proper navigation function is called
+
+    // Schedule notifications
+    if (startDate && endDate && reminderTimes.length > 0) {
+      const timeStrings = reminderTimes.map(time => time?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })); // Format times
+      await scheduleReminderNotifications(startDate, endDate, reminderTimes, reminderName); // Schedule notifications with the formatted times
+    }
+
+    // Navigate back after setting reminder
+    navigation.goBack(); 
   };
 
   return (

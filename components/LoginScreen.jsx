@@ -38,29 +38,61 @@ export default function Page() {
 
   // Otherwise, render the SignIn form
   return (
-    <View style={{ alignItems: "center", flex: 1, marginTop: 96 }}>
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#F5F6FA", padding: 20 }}>
+      <Text style={{ fontSize: 32, fontWeight: "bold", color: "#607AFB", marginBottom: 40 }}>Welcome Back</Text>
+      
       <TextInput
         autoCapitalize="none"
         value={emailAddress}
-        placeholder="Email..."
+        placeholder="Email Address"
         onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
-        style={{ marginBottom: 10, borderBottomWidth: 1, width: '80%' }}
+        style={{
+          backgroundColor: "#fff",
+          width: "100%",
+          padding: 15,
+          borderRadius: 8,
+          borderColor: "#DADCE0",
+          borderWidth: 1,
+          marginBottom: 20,
+        }}
+        placeholderTextColor="#9AA0A6"
       />
+      
       <TextInput
         value={password}
-        placeholder="Password..."
+        placeholder="Password"
         secureTextEntry={true}
         onChangeText={(password) => setPassword(password)}
-        style={{ marginBottom: 10, borderBottomWidth: 1, width: '80%' }}
+        style={{
+          backgroundColor: "#fff",
+          width: "100%",
+          padding: 15,
+          borderRadius: 8,
+          borderColor: "#DADCE0",
+          borderWidth: 1,
+          marginBottom: 20,
+        }}
+        placeholderTextColor="#9AA0A6"
       />
-      <Button title="Sign In" onPress={onSignInPress} />
-      <View style={{ marginTop: 20 }}>
-        <Text>Don't have an account?</Text>
-        <TouchableOpacity 
-          onPress={() => setShowSignUp(true)} // Toggle the screen to SignUp
-          style={{ padding: 10, backgroundColor: "blue", borderRadius: 5, marginTop: 10 }}
-        >
-          <Text style={{ fontWeight: "bold", textAlign: "center", color: "white" }}>Sign Up</Text>
+      
+      <TouchableOpacity
+        onPress={onSignInPress}
+        style={{
+          backgroundColor: "#607AFB",
+          paddingVertical: 15,
+          borderRadius: 8,
+          width: "100%",
+          alignItems: "center",
+          marginBottom: 20,
+        }}
+      >
+        <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}>Sign In</Text>
+      </TouchableOpacity>
+
+      <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+        <Text style={{ color: "#5F6368" }}>Don't have an account? </Text>
+        <TouchableOpacity onPress={() => setShowSignUp(true)}>
+          <Text style={{ color: "#607AFB", fontWeight: "bold" }}>Sign Up</Text>
         </TouchableOpacity>
       </View>
     </View>

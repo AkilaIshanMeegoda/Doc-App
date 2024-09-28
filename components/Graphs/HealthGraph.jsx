@@ -1,12 +1,16 @@
-import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
-import { db } from './../../configs/FirebaseConfig';
-import React, { useEffect, useState } from 'react';
-import { View, Text, Dimensions } from 'react-native';
-import { LineChart } from 'react-native-chart-kit'; // Graph library
-import { useUser } from '@clerk/clerk-expo';
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  onSnapshot,
+} from "firebase/firestore";
+import { db } from "./../../configs/FirebaseConfig";
+import React, { useEffect, useState } from "react";
+import { View, Text, Dimensions } from "react-native";
+import { LineChart } from "react-native-chart-kit"; // Graph library
+import { useUser } from "@clerk/clerk-expo";
 import MetricsChart from "./../../components/Graphs/MetricsChart"; // Import HealthGraph component
-
-
 
 const HealthGraph = () => {
   const [metrics, setMetrics] = useState([]);
@@ -15,11 +19,11 @@ const HealthGraph = () => {
   useEffect(() => {
     if (user && user.primaryEmailAddress) {
       const email = user.primaryEmailAddress.emailAddress;
-      const metricsCollection = collection(db, 'healthMetrics');
+      const metricsCollection = collection(db, "healthMetrics");
       const q = query(
         metricsCollection,
-        where('email', '==', email),
-        orderBy('submittedAt', 'asc')
+        where("email", "==", email),
+        orderBy("submittedAt", "asc")
       );
 
       const unsubscribe = onSnapshot(q, (snapshot) => {
