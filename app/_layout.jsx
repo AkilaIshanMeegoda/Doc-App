@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { Text } from "react-native";
 import LoginScreen from "../components/LoginScreen";
 import { useFonts } from "expo-font";
+import { configureNotificationBehavior } from "../utils/RemindNotificationPermission";
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
@@ -46,6 +47,10 @@ if (!publishableKey) {
 }
 
 export default function RootLayout() {
+  useEffect(() => {
+    configureNotificationBehavior(); // Configure notification behavior when app starts
+  }, []);
+
   const [fontsLoaded] = useFonts({
     "poppins": require("./../assets/fonts/Poppins-Regular.ttf"),
     "poppins-medium": require("./../assets/fonts/Poppins-Medium.ttf"),

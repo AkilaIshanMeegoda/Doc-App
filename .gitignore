@@ -10,6 +10,9 @@ npm-debug.*
 *.orig.*
 web-build/
 
+# Ignore android folder (build artifacts)
+android/
+
 # macOS
 .DS_Store
 
