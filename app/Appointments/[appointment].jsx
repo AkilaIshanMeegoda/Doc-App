@@ -92,6 +92,8 @@ const Appointment = () => {
           pathname: "/appointments/AppointmentConfirmation",
           params: {
             doctorName: doctor.name,
+            doctorImg: doctor.imageUrl,
+            specialization: doctor.specialization,
             hospitalName: doctor.hospital,
             appointmentDate: selectedDate,
             appointmentTime: selectedTime,
@@ -109,7 +111,6 @@ const Appointment = () => {
     setSelectedTime("");
     setFullName("");
     setMobileNumber("");
-    navigation.goBack()
   };
 
   return (
