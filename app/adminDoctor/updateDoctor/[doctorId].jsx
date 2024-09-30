@@ -1,46 +1,30 @@
-import {
-  View,
-  Text,
-  Image,
-  TextInput,
-  ScrollView,
-  TouchableOpacity,
-  ToastAndroid,
-  ActivityIndicator,
-} from "react-native";
+import { ActivityIndicator, View, Text, Image, TextInput, ScrollView, TouchableOpacity, ToastAndroid } from "react-native";
 import React, { useEffect, useState } from "react";
 import RNPickerSelect from "react-native-picker-select";
 import { MultipleSelectList } from "react-native-dropdown-select-list";
 import * as ImagePicker from "expo-image-picker";
-import { db, storage } from "./../../configs/FirebaseConfig";
-import {
-  addDoc,
-  collection,
-  doc,
-  getDocs,
-  query,
-  setDoc,
-  where,
-} from "firebase/firestore";
+import { db, storage } from "./../../../configs/FirebaseConfig";
+import { addDoc, collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useUser } from "@clerk/clerk-expo";
-import AddDoctorHeader from "../../components/Admin/AddDoctorHeader";
-import { Colors } from "../../constants/Colors";
-import { useNavigation } from "expo-router";
+import { Colors } from "../../../constants/Colors";
+import { useLocalSearchParams, useNavigation } from "expo-router";
 
-const addDoctor = () => {
+const UpdateDoctor = () => {
+  const { doctorId } = useLocalSearchParams();
   const navigation = useNavigation();
+  const [doctor, setDoctor] = useState();
   const { user } = useUser();
   const [image, setImage] = useState(null);
   const [docName, setDocName] = useState(null);
   const [specialization, setSpecialization] = useState(null);
   const [specializationOptions, setSpecializationOptions] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [hospital, setHospital] = useState(null);
   const [exp, setExp] = useState(null);
   const [description, setDescription] = useState(null);
-  const [selected, setSelected] = React.useState([]);
-  const [daySelected, setDaySelected] = React.useState([]);
+  const [selected, setSelected] = useState([]);
+  const [daySelected, setDaySelected] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); 
   const day = [
     { key: "1", value: "Monday" },
     { key: "2", value: "Tuesday" },
@@ -102,6 +86,47 @@ const addDoctor = () => {
     { key: "48", value: "11.30 P.M" },
   ];
 
+  useEffect(() => {
+    getDoctorById();
+  }, [doctorId]);
+
+  const getDoctorById = async () => {
+    try {
+      const hospitalQuery = query(
+        collection(db, "HospitalList"),
+        where("userEmail", "==", user?.primaryEmailAddress?.emailAddress)
+      );
+      const hospitalSnapshot = await getDocs(hospitalQuery);
+
+      if (!hospitalSnapshot.empty) {
+        const hospitalDocRef = hospitalSnapshot.docs[0].ref;
+        const doctorDocRef = doc(hospitalDocRef, "DoctorList", doctorId);
+        const doctorSnapshot = await getDoc(doctorDocRef);
+
+        if (doctorSnapshot.exists()) {
+          const doctorData = { id: doctorSnapshot.id, ...doctorSnapshot.data() };
+          setDoctor(doctorData);
+          setDocName(doctorData.name || "");
+          setSpecialization(doctorData.specialization || "");
+          setExp(doctorData.exp || "");
+          setDescription(doctorData.description || "");
+          setSelected(doctorData.times || []);
+          setDaySelected(doctorData.days || []);
+          setImage(doctorData.imageUrl || null);
+        } else {
+          console.log("No doctor found with the given doctorId");
+        }
+      } else {
+        console.log("No hospital found for the current user");
+      }
+    } catch (error) {
+      console.error("Error fetching doctor data: ", error);
+    } finally {
+      // Once the doctor data and image are loaded, stop the loading animation
+      setIsLoading(false);
+    }
+  };
+
   const onImagePick = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -153,31 +178,26 @@ const addDoctor = () => {
       where("userEmail", "==", user?.primaryEmailAddress?.emailAddress)
     );
     const hospitalSnapshot = await getDocs(hospitalQuery);
+
     if (!hospitalSnapshot.empty) {
       const hospitalDocRef = hospitalSnapshot.docs[0].ref;
-      const doctorCollectionRef = collection(hospitalDocRef, "DoctorList");
-
-      await addDoc(doctorCollectionRef, {
+      const doctorDocRef = doc(hospitalDocRef, "DoctorList", doctorId);
+      await updateDoc(doctorDocRef, {
         name: docName,
-        specialization: specialization,
-        hospital: hospital,
-        exp: exp,
-        description: description,
+        specialization,
+        hospital,
+        exp,
+        description,
         times: selected,
         days: daySelected,
         userEmail: user?.primaryEmailAddress?.emailAddress,
-        imageUrl: imageUrl,
+        imageUrl,
       });
 
-      ToastAndroid.show("New doctor added...", ToastAndroid.LONG);
-      setDocName(null);
-      setSpecialization(null);
-      setExp(null);
-      setDescription(null);
-      setSelected([]);
-      setDaySelected([]);
-      setImage(null);
-      navigation.goBack()
+      ToastAndroid.show("Doctor details updated...", ToastAndroid.LONG);
+      navigation.goBack();
+    } else {
+      ToastAndroid.show("No matching hospital found...", ToastAndroid.LONG);
     }
   };
 
@@ -191,25 +211,20 @@ const addDoctor = () => {
 
   return (
     <ScrollView>
-      <AddDoctorHeader />
+      {/* Doctor update form */}
       <View className="p-6">
-        <Text className="font-[poppins-bold] text-lg">Add new doctor</Text>
+        <Text className="font-[poppins-bold] text-lg">Update doctor profile</Text>
         <Text className="font-[poppins-medium] text-lg text-gray-500 mt-[-6px]">
-          Fill all details about doctor
+          Update details about doctor
         </Text>
 
         <TouchableOpacity onPress={() => onImagePick()} className="flex-row">
           {!image ? (
-            <Image
-              className="w-20 h-20 mt-4"
-              source={require("../../assets/images/photo.png")}
-            />
+            <Image className="w-20 h-20 mt-4 rounded-full" source={require("../../../assets/images/photo.png")} />
           ) : (
-            <Image source={{ uri: image }} className="w-20 h-20 mt-4" />
+            <Image source={{ uri: image }} className="w-20 h-20 mt-4 rounded-full" />
           )}
-          <Text className="font-[poppins-medium] text-lg mt-10 ml-2">
-            Add doctor image
-          </Text>
+          <Text className="font-[poppins-medium] text-lg mt-10 ml-2">Edit doctor image</Text>
         </TouchableOpacity>
 
         <View>
@@ -272,13 +287,25 @@ const addDoctor = () => {
 
           <View className="mt-4">
             <Text className="mb-2 ml-4 font-[poppins-bold] text-md">
-              Select Times
+              Selected Times
             </Text>
+            <View className="flex-row flex-wrap mb-2">
+              {selected.length > 0 &&
+                selected.map((time, index) => (
+                  <View
+                    key={index}
+                    className="bg-[#607AFB] px-4 py-2 m-1 rounded-full"
+                  >
+                    <Text className="text-white">{time}</Text>
+                  </View>
+                ))}
+            </View>
             <MultipleSelectList
               setSelected={(val) => setSelected(val)}
               data={data}
               label="Times"
               onSelect={() => console.log(selected)}
+              defaultValues={selected}
               save="value"
               fontFamily="poppins-medium"
               labelStyles={{ fontWeight: "900" }}
@@ -289,13 +316,25 @@ const addDoctor = () => {
 
           <View className="mt-4">
             <Text className="mb-2 ml-4 font-[poppins-bold] text-md">
-              Select Dates
+              Selected Dates
             </Text>
+            <View className="flex-row flex-wrap mb-2">
+              {daySelected.length > 0 &&
+                daySelected.map((day, index) => (
+                  <View
+                    key={index}
+                    className="bg-[#607AFB] px-4 py-2 m-1 rounded-full"
+                  >
+                    <Text className="text-white">{day}</Text>
+                  </View>
+                ))}
+            </View>
             <MultipleSelectList
               setSelected={(val) => setDaySelected(val)}
               data={day}
               label="Days"
               onSelect={() => console.log(daySelected)}
+              defaultValues={daySelected}
               save="value"
               fontFamily="poppins-medium"
               labelStyles={{ fontWeight: "900" }}
@@ -306,7 +345,7 @@ const addDoctor = () => {
 
           <TouchableOpacity onPress={() => onAddDoctor()}>
             <Text className="bg-[#607AFB] mt-4 p-3 text-white text-center rounded-lg font-[poppins-bold]">
-              Add New Doctor
+              Update Doctor
             </Text>
           </TouchableOpacity>
         </View>
@@ -315,4 +354,4 @@ const addDoctor = () => {
   );
 };
 
-export default addDoctor;
+export default UpdateDoctor;

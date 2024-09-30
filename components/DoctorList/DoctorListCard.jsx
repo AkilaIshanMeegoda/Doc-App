@@ -94,11 +94,11 @@ const DoctorListCard = ({ doctor, getDoctorList }) => {
 
         <View className="flex-row justify-between">
           <TouchableOpacity
-            onPress={() => router.push("/doctor/" + doctor.id)}
+            onPress={() => router.push("/adminDoctor/updateDoctor/" + doctor.id)}
             className="w-20 bg-blue-500 shadow-2xl rounded-xl"
           >
             <Text className="text-center text-white font-[poppins-medium]">
-              View
+              Update
             </Text>
           </TouchableOpacity>
           <TouchableOpacity

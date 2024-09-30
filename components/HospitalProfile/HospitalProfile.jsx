@@ -1,38 +1,29 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, Image, ActivityIndicator } from "react-native";
-import { useState, useEffect } from "react";
-import { doc, getDoc } from "firebase/firestore"; // Firestore imports
-import { db } from "../../configs/FirebaseConfig"; // Import Firestore config
-
-const Color = {
-  colorBlack: "#000",
-  backgroundDefaultDefault: "#fff",
-};
-
-const Border = {
-  br_3xs: 10,
-};
-
-const FontSize = {
-  size_lg: 18,
-  size_mini: 15,
-};
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../configs/FirebaseConfig";
 
 const HospitalProfile = ({ hospitalId }) => {
   const [hospitalData, setHospitalData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [averageRating, setAverageRating] = useState(0);
 
   useEffect(() => {
-    // Fetch hospital data from Firestore
     const fetchHospitalData = async () => {
       try {
-        const docRef = doc(db, "HospitalList", hospitalId); // Get the hospital doc by ID
+        const docRef = doc(db, "HospitalList", hospitalId);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          setHospitalData(docSnap.data()); // Store the document data in state
-        } else {
-          console.log("No such document!");
+          const data = docSnap.data();
+          setHospitalData(data);
+
+          const reviews = data.reviews || [];
+          if (Array.isArray(reviews)) {
+            const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
+            const avgRating = reviews.length > 0 ? (totalRating / reviews.length).toFixed(1) : 0;
+            setAverageRating(avgRating);
+          }
         }
       } catch (error) {
         console.error("Error fetching hospital data:", error);
@@ -47,7 +38,7 @@ const HospitalProfile = ({ hospitalId }) => {
   }, [hospitalId]);
 
   if (loading) {
-    return <ActivityIndicator size="large" color={Color.colorBlack} />;
+    return <ActivityIndicator size="large" color="#000" />;
   }
 
   if (!hospitalData) {
@@ -56,12 +47,11 @@ const HospitalProfile = ({ hospitalId }) => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.hospitalName}>{hospitalData.name}</Text>
       <View style={styles.card}>
         <View style={styles.imageContainer}>
-          <Text style={styles.hospitalName}>{hospitalData.name}</Text>
           <Image
             style={styles.hospitalImage}
-            contentFit="cover"
             source={
               hospitalData.image
                 ? { uri: hospitalData.image }
@@ -69,26 +59,27 @@ const HospitalProfile = ({ hospitalId }) => {
             }
           />
         </View>
+
         <View style={styles.detailsContainer}>
           <View style={styles.detailsRow}>
-            <Text style={styles.label}>Address:</Text>
+            <Text style={styles.label}>Address</Text>
             <Text style={styles.address}>{hospitalData.address}</Text>
           </View>
           <View style={styles.detailsRow}>
-            <Text style={styles.label}>Contact Number:</Text>
+            <Text style={styles.label}>Contact Number</Text>
             <Text style={styles.contactNumber}>{hospitalData.contact}</Text>
           </View>
-          <View style={styles.ratingContainer}>
-            {Array(hospitalData.rating)
-              .fill()
-              .map((_, index) => (
-                <Image
-                  key={index}
-                  style={styles.starIcon}
-                  contentFit="cover"
-                  source={require("../../assets/images/star1.png")}
-                />
-              ))}
+        </View>
+
+        <View style={styles.ratingContainer}>
+          <View style={styles.ratingFrame}>
+            <Image
+              style={styles.starIcon}
+              source={require("../../assets/images/star1.png")}
+            />
+            <Text style={styles.ratingText}>
+              {averageRating !== undefined ? averageRating.toString() : "0.0"}
+            </Text>
           </View>
         </View>
       </View>
@@ -98,71 +89,80 @@ const HospitalProfile = ({ hospitalId }) => {
 
 const styles = StyleSheet.create({
   container: {
-    margin: 10,
-    width: "100%", // Adjust width as needed
+    marginTop: 10,
+    marginHorizontal: 10,
+  },
+  hospitalName: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#000",
+    marginBottom: 10,
+    textAlign: "left",
   },
   card: {
     flexDirection: "row",
-    backgroundColor: Color.backgroundDefaultDefault,
-    borderRadius: Border.br_3xs,
+    backgroundColor: "#fff",
+    borderRadius: 8,
     overflow: "hidden",
     padding: 10,
-    elevation: 3, // Shadow effect for Android
-    shadowColor: '#000', // Shadow effect for iOS
+    elevation: 3,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+    position: "relative",
   },
   imageContainer: {
-    alignItems: "center",
     marginRight: 10,
-    flex: 1,
-  },
-  hospitalName: {
-    fontSize: FontSize.size_lg,
-    fontFamily: 'poppins-bold',
-    fontWeight: "700",
-    color: Color.colorBlack,
-    marginBottom: 5,
-    textAlign: 'center',
   },
   hospitalImage: {
-    width: 100,
-    height: 100,
-    borderRadius: Border.br_3xs,
+    width: 120,
+    height: 120,
+    borderRadius: 10,
   },
   detailsContainer: {
-    flex: 2,
+    flex: 1,
     justifyContent: "center",
   },
   detailsRow: {
-    marginBottom: 10,
+    marginBottom: 8,
   },
   label: {
-    fontSize: FontSize.size_mini,
-    fontFamily: 'poppins-medium',
-    fontWeight: "500",
-    color: Color.colorBlack,
-    marginBottom: 3,
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#000",
   },
   address: {
-    fontSize: FontSize.size_mini,
-    fontFamily: 'poppins-medium',
-    color: Color.colorBlack,
+    fontSize: 14,
+    color: "#555",
   },
   contactNumber: {
-    fontSize: FontSize.size_mini,
-    fontFamily: 'poppins-medium',
-    color: Color.colorBlack,
+    fontSize: 14,
+    color: "#555",
   },
   ratingContainer: {
+    position: "absolute",
+    bottom: 10,
+    right: 10,
     flexDirection: "row",
-    marginTop: 10,
+    alignItems: "center",
+  },
+  ratingFrame: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f0f0f0",
+    padding: 5,
+    borderRadius: 10,
   },
   starIcon: {
     width: 20,
     height: 20,
-    marginRight: 2,
+    marginRight: 5,
+  },
+  ratingText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#000",
   },
 });
 

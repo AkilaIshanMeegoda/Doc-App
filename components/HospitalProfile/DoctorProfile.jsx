@@ -4,9 +4,9 @@ import { useRouter } from "expo-router";
 
 const Color = {
   colorBlack: "#000",
-  backgroundDefaultDefault: "#fff",
   colorRoyalblue: "#607afb",
-  colorWhitesmoke_100: "#f5f5f5",
+  colorWhite: "#fff",
+  backgroundDefaultDefault: "#fff",
 };
 
 const Border = {
@@ -16,121 +16,123 @@ const Border = {
 
 const FontSize = {
   size_lg: 18,
-  size_mini: 15,
+  size_mini: 14,
   size_xs: 12,
   bodyBase_size: 16,
 };
 
 const DoctorProfile = ({ doctor }) => {
-
   const router = useRouter();
 
   const handleAppointmentPress = () => {
-    router.push("/appointment"); // Adjust the route to your appointment page
+    router.push(`/doctor/${doctor.id}?userEmail=${doctor.userEmail}`);
+    console.log(doctor.id, doctor.userEmail);
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.card}>
-        <Image
-          style={styles.doctorImage}
-          contentFit="cover"
-          source={require("../../assets/images/doctorimage.png")}
-        />
-        <Text style={styles.doctorName}>{doctor.name}</Text>
-        <Text style={styles.specialization}>{doctor.specialization}</Text>
-        <View style={styles.ratingContainer}>
-          <Image
-            style={styles.starIcon}
-            contentFit="cover"
-            source={require("../../assets/images/star1.png")}
-          />
-          <Image
-            style={styles.starIcon}
-            contentFit="cover"
-            source={require("../../assets/images/star1.png")}
-          />
-          <Image
-            style={styles.starIcon}
-            contentFit="cover"
-            source={require("../../assets/images/star1.png")}
-          />
-          <Image
-            style={styles.starIcon}
-            contentFit="cover"
-            source={require("../../assets/images/star1.png")}
-          />
-          <Image
-            style={styles.starIcon}
-            contentFit="cover"
-            source={require("../../assets/images/star1.png")}
-          />
-        </View>
+    <View style={styles.card}>
+      {/* Doctor Image */}
+      <Image
+        style={styles.doctorImage}
+        source={require("../../assets/images/doctorimage.png")}
+      />
+
+      {/* Doctor Name and Specialization */}
+      <View style={styles.textContainer}>
+        <Text style={styles.doctorName}>{doctor.name || "Dr. David Johnson"}</Text>
+        <Text style={styles.specialization}>{doctor.specialization || "Heart Surgeon"}</Text>
+      </View>
+
+      {/* Appointment Button and Rating */}
+      <View style={styles.footer}>
         <TouchableOpacity style={styles.appointmentButton} onPress={handleAppointmentPress}>
           <Text style={styles.appointmentText}>Appointment</Text>
         </TouchableOpacity>
+        <View style={styles.ratingFrame}>
+          <Image
+            style={styles.starIcon}
+            source={require("../../assets/images/star1.png")}
+          />
+          <Text style={styles.ratingText}>4.5</Text>
+        </View>
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    margin: 10,
-  },
   card: {
-    width: 160,
-    backgroundColor: Color.backgroundDefaultDefault,
-    borderRadius: Border.br_3xs,
-    padding: 10,
+    width: 180, // Reduced width
+    backgroundColor: "#fff",
+    borderRadius: 15,
+    padding: 8, // Reduced padding
     alignItems: "center",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
-    elevation: 4,
+    elevation: 5,
+    marginVertical: 8, // Reduced margin
+    marginHorizontal: 8, // Reduced margin
   },
   doctorImage: {
-    height: 118,
-    width: 157,
-    borderRadius: Border.br_3xs,
-    marginBottom: 10,
+    width: 140, // Reduced image width
+    height: 120, // Reduced image height
+    borderRadius: 12, // Kept the same
+    marginBottom: 5,
+  },
+  textContainer: {
+    alignItems: "flex-start", 
+    width: "100%", 
+    paddingLeft: 10, // Adjusted padding
   },
   doctorName: {
-    fontSize: FontSize.bodyBase_size,
-    fontFamily: 'poppins-medium',
-    color: Color.colorBlack,
-    textAlign: "center",
+    fontSize: 18, // Reduced font size
+    fontWeight: "bold",
+    color: "#000",
+    textAlign: "left",
   },
   specialization: {
-    fontSize: FontSize.bodyBase_size,
-    fontFamily: 'poppins-medium',
-    color: Color.colorBlack,
-    textAlign: "center",
-    marginBottom: 10,
+    fontSize: 14, // Reduced font size
+    color: "#7d7d7d",
+    textAlign: "left",
+    marginVertical: 4, // Slightly reduced vertical margin
   },
-  ratingContainer: {
+  footer: {
     flexDirection: "row",
-    marginBottom: 10,
-  },
-  starIcon: {
-    height: 20,
-    width: 20,
-    marginRight: 2,
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 12, // Reduced margin at the top
+    width: "100%",
   },
   appointmentButton: {
-    height: 26,
-    width: "100%",
-    backgroundColor: Color.colorRoyalblue,
-    borderRadius: Border.br_9xs,
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: "#5271FF",
+    borderRadius: 30,
+    paddingVertical: 6, // Reduced vertical padding
+    paddingHorizontal: 12, // Reduced horizontal padding
   },
   appointmentText: {
-    fontSize: FontSize.size_xs,
-    fontFamily: 'poppins-medium',
-    fontWeight: "500",
-    color: Color.colorWhite,
+    color: "#fff",
+    fontSize: 12, // Reduced font size
+    fontWeight: "bold",
+  },
+  ratingFrame: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f2f2f2",
+    paddingVertical: 4, // Reduced padding
+    paddingHorizontal: 8, // Reduced padding
+    borderRadius: 12, // Reduced border-radius
+  },
+  starIcon: {
+    width: 18, // Reduced icon size
+    height: 18, 
+    marginRight: 4,
+  },
+  ratingText: {
+    fontSize: 12, // Reduced font size
+    color: "#000",
+    fontWeight: "bold",
   },
 });
 
