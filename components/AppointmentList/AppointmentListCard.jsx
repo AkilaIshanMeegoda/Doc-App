@@ -8,13 +8,13 @@ const AppointmentListCard = ({ appointment }) => {
     <View className="flex-row items-center justify-between p-4 mt-4 mb-4 bg-white border-l-4 border-blue-500 rounded-lg shadow-lg">
       <Image
         source={{ uri: appointment.doctorImage }}
-        className="w-24 h-24 ml-4 rounded-full"
+        className="w-24 h-24 mr-2 rounded-full"
       />
       <View>
         {/* Patient Name */}
         <View className="flex-row items-center mb-2">
           <Ionicons name="person-circle-outline" size={20} color="#5a67d8" />
-          <Text className="ml-2 text-xl font-bold text-gray-800">
+          <Text className="pr-8 ml-2 text-xl font-bold text-gray-800">
             {appointment.patientName}
           </Text>
         </View>
@@ -30,7 +30,7 @@ const AppointmentListCard = ({ appointment }) => {
         {/* Doctor Info */}
         <View className="flex-row items-center mb-2">
           <Ionicons name="medkit-outline" size={20} color="blue" />
-          <Text className="ml-2 text-gray-600">
+          <Text className="pr-8 ml-2 text-gray-600">
             {appointment.doctorName} - {appointment.doctorSpecialization}
           </Text>
         </View>

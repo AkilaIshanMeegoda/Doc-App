@@ -22,7 +22,7 @@ const AdminTabLayout = () => {
           },
           tabBarLabel: "Home",
           tabBarIcon: () => (
-            <Feather name="user" size={24} color={Colors.PRIMARY} />
+            <Feather name="home" size={24} color={Colors.PRIMARY} />
           ),
           headerLeft: () => (
               <Feather
