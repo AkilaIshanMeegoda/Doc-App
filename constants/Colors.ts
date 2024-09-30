@@ -28,7 +28,7 @@ export const Colors = {
     textPrimary: '#555',
     textSecondary: '#000',
     buttonBackground: '#fff',
-    iconColor: '#4A90E2',
+    iconColor: '#607AFB',
     shadowColor: '#000',
   },
   remind: {
