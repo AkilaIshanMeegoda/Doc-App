@@ -1,31 +1,12 @@
-import {
-  View,
-  Text,
-  Image,
-  TextInput,
-  ScrollView,
-  TouchableOpacity,
-  ToastAndroid,
-} from "react-native";
+import { ActivityIndicator, View, Text, Image, TextInput, ScrollView, TouchableOpacity, ToastAndroid } from "react-native";
 import React, { useEffect, useState } from "react";
 import RNPickerSelect from "react-native-picker-select";
 import { MultipleSelectList } from "react-native-dropdown-select-list";
 import * as ImagePicker from "expo-image-picker";
 import { db, storage } from "./../../../configs/FirebaseConfig";
-import {
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  setDoc,
-  updateDoc,
-  where,
-} from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useUser } from "@clerk/clerk-expo";
-import AddDoctorHeader from "../../../components/Admin/AddDoctorHeader";
 import { Colors } from "../../../constants/Colors";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 
@@ -38,12 +19,12 @@ const UpdateDoctor = () => {
   const [docName, setDocName] = useState(null);
   const [specialization, setSpecialization] = useState(null);
   const [specializationOptions, setSpecializationOptions] = useState([]);
-
   const [hospital, setHospital] = useState(null);
   const [exp, setExp] = useState(null);
   const [description, setDescription] = useState(null);
-  const [selected, setSelected] = React.useState([]);
-  const [daySelected, setDaySelected] = React.useState([]);
+  const [selected, setSelected] = useState([]);
+  const [daySelected, setDaySelected] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); 
   const day = [
     { key: "1", value: "Monday" },
     { key: "2", value: "Tuesday" },
@@ -110,33 +91,39 @@ const UpdateDoctor = () => {
   }, [doctorId]);
 
   const getDoctorById = async () => {
-    const hospitalQuery = query(
-      collection(db, "HospitalList"),
-      where("userEmail", "==", user?.primaryEmailAddress?.emailAddress)
-    );
-    const hospitalSnapshot = await getDocs(hospitalQuery);
+    try {
+      const hospitalQuery = query(
+        collection(db, "HospitalList"),
+        where("userEmail", "==", user?.primaryEmailAddress?.emailAddress)
+      );
+      const hospitalSnapshot = await getDocs(hospitalQuery);
 
-    if (!hospitalSnapshot.empty) {
-      const hospitalDocRef = hospitalSnapshot.docs[0].ref;
+      if (!hospitalSnapshot.empty) {
+        const hospitalDocRef = hospitalSnapshot.docs[0].ref;
+        const doctorDocRef = doc(hospitalDocRef, "DoctorList", doctorId);
+        const doctorSnapshot = await getDoc(doctorDocRef);
 
-      const doctorDocRef = doc(hospitalDocRef, "DoctorList", doctorId);
-      const doctorSnapshot = await getDoc(doctorDocRef);
-
-      if (doctorSnapshot.exists()) {
-        const doctorData = { id: doctorSnapshot.id, ...doctorSnapshot.data() };
-        setDoctor(doctorData);
-        setDocName(doctorData.name || "");
-        setSpecialization(doctorData.specialization || "");
-        setExp(doctorData.exp || "");
-        setDescription(doctorData.description || "");
-        setSelected(doctorData.times || []);
-        setDaySelected(doctorData.days || []);
-        setImage(doctorData.imageUrl || null);
+        if (doctorSnapshot.exists()) {
+          const doctorData = { id: doctorSnapshot.id, ...doctorSnapshot.data() };
+          setDoctor(doctorData);
+          setDocName(doctorData.name || "");
+          setSpecialization(doctorData.specialization || "");
+          setExp(doctorData.exp || "");
+          setDescription(doctorData.description || "");
+          setSelected(doctorData.times || []);
+          setDaySelected(doctorData.days || []);
+          setImage(doctorData.imageUrl || null);
+        } else {
+          console.log("No doctor found with the given doctorId");
+        }
       } else {
-        console.log("No doctor found with the given doctorId");
+        console.log("No hospital found for the current user");
       }
-    } else {
-      console.log("No hospital found for the current user");
+    } catch (error) {
+      console.error("Error fetching doctor data: ", error);
+    } finally {
+      // Once the doctor data and image are loaded, stop the loading animation
+      setIsLoading(false);
     }
   };
 
@@ -150,21 +137,21 @@ const UpdateDoctor = () => {
   };
 
   const onAddDoctor = async () => {
-    const fileName = Date.now().toString() + ".jpg";
-    const resp = await fetch(image);
-    const blob = await resp.blob();
-
-    const imageRef = ref(storage, "Doc-App/" + fileName);
-    uploadBytes(imageRef, blob)
-      .then((snapshot) => {
-        console.log("File Uploaded...");
-      })
-      .then((resp) => {
-        getDownloadURL(imageRef).then(async (downloadUrl) => {
-          console.log(downloadUrl);
-          saveDoctorDetails(downloadUrl);
-        });
-      });
+    try {
+      setIsLoading(true); // start loading
+      const fileName = Date.now().toString() + ".jpg";
+      const resp = await fetch(image);
+      const blob = await resp.blob();
+      const imageRef = ref(storage, "Doc-App/" + fileName);
+      await uploadBytes(imageRef, blob);
+      const downloadUrl = await getDownloadURL(imageRef);
+      await saveDoctorDetails(downloadUrl);
+    } catch (error) {
+      console.error("Error updating doctor details: ", error);
+      ToastAndroid.show(`Failed to update doctor details: ${error.message}`, ToastAndroid.LONG);
+    } finally {
+      setIsLoading(false); // stop loading
+    }
   };
 
   useEffect(() => {
@@ -186,75 +173,58 @@ const UpdateDoctor = () => {
   }, []);
 
   const saveDoctorDetails = async (imageUrl) => {
-    try {
-      // Log the doctorId to make sure it's not undefined or empty
-      console.log("Updating doctor with ID: ", doctorId);
-  
-      if (!doctorId) {
-        throw new Error("doctorId is undefined or null");
-      }
-  
-      // Get the hospital's collection where user is authenticated
-      const hospitalQuery = query(
-        collection(db, "HospitalList"),
-        where("userEmail", "==", user?.primaryEmailAddress?.emailAddress)
-      );
-      const hospitalSnapshot = await getDocs(hospitalQuery);
-  
-      if (!hospitalSnapshot.empty) {
-        const hospitalDocRef = hospitalSnapshot.docs[0].ref;
-        console.log("Hospital docRef: ", hospitalDocRef);
-  
-        // Get the reference to the specific doctor
-        const doctorDocRef = doc(hospitalDocRef, "DoctorList", doctorId); 
-        console.log("Doctor docRef: ", doctorDocRef);
+    const hospitalQuery = query(
+      collection(db, "HospitalList"),
+      where("userEmail", "==", user?.primaryEmailAddress?.emailAddress)
+    );
+    const hospitalSnapshot = await getDocs(hospitalQuery);
 
-        // Update the doctor's document
-        await updateDoc(doctorDocRef, {
-          name: docName,
-          specialization: specialization,
-          hospital: hospital,
-          exp: exp,
-          description: description,
-          times: selected,
-          days: daySelected,
-          userEmail: user?.primaryEmailAddress?.emailAddress,
-          imageUrl: imageUrl,
+    if (!hospitalSnapshot.empty) {
+      const hospitalDocRef = hospitalSnapshot.docs[0].ref;
+      const doctorDocRef = doc(hospitalDocRef, "DoctorList", doctorId);
+      await updateDoc(doctorDocRef, {
+        name: docName,
+        specialization,
+        hospital,
+        exp,
+        description,
+        times: selected,
+        days: daySelected,
+        userEmail: user?.primaryEmailAddress?.emailAddress,
+        imageUrl,
+      });
 
-        });
-  
-        ToastAndroid.show("Doctor details updated...", ToastAndroid.LONG);
-        navigation.goBack();
-      } else {
-        ToastAndroid.show("No matching hospital found...", ToastAndroid.LONG);
-      }
-    } catch (error) {
-      console.error("Error updating doctor details: ", error);
-      ToastAndroid.show(`Failed to update doctor details: ${error.message}`, ToastAndroid.LONG);
+      ToastAndroid.show("Doctor details updated...", ToastAndroid.LONG);
+      navigation.goBack();
+    } else {
+      ToastAndroid.show("No matching hospital found...", ToastAndroid.LONG);
     }
   };
+
+  if (isLoading) {
+    return (
+      <View className="items-center justify-center flex-1">
+        <ActivityIndicator size="large" color={Colors.PRIMARY} />
+      </View>
+    );
+  }
+
   return (
     <ScrollView>
+      {/* Doctor update form */}
       <View className="p-6">
-        <Text className="font-[poppins-bold] text-lg">
-          Update doctor profile
-        </Text>
+        <Text className="font-[poppins-bold] text-lg">Update doctor profile</Text>
         <Text className="font-[poppins-medium] text-lg text-gray-500 mt-[-6px]">
           Update details about doctor
         </Text>
 
         <TouchableOpacity onPress={() => onImagePick()} className="flex-row">
           {!image ? (
-            <Image
-              className="w-20 h-20 mt-4"
-              source={require("../../../assets/images/photo.png")}
-            />
+            <Image className="w-20 h-20 mt-4 rounded-full" source={require("../../../assets/images/photo.png")} />
           ) : (
-            <Image source={{ uri: image }} className="w-20 h-20 mt-4" />
+            <Image source={{ uri: image }} className="w-20 h-20 mt-4 rounded-full" />
           )}
-          <Text className="font-[poppins-medium] text-lg mt-10 ml-2">
-            Edit doctor image
-          </Text>
+          <Text className="font-[poppins-medium] text-lg mt-10 ml-2">Edit doctor image</Text>
         </TouchableOpacity>
 
         <View>

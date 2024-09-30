@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   ToastAndroid,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import RNPickerSelect from "react-native-picker-select";
@@ -34,7 +35,7 @@ const addDoctor = () => {
   const [docName, setDocName] = useState(null);
   const [specialization, setSpecialization] = useState(null);
   const [specializationOptions, setSpecializationOptions] = useState([]);
-
+  const [isLoading, setIsLoading] = useState(false);
   const [hospital, setHospital] = useState(null);
   const [exp, setExp] = useState(null);
   const [description, setDescription] = useState(null);
@@ -111,21 +112,21 @@ const addDoctor = () => {
   };
 
   const onAddDoctor = async () => {
-    const fileName = Date.now().toString() + ".jpg";
-    const resp = await fetch(image);
-    const blob = await resp.blob();
-
-    const imageRef = ref(storage, "Doc-App/" + fileName);
-    uploadBytes(imageRef, blob)
-      .then((snapshot) => {
-        console.log("File Uploaded...");
-      })
-      .then((resp) => {
-        getDownloadURL(imageRef).then(async (downloadUrl) => {
-          console.log(downloadUrl);
-          saveDoctorDetails(downloadUrl);
-        });
-      });
+    try {
+      setIsLoading(true); // start loading
+      const fileName = Date.now().toString() + ".jpg";
+      const resp = await fetch(image);
+      const blob = await resp.blob();
+      const imageRef = ref(storage, "Doc-App/" + fileName);
+      await uploadBytes(imageRef, blob);
+      const downloadUrl = await getDownloadURL(imageRef);
+      await saveDoctorDetails(downloadUrl);
+    } catch (error) {
+      console.error("Error updating doctor details: ", error);
+      ToastAndroid.show(`Failed to update doctor details: ${error.message}`, ToastAndroid.LONG);
+    } finally {
+      setIsLoading(false); // stop loading
+    }
   };
 
   useEffect(() => {
@@ -176,8 +177,18 @@ const addDoctor = () => {
       setSelected([]);
       setDaySelected([]);
       setImage(null);
+      navigation.goBack()
     }
   };
+
+  if (isLoading) {
+    return (
+      <View className="items-center justify-center flex-1">
+        <ActivityIndicator size="large" color={Colors.PRIMARY} />
+      </View>
+    );
+  }
+
   return (
     <ScrollView>
       <AddDoctorHeader />
