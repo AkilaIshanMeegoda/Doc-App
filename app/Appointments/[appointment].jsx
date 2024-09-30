@@ -82,6 +82,7 @@ const Appointment = () => {
           appointmentTime: selectedTime,
           userEmail: userEmail,
           doctorName: doctor.name,
+          doctorImage:doctor.imageUrl,
           doctorSpecialization: doctor.specialization,
           hospitalName: doctor.hospital,
           createdAt: new Date(), // Optional: Track when the appointment was created
