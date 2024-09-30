@@ -109,6 +109,7 @@ const Appointment = () => {
     setSelectedTime("");
     setFullName("");
     setMobileNumber("");
+    navigation.goBack()
   };
 
   return (
