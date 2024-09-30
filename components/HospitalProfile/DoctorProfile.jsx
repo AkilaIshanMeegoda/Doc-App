@@ -25,7 +25,8 @@ const DoctorProfile = ({ doctor }) => {
   const router = useRouter();
 
   const handleAppointmentPress = () => {
-    router.push("/appointment"); // Adjust the route to your appointment page
+    router.push(`/doctor/${doctor.id}?userEmail=${doctor.userEmail}`);
+    console.log(doctor.id, doctor.userEmail);
   };
 
   return (

@@ -23,13 +23,15 @@ import { useUser } from "@clerk/clerk-expo";
 
 const Doctor = () => {
   const navigation = useNavigation();
-  const { doctorId } = useLocalSearchParams();
+  const { doctorId,userEmail } = useLocalSearchParams();
   const [doctor, setDoctor] = useState(null);
   const { user } = useUser();
 
   useEffect(() => {
     getDoctorById();
-  }, [doctorId]);
+    console.log("Doctor ID from params:", doctorId);
+
+  }, []);
 
   useEffect(() => {
     navigation.setOptions({
@@ -48,7 +50,7 @@ const Doctor = () => {
   const getDoctorById = async () => {
     const hospitalQuery = query(
       collection(db, "HospitalList"),
-      where("userEmail", "==", user?.primaryEmailAddress?.emailAddress)
+      where("userEmail", "==", userEmail)
     );
     const hospitalSnapshot = await getDocs(hospitalQuery);
 
