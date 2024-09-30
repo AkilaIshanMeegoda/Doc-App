@@ -18,7 +18,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../configs/FirebaseConfig";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useLocalSearchParams, useNavigation } from "expo-router";
+import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { useUser } from "@clerk/clerk-expo";
 
 const Doctor = () => {
@@ -87,6 +87,13 @@ const Doctor = () => {
       />
     </View>
   );
+
+  const handleAppointment = () => {
+    router.push({
+      pathname: `/appointments/${doctor.id}`,
+      params: { doctorId: doctor.id, userEmail: userEmail }
+    });
+  };
 
   return (
     <ScrollView>
@@ -160,7 +167,7 @@ const Doctor = () => {
                 {doctor.description || "No description available."}
               </Text>
               <TouchableOpacity
-                onPress={() => alert("Appointment request initiated!")}
+                onPress={handleAppointment}
               >
                 <Text className="bg-[#607AFB] mt-4 p-3 text-white text-center rounded-lg font-[poppins-bold]">
                   Make an appointment
