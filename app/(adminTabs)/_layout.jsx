@@ -15,9 +15,22 @@ const AdminTabLayout = () => {
       <Tabs.Screen
         name="adminHome"
         options={{
+          headerTitle: "All Appointments",
+          headerTitleStyle: {
+            fontFamily: "poppins-medium",
+            fontSize: 20,
+          },
           tabBarLabel: "Home",
           tabBarIcon: () => (
-            <Feather name="home" size={24} color={Colors.PRIMARY} />
+            <Feather name="user" size={24} color={Colors.PRIMARY} />
+          ),
+          headerLeft: () => (
+              <Feather
+                name="grid"
+                size={24}
+                color={Colors.PRIMARY}
+                style={{ marginLeft: 15, marginBottom: 4 }}
+              />
           ),
         }}
       />
