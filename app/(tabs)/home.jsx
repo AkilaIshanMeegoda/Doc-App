@@ -1,48 +1,73 @@
-import React from 'react'
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from 'expo-router';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image } from "react-native";
-import { Link } from "expo-router";
+import DropDownPicker from "react-native-dropdown-picker";
 import { collection, query, getDocs } from "firebase/firestore";
-
 import { db } from "../../configs/FirebaseConfig";
-const home = () => {
-  const router = useRouter();
-  const [name, setName] = useState("");
-  const [specialization, setSpecialization] = useState("");
-  const [hospitalName, setHospitalName] = useState("");
-  const [area, setArea] = useState("");
 
-  const GetDetails = async () => {
+const Home = () => {
+  const router = useRouter();
+  
+  // State variables
+  const [name, setName] = useState("");
+  const [specialization, setSpecialization] = useState(null);
+  const [hospitalName, setHospitalName] = useState(null);
+  const [area, setArea] = useState(null);
+  const [specializations, setSpecializations] = useState([]);
+  const [hospitals, setHospitals] = useState([]);
+  const [areas, setAreas] = useState([]);
+  const [openSpecialization, setOpenSpecialization] = useState(false);
+  const [openHospital, setOpenHospital] = useState(false);
+  const [openArea, setOpenArea] = useState(false);
+
+  const GetData = async () => {
     try {
-      // Query the Hospital collection
       const q = query(collection(db, "HospitalList"));
-      // console.log("q", q);
       const querySnapshot = await getDocs(q);
-    // console.log("querySnapshot", querySnapshot);
-      for (const hospitalDoc of querySnapshot.docs) {
-        console.log("Hospital:", hospitalDoc.data());
-    
-        // Access the doctors subcollection
-        const doctorsRef = collection(db, "HospitalList", hospitalDoc.id, "DoctorList");
-        const doctorsSnapshot = await getDocs(doctorsRef);
-    
-        doctorsSnapshot.forEach((doctorDoc) => {
-          console.log("Doctor:", doctorDoc.data());
-        });
-      }
+
+      let allSpecializations = new Set();
+      let allHospitals = new Set();
+      let allAreas = new Set();
+
+      querySnapshot.forEach((hospitalDoc) => {
+        const hospitalData = hospitalDoc.data();
+        console.log('Hospital Data:', hospitalData);
+
+        // Collect specializations
+        if (Array.isArray(hospitalData.specialization)) {
+          hospitalData.specialization.forEach(spec => {
+            allSpecializations.add(spec);
+          });
+        }
+
+        // Collect hospital names
+        allHospitals.add(hospitalData.name);
+
+        // Collect areas
+        if (hospitalData.area) {
+          allAreas.add(hospitalData.area);
+        }
+      });
+
+      // Convert sets to arrays
+      const specializationArray = [...allSpecializations].map(item => ({ label: item, value: item }));
+      const hospitalArray = [...allHospitals].map(item => ({ label: item, value: item }));
+      const areaArray = [...allAreas].map(item => ({ label: item, value: item }));
+
+      setSpecializations(specializationArray);
+      setHospitals(hospitalArray);
+      setAreas(areaArray);
     } catch (error) {
       console.error("Error getting documents: ", error);
     }
   };
 
   useEffect(() => {
-    GetDetails();
+    GetData();
   }, []);
 
   const handleSearch = () => {
     router.push({
-      // navigate to the mappage with the search parameters
       pathname: '/mappage/[settings]',
       params: {
         name,
@@ -50,69 +75,80 @@ const home = () => {
         specialization,
         hospitalName
       }
-    })
-  }
+    });
+  };
 
   return (
     <View style={styles.container}>
-    <Image
-      style={styles.vnk44ui9ie1Icon}
-      contentFit="cover"
-      source={require("../../assets/images/home.png")}
-    />
-    <Text
-      style={[styles.findTheBest, styles.findFlexBoxTop]}
-    >{`Find the Best Doctors`}</Text>
+      <Image
+        style={styles.vnk44ui9ie1Icon}
+        contentFit="cover"
+        source={require("../../assets/images/home.png")}
+      />
+      <Text style={[styles.findTheBest, styles.findFlexBoxTop]}>Find the Best Doctors</Text>
 
-    <View
-      style={{
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: 240,
-      }}
-    >
-      <View style={styles.input}>
-      <TextInput 
-        placeholder="Name of Doctor"
-        value= {name}
-        onChangeText={setName}
-/>
-      </View>
-      <View style={styles.input}>
-      <TextInput 
-        placeholder="Specialization"
-        value= {specialization}
-        onChangeText={setSpecialization}
-/>
-      </View>
-      <View style={styles.input}>
-      <TextInput 
-        placeholder="Doctor Center"
-        value= {hospitalName}
-        onChangeText={setHospitalName}
-/>
-      </View>
-      <View style={styles.input}>
+      <View style={styles.formContainer}>
         <TextInput 
-        placeholder="Area"
-        value= {area}
-        onChangeText={setArea}
-/>
-      </View>
-    </View>
+          style={styles.input}
+          placeholder="Name of Doctor"
+          value={name}
+          onChangeText={setName}
+        />
+        
+        <DropDownPicker
+          open={openSpecialization}
+          value={specialization}
+          items={specializations}
+          setOpen={setOpenSpecialization}
+          setValue={(callback) => {
+            setSpecialization(prev => (prev === callback() ? null : callback()));
+          }}
+          setItems={setSpecializations}
+          placeholder="Select Specialization"
+          containerStyle={{ width: '100%', marginTop: 12 }}
+          zIndex={3000}
+          zIndexInverse={1000}
+        />
 
-    <TouchableOpacity
-    onPress={handleSearch}
-     style={styles.frame}
-  >
-    <Text style={[styles.findMyDoctor, styles.findFlexBox]}>
-      Find my Doctor
-    </Text>
-  </TouchableOpacity>
-  </View>
-  )
+        <DropDownPicker
+          open={openHospital}
+          value={hospitalName}
+          items={hospitals}
+          setOpen={setOpenHospital}
+          setValue={(callback) => {
+            setHospitalName(prev => (prev === callback() ? null : callback()));
+          }}
+          setItems={setHospitals}
+          placeholder="Select Doctor Center"
+          containerStyle={{ width: '100%', marginTop: 12 }}
+          zIndex={2000}
+          zIndexInverse={5000} // Ensures the hospital dropdown opens in front
+        />
+        
+        <DropDownPicker
+          open={openArea}
+          value={area}
+          items={areas}
+          setOpen={setOpenArea}
+          setValue={(callback) => {
+            setArea(prev => (prev === callback() ? null : callback()));
+          }}
+          setItems={setAreas}
+          placeholder="Select Area"
+          containerStyle={{ width: '100%', marginTop: 12 }}
+          zIndex={1000}
+          zIndexInverse={6000} // Higher inverse to ensure it opens in front
+        />
+      </View>
+
+      <TouchableOpacity onPress={handleSearch} style={styles.frame}>
+        <Text style={[styles.findMyDoctor, styles.findFlexBox]}>Find my Doctor</Text>
+      </TouchableOpacity>
+    </View>
+  );
 };
 
+// Styles for the component
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -124,11 +160,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 44,
     position: "absolute",
+    top: 100, // Adjust position to avoid overlap
   },
   findFlexBox: {
     textAlign: "center",
     lineHeight: 24,
-    position: "absolute",
   },
   vnk44ui9ie1Icon: {
     top: -2,
@@ -138,12 +174,18 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
   findTheBest: {
-    top: 107,
     fontSize: 38,
     color: "#fff7f7",
     width: 360,
     height: 90,
     textAlign: "center",
+  },
+  formContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 240,
+    width: '100%', // Ensure the form takes full width
+    paddingHorizontal: 20, // Add horizontal padding
   },
   input: {
     borderRadius: 8,
@@ -152,24 +194,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginTop: 12,
     padding: 10,
-    width: 300,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  labelTypo: {
-    fontFamily: "poppins",
-    fontSize: 16,
-    color: "#333",
+    width: '100%', // Use full width for input
   },
   findMyDoctor: {
-    top: 12,
-    left: 102,
     fontSize: 16,
     fontFamily: "poppins",
     color: "#fff",
   },
   frame: {
-    top: 2,
     borderRadius: 6,
     backgroundColor: "#4169e1",
     width: 309,
@@ -178,11 +210,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 20,
   },
-  link: {
-    marginTop: 30,
-    fontSize: 18,
-    color: "blue",
-  },
 });
 
-export default home
+export default Home;
