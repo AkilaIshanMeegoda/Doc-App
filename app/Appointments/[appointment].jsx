@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { View, Text, Image, TextInput, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { useLocalSearchParams, useNavigation } from 'expo-router';
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { db } from '../../configs/FirebaseConfig';
 import { collection, doc, addDoc, getDoc, getDocs, query, where } from "firebase/firestore";
 
 const Appointment = () => {
   const { doctorId, userEmail } = useLocalSearchParams();
   const navigation = useNavigation();
+  const router = useRouter();
 
   const [doctor, setDoctor] = useState(null);
   const [selectedDate, setSelectedDate] = useState("");
@@ -56,12 +57,12 @@ const Appointment = () => {
   }, [doctorId, userEmail]);
 
   const saveAppointmentDetails = async () => {
-    setLoading(true);
     try {
+      setLoading(true);
       // Query to find the hospital document based on the userEmail (or any other identifying attribute)
       const hospitalQuery = query(
         collection(db, "HospitalList"),
-        where("userEmail", "==", userEmail) // Assuming userEmail links hospital and user
+        where("userEmail", "==", userEmail)
       );
   
       const hospitalSnapshot = await getDocs(hospitalQuery);
@@ -87,6 +88,15 @@ const Appointment = () => {
         });
   
         console.log("Appointment saved successfully.");
+        router.push({
+          pathname: "/appointments/AppointmentConfirmation",
+          params: {
+            doctorName: doctor.name,
+            hospitalName: doctor.hospital,
+            appointmentDate: selectedDate,
+            appointmentTime: selectedTime,
+          }
+        });
       } else {
         console.log("No hospital found for the given user.");
       }
