@@ -71,7 +71,7 @@ const Doctor = () => {
 
   const renderAppointmentItem = ({ item }) => (
     <View className="flex-row justify-between my-1">
-      <Text className="font-[poppins-medium] text-[14px] w-20">{item.day}</Text>
+      <Text className="font-[poppins-medium] text-[14px] w-24">{item.day}</Text>
       <FlatList
         data={item.times}
         horizontal
