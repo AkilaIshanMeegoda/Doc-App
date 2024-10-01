@@ -39,13 +39,22 @@ const DoctorProfile = ({ doctor }) => {
 
       {/* Doctor Name and Specialization */}
       <View style={styles.textContainer}>
-        <Text style={styles.doctorName}>{doctor.name || "Dr. David Johnson"}</Text>
-        <Text style={styles.specialization}>{doctor.specialization || "Heart Surgeon"}</Text>
+        <Text style={styles.doctorName}>
+          {doctor.name || "Dr. David Johnson"}
+        </Text>
+        <View style={styles.specializationButton}>
+          <Text style={styles.specialization}>
+            {doctor.specialization || "Heart Surgeon"}
+          </Text>
+        </View>
       </View>
 
       {/* Appointment Button and Rating */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.appointmentButton} onPress={handleAppointmentPress}>
+        <TouchableOpacity
+          style={styles.appointmentButton}
+          onPress={handleAppointmentPress}
+        >
           <Text style={styles.appointmentText}>Appointment</Text>
         </TouchableOpacity>
         <View style={styles.ratingFrame}>
@@ -82,21 +91,27 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   textContainer: {
-    alignItems: "flex-start", 
-    width: "100%", 
+    alignItems: "flex-start",
+    width: "100%",
     paddingLeft: 10, // Adjusted padding
   },
   doctorName: {
-    fontSize: 18, // Reduced font size
+    fontSize: 16, // Reduced font size
     fontWeight: "bold",
     color: "#000",
     textAlign: "left",
   },
   specialization: {
-    fontSize: 14, // Reduced font size
+    fontSize: 13, // Reduced font size
     color: "#7d7d7d",
     textAlign: "left",
     marginVertical: 4, // Slightly reduced vertical margin
+  },
+  specializationButton: {
+    backgroundColor: "#dfdfdf",
+    borderRadius: 30,
+    paddingVertical: 2, // Reduced vertical padding
+    paddingHorizontal: 5, // Reduced horizontal padding
   },
   footer: {
     flexDirection: "row",
@@ -126,7 +141,7 @@ const styles = StyleSheet.create({
   },
   starIcon: {
     width: 18, // Reduced icon size
-    height: 18, 
+    height: 18,
     marginRight: 4,
   },
   ratingText: {
