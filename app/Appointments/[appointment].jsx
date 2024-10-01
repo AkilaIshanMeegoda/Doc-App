@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { View, Text, Image, TextInput, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, Image, TextInput, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { db } from '../../configs/FirebaseConfig';
+import { Colors } from '../../constants/Colors';
 import { collection, doc, addDoc, getDoc, getDocs, query, where } from "firebase/firestore";
 
 const Appointment = () => {
@@ -115,7 +116,7 @@ const Appointment = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       {Loading ? (
         <ActivityIndicator size="large" color="#607AFB" />
       ) : doctor ? (
@@ -180,16 +181,16 @@ const Appointment = () => {
           </TouchableOpacity>
         </>
       ) : (
-        <Text>Loading...</Text>
+        <ActivityIndicator size="large" color="#607AFB" />
       )}
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9F9F9',
+    backgroundColor: Colors.BACKGROUND,
     padding: 20,
   },
   header: {
@@ -246,10 +247,11 @@ const styles = StyleSheet.create({
   },
   button: {
     height: 50,
-    backgroundColor: '#607AFB',
+    backgroundColor: Colors.PRIMARY,
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
+    marginVertical: 34
   },
   buttonText: {
     color: '#FFF',

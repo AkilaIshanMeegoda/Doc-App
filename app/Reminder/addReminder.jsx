@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Feather } from '@expo/vector-icons';
@@ -24,6 +24,17 @@ const ReminderDetails = () => {
 
   const { user } = useUser(); // Get the authenticated user information
   const navigation = useNavigation();
+
+  // Screen navigation bar
+  useEffect(() => {
+    navigation.setOptions({
+      title: `Medication Reminder`,
+      headerTintColor: '#607AFB', 
+      headerTitleStyle: {
+        color: 'black', 
+      },
+    });
+  }, [navigation]);
 
   const addMoreTime = () => {
     setReminderTimes([...reminderTimes, null]);
@@ -112,7 +123,9 @@ const ReminderDetails = () => {
 
       {/* Start Date Picker */}
       <TouchableOpacity onPress={() => setShowStartDatePicker(true)} style={styles.datePicker}>
-        <Text>{startDate ? startDate.toDateString() : 'Starting Date'}</Text>
+        <Text style={startDate ? styles.selectedText : styles.placeholderText}>
+          {startDate ? startDate.toDateString() : 'Starting Date'}
+        </Text>
       </TouchableOpacity>
       {showStartDatePicker && (
         <DateTimePicker
@@ -128,7 +141,9 @@ const ReminderDetails = () => {
 
       {/* End Date Picker */}
       <TouchableOpacity onPress={() => setShowEndDatePicker(true)} style={styles.datePicker}>
-        <Text>{endDate ? endDate.toDateString() : 'Ending Date'}</Text>
+        <Text style={startDate ? styles.selectedText : styles.placeholderText}>
+          {endDate ? endDate.toDateString() : 'Ending Date'}
+        </Text>
       </TouchableOpacity>
       {showEndDatePicker && (
         <DateTimePicker
@@ -149,7 +164,9 @@ const ReminderDetails = () => {
           style={styles.timePicker}
           onPress={() => setShowTimePicker({ show: true, index })}
         >
-          <Text>{time ? time.toLocaleTimeString() : 'Select Time'}</Text>
+          <Text style={startDate ? styles.selectedText : styles.placeholderText}>
+            {time ? time.toLocaleTimeString() : 'Select Time'}
+          </Text>
         </TouchableOpacity>
       ))}
       {showTimePicker.show && (
@@ -165,7 +182,7 @@ const ReminderDetails = () => {
 
       {/* Add More Time Button */}
       <TouchableOpacity onPress={addMoreTime} style={styles.addTimeButton}>
-        <Feather name="plus" size={24} color={Colors.PRIMARY} />
+        <Feather name="plus" size={24} color={Colors.remind.fieldBackground} />
       </TouchableOpacity>
 
       {/* Set Reminder Button */}
@@ -179,35 +196,49 @@ const ReminderDetails = () => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
+    paddingTop: 40,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.remind.background,
   },
   input: {
-    borderColor: '#ccc',
+    borderColor: Colors.remind.neutralColor,
     borderWidth: 1,
-    padding: 10,
+    padding: 15,
     marginVertical: 10,
     borderRadius: 8,
+    backgroundColor: Colors.remind.fieldBackground,
+    fontSize: 16,
+    color: '#000000',
+  },
+  selectedText: {
+    color: '#000000',
+  },
+  placeholderText: {
+    color: '#999999',
   },
   datePicker: {
     padding: 15,
-    borderColor: '#ccc',
+    borderColor: Colors.remind.neutralColor,
     borderWidth: 1,
     borderRadius: 8,
     marginVertical: 10,
+    backgroundColor: Colors.remind.fieldBackground,
+    fontSize: 16,
   },
   timePicker: {
     padding: 15,
-    borderColor: '#ccc',
+    borderColor: Colors.remind.neutralColor,
     borderWidth: 1,
     borderRadius: 8,
     marginVertical: 10,
+    backgroundColor: Colors.remind.fieldBackground,
+    fontSize: 16,
   },
   addTimeButton: {
     marginVertical: 10,
     alignSelf: 'center',
     padding: 10,
-    borderRadius: 50,
+    borderRadius: 8,
     backgroundColor: Colors.PRIMARY,
   },
   setReminderButton: {
@@ -218,7 +249,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   setReminderButtonText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontWeight: 'bold',
     fontSize: 16,
   },

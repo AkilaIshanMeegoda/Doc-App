@@ -33,7 +33,12 @@ export const Colors = {
   },
   remind: {
     textSecondary: '#555',
-    background: '#FBFBFB'
+    neutralColor: '#E5E5E5',
+    background: '#F9F9F9',
+    cardBackground: '#FFFFFF',
+    fieldBackground: '#FFFFFF'
   },
-  PRIMARY:'#607AFB'
+  PRIMARY:'#607AFB',
+  DANGER: '#FF4040',
+  BACKGROUND: '#F9F9F9'
 };
