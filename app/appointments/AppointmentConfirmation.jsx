@@ -1,6 +1,7 @@
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { useEffect } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
+import { Colors } from '../../constants/Colors';
 
 const AppointmentConfirmation = () => {
     const navigation = useNavigation();
@@ -24,7 +25,7 @@ const AppointmentConfirmation = () => {
                 style={styles.image}
             />
             <Text style={styles.thankYouText}>Thank You!</Text>
-            <Text style={styles.confirmationText}>Your appointment has been confirmed.</Text>
+            <Text style={styles.confirmationText}>Your appointment has been{'\n'}confirmed.</Text>
             <View style={styles.appointmentDetails}>
                 <View style={styles.doctorInfo}>
                     <Image
@@ -68,11 +69,12 @@ const styles = StyleSheet.create({
     thankYouText: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#607AFB',
+        color: Colors.PRIMARY,
         marginBottom: 10,
     },
     confirmationText: {
         fontSize: 16,
+        textAlign: 'center',
         color: '#333',
         marginBottom: 20,
     },
@@ -81,8 +83,8 @@ const styles = StyleSheet.create({
         padding: 12,
         borderRadius: 10,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
         shadowRadius: 1.41,
         elevation: 2,
         width: '95%',
