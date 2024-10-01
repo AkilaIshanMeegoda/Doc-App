@@ -80,15 +80,20 @@ const Remind = () => {
                 <View>
                   <Text style={styles.reminderName}>{reminder.reminderName}</Text>
                   <Text style={styles.reminderDates}>
-                    {formatReminderDates(reminder.startDate, reminder.endDate)} / {formatReminderTimes(reminder.reminderTimes)}
+                    {formatReminderDates(reminder.startDate, reminder.endDate)}
+                  </Text>
+                  <Text style={styles.reminderDates}>
+                    {formatReminderTimes(reminder.reminderTimes)}
                   </Text>
                   <Text style={styles.reminderNote}>{reminder.reminderNotes}</Text>
                 </View>
 
                 {/* Delete Icon */}
-                <TouchableOpacity onPress={() => handleDeleteReminder(reminder.id)}>
-                  <Feather name="trash" size={24} color={Colors.DANGER} />
-                </TouchableOpacity>
+                <View>
+                  <TouchableOpacity onPress={() => handleDeleteReminder(reminder.id)}>
+                    <Feather name="trash" size={24} color={Colors.DANGER} />
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
           ))}
@@ -118,7 +123,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingTop: 50,
+    paddingTop: 40,
     backgroundColor: Colors.remind.background,
   },
   button: {
@@ -147,30 +152,39 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   reminderCard: {
-    backgroundColor: Colors.cardBackground,
+    backgroundColor: Colors.remind.cardBackground,
     padding: 15,
-    borderRadius: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: Colors.remind.neutralColor,
     marginBottom: 15,
-    width: '100%',
+    width: '90%',
+    alignSelf: 'center',
   },
   reminderCardContent: {
-    flexDirection: 'row',         
-    justifyContent: 'space-between',
+    flexDirection: 'row',
+    justifyContent: 'space-between', // Space between text and icon
     alignItems: 'center',
+    width: '100%',
   },
   reminderName: {
     fontSize: 18,
     fontWeight: 'bold',
     color: Colors.primaryText,
+    marginBottom: 5,
   },
   reminderDates: {
-    fontSize: 16,
+    fontSize: 14,
     color: Colors.secondaryText,
-    marginVertical: 5,
+    marginBottom: 3,
   },
   reminderNote: {
     fontSize: 14,
     color: Colors.secondaryText,
+    marginTop: 5,
+  },
+  deleteIcon: {
+    paddingLeft: 10,
   },
 });
 
