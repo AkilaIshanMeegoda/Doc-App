@@ -2,7 +2,7 @@ import React from 'react'
 import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { Link } from "expo-router";
 import CenterComponent from "../../components/MapPage/CenterComponent";
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useLocalSearchParams, router, useNavigation } from 'expo-router'
 import { fetchHospitals } from "../../utils/FetchHospitals";
 import { useState, useEffect } from "react";
 import MapComponent from '../../components/MapPage/MapComponent';
@@ -24,8 +24,7 @@ const FontSize = {
 };
 
 const mappage = () => {
-  const router = useRouter();
-
+  const navigation = useNavigation();
   const { name, area, specialization, hospitalName } = useLocalSearchParams();
   console.log("im at setting page", name, area, specialization, hospitalName);
   const [hospitalIds, setHospitalIds] = useState([]);
@@ -40,6 +39,16 @@ const mappage = () => {
     fetchData();
   }, [area, name, specialization, hospitalName]);
   
+  useEffect(() => {
+    navigation.setOptions({
+      title: `Home`,
+      headerTintColor: '#607AFB', 
+      headerTitleStyle: {
+        color: 'black', 
+      },
+    });
+  }, [navigation]);
+
   const handleHospitalClick = (hospitalId) => {
     router.push({
       pathname: '/hospitalprofile/[hospital]',
