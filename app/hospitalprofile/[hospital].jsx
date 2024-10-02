@@ -10,7 +10,7 @@ import React, { useState, useEffect } from "react";
 import DoctorProfile from "../../components/HospitalProfile/DoctorProfile";
 import HospitalProfile from "../../components/HospitalProfile/HospitalProfile";
 import OptionComponent from "../../components/HospitalProfile/OptionComponent";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useNavigation } from "expo-router";
 import { fetchDoctorsByFilter } from "../../utils/FetchDoctorsByFilter";
 import { Rating } from "react-native-ratings";
 import Toast from "react-native-toast-message";
@@ -25,7 +25,7 @@ const hospital = () => {
   const [rating, setRating] = useState(0);
   const [reviewText, setReviewText] = useState(""); // Optional: Add review text
   const { user } = useUser(); // Retrieve user from hook
-
+  const navigation = useNavigation();
   // Fetch doctors when the component mounts or params change
   useEffect(() => {
     const fetchData = async () => {
@@ -38,6 +38,16 @@ const hospital = () => {
     };
     fetchData();
   }, [hospitalId, specialization, doctorName]);
+
+  useEffect(() => {
+    navigation.setOptions({
+      title: `Map Page`,
+      headerTintColor: '#607AFB', 
+      headerTitleStyle: {
+        color: 'black', 
+      },
+    });
+  }, [navigation]);
 
   // Handle rating completion
   const ratingCompleted = (ratingValue) => {
@@ -164,7 +174,7 @@ const hospital = () => {
       </View>
     </ScrollView>
   );
-};
+}; 
 
 // Styles for the component
 const styles = StyleSheet.create({
