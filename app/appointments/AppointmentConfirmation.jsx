@@ -10,8 +10,6 @@ const AppointmentConfirmation = () => {
     const { doctorId, userEmail, appointmentDate, appointmentTime } = useLocalSearchParams();
     const [doctor, setDoctor] = useState(null);
 
-    console.log("Savishka: Doctor ID is : ", doctorId);
-
     // Screen navigation bar
     useEffect(() => {
         navigation.setOptions({
