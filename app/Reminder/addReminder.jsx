@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, StyleSheet, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Feather } from '@expo/vector-icons';
 import { Colors } from '../../constants/Colors';
@@ -21,6 +21,7 @@ const ReminderDetails = () => {
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState({ show: false, index: null });
+  const [loading, setLoading] = useState(false); // Loading state
 
   const { user } = useUser(); // Get the authenticated user information
   const navigation = useNavigation();
@@ -67,6 +68,27 @@ const ReminderDetails = () => {
     }
   };
 
+  // Validation function
+  const validateForm = () => {
+    if (!reminderName) {
+      Alert.alert("Incomplete", "Please enter a reminder name.");
+      return false;
+    }
+    if (!startDate) {
+      Alert.alert("Incomplete", "Please select a starting date.");
+      return false;
+    }
+    if (!endDate) {
+      Alert.alert("Incomplete", "Please select an ending date.");
+      return false;
+    }
+    if (reminderTimes.some(time => time === null)) {
+      Alert.alert("Incomplete", "Please select a time.");
+      return false;
+    }
+    return true;
+  };
+
   // Function to handle setting the reminder and scheduling notifications
   const handleSetReminder = async () => {
     if (!user) {
@@ -74,35 +96,49 @@ const ReminderDetails = () => {
       return;
     }
 
-    // Check notification permissions
-    const permissionGranted = await requestNotificationPermissions();
-    if (!permissionGranted) {
-      alert('Notification permissions are required for reminders.');
+    // Validate the form before proceeding
+    if (!validateForm()) {
       return;
     }
 
-    defineNotificationActions(); // Define the action button ('Okay') for the notification
+    // Set loading to true while saving
+    setLoading(true);
 
-    // Create reminder data object
-    const reminderData = {
-      reminderName,
-      reminderNotes,
-      startDate,
-      endDate,
-      reminderTimes,
-    };
+    try {
+      // Check notification permissions
+      const permissionGranted = await requestNotificationPermissions();
+      if (!permissionGranted) {
+        alert('Notification permissions are required for reminders.');
+        return;
+      }
 
-    // Save the reminder in Firestore
-    await addReminder(reminderData);
+      defineNotificationActions(); // Define the action button ('Okay') for the notification
 
-    // Schedule notifications
-    if (startDate && endDate && reminderTimes.length > 0) {
-      const timeStrings = reminderTimes.map(time => time?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })); // Format times
-      await scheduleReminderNotifications(startDate, endDate, reminderTimes, reminderName, reminderNotes); // Schedule notifications with the formatted times
+      // Create reminder data object
+      const reminderData = {
+        reminderName,
+        reminderNotes,
+        startDate,
+        endDate,
+        reminderTimes,
+      };
+
+      // Save the reminder in Firestore
+      await addReminder(reminderData);
+
+      // Schedule notifications
+      if (startDate && endDate && reminderTimes.length > 0) {
+        const timeStrings = reminderTimes.map(time => time?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })); // Format times
+        await scheduleReminderNotifications(startDate, endDate, reminderTimes, reminderName, reminderNotes); // Schedule notifications with the formatted times
+      }
+
+      // Navigate back after setting reminder
+      navigation.goBack();
+    } catch (error) {
+      console.error("Error while setting reminder:", error);
+    } finally {
+      setLoading(false); // Set loading to false after saving
     }
-
-    // Navigate back after setting reminder
-    navigation.goBack(); 
   };
 
   return (
@@ -185,10 +221,14 @@ const ReminderDetails = () => {
         <Feather name="plus" size={24} color={Colors.remind.fieldBackground} />
       </TouchableOpacity>
 
-      {/* Set Reminder Button */}
-      <TouchableOpacity onPress={handleSetReminder} style={styles.setReminderButton}>
-        <Text style={styles.setReminderButtonText}>Set Reminder</Text>
-      </TouchableOpacity>
+      {/* Show loading while saving */}
+      {loading ? (
+        <ActivityIndicator size="large" color="#607AFB" />
+      ) : (
+        <TouchableOpacity onPress={handleSetReminder} style={styles.setReminderButton}>
+          <Text style={styles.setReminderButtonText}>Set Reminder</Text>
+        </TouchableOpacity>
+      )}
     </ScrollView>
   );
 };
