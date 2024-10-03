@@ -93,10 +93,8 @@ const Appointment = () => {
         router.push({
           pathname: "/appointments/AppointmentConfirmation",
           params: {
-            doctorName: doctor.name,
-            doctorImg: doctor.imageUrl,
-            specialization: doctor.specialization,
-            hospitalName: doctor.hospital,
+            doctorId: doctorId,
+            userEmail: userEmail,
             appointmentDate: selectedDate,
             appointmentTime: selectedTime,
           }
@@ -127,8 +125,8 @@ const Appointment = () => {
               source={{ uri: doctor.imageUrl }}
             />
             <Text style={styles.doctorName}>Dr. {doctor?.name || "Doctor's Name"}</Text>
-            <Text style={styles.hospitalName}>{doctor?.hospital || "Hospital's Name"}</Text>
             <Text style={styles.specialization}>{doctor?.specialization || "Doctor's Specialization"}</Text>
+            <Text style={styles.hospitalName}>{doctor?.hospital || "Hospital's Name"}</Text>
           </View>
 
           <View style={styles.pickerContainer}>

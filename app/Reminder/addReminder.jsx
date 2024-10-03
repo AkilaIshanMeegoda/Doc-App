@@ -98,7 +98,7 @@ const ReminderDetails = () => {
     // Schedule notifications
     if (startDate && endDate && reminderTimes.length > 0) {
       const timeStrings = reminderTimes.map(time => time?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })); // Format times
-      await scheduleReminderNotifications(startDate, endDate, reminderTimes, reminderName); // Schedule notifications with the formatted times
+      await scheduleReminderNotifications(startDate, endDate, reminderTimes, reminderName, reminderNotes); // Schedule notifications with the formatted times
     }
 
     // Navigate back after setting reminder

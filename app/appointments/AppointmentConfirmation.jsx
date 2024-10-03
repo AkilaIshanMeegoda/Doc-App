@@ -1,22 +1,55 @@
 import { useLocalSearchParams, useNavigation } from 'expo-router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { Colors } from '../../constants/Colors';
+import { db } from '../../configs/FirebaseConfig';
+import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 
 const AppointmentConfirmation = () => {
     const navigation = useNavigation();
-    const { doctorName, doctorImg, specialization, hospitalName, appointmentDate, appointmentTime } = useLocalSearchParams();
+    const { doctorId, userEmail, appointmentDate, appointmentTime } = useLocalSearchParams();
+    const [doctor, setDoctor] = useState(null);
+
+    console.log("Savishka: Doctor ID is : ", doctorId);
 
     // Screen navigation bar
     useEffect(() => {
         navigation.setOptions({
-            title: 'Make An Appointment',
+            title: 'Make Appointment',
             headerTintColor: '#607AFB',
             headerTitleStyle: {
                 color: 'black',
             },
         });
     }, [navigation]);
+
+    useEffect(() => {
+        const getDoctorById = async () => {
+          const hospitalQuery = query(
+            collection(db, "HospitalList"),
+            where("userEmail", "==", userEmail)
+          );
+          const hospitalSnapshot = await getDocs(hospitalQuery);
+      
+          if (!hospitalSnapshot.empty) {
+            const hospitalDocRef = hospitalSnapshot.docs[0].ref;
+      
+            const doctorDocRef = doc(hospitalDocRef, "DoctorList", doctorId);
+            const doctorSnapshot = await getDoc(doctorDocRef);
+      
+            if (doctorSnapshot.exists()) {
+              const doctorData = { id: doctorSnapshot.id, ...doctorSnapshot.data() };
+              setDoctor(doctorData);
+            } else {
+              console.log("No doctor found with the given doctorId");
+            }
+          } else {
+            console.log("No hospital found for the current user");
+          }
+        };
+    
+        getDoctorById();
+      }, [doctorId, userEmail]);
 
     return (
         <View style={styles.container}>
@@ -30,12 +63,12 @@ const AppointmentConfirmation = () => {
                 <View style={styles.doctorInfo}>
                     <Image
                         style={styles.doctorImage}
-                        source={{ uri: doctorImg }}
+                        source={{ uri: doctor?.imageUrl }}
                     />
                     <View style={styles.doctorText}>
-                        <Text style={styles.doctorName}>{doctorName}</Text>
-                        <Text style={styles.specialization}>{specialization}</Text>
-                        <Text style={styles.hospitalName}>{hospitalName}</Text>
+                        <Text style={styles.doctorName}>Dr. {doctor?.name || "Doctor's Name"}</Text>
+                        <Text style={styles.specialization}>{doctor?.specialization || "Doctor's Specialization"}</Text>
+                        <Text style={styles.hospitalName}>{doctor?.hospital || "Hospital's Name"}</Text>
                     </View>
                 </View>
                 <View style={styles.appointmentInfo}>
