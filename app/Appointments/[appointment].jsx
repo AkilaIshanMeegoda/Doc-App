@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, Image, TextInput, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, Image, TextInput, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { db } from '../../configs/FirebaseConfig';
@@ -57,7 +57,32 @@ const Appointment = () => {
     getDoctorById();
   }, [doctorId, userEmail]);
 
+  const validateAppointment = () => {
+    if (!selectedDate) {
+      Alert.alert("Incomplete", "Please select a date");
+      return false;
+    }
+    if (!selectedTime) {
+      Alert.alert("Incomplete", "Please select a time");
+      return false;
+    }
+    if (!fullName) {
+      Alert.alert("Incomplete", "Please enter your name");
+      return false;
+    }
+    if (!mobileNumber) {
+      Alert.alert("Incomplete", "Please enter your mobile number");
+      return false;
+    }
+    if (mobileNumber.length !== 10 || isNaN(mobileNumber)) {
+      Alert.alert("Invalid Number", "Please enter a valid mobile number");
+      return false;
+    }
+    return true;
+  }
+
   const saveAppointmentDetails = async () => {
+    if (!validateAppointment()) return;
     try {
       setLoading(true);
       // Query to find the hospital document based on the userEmail (or any other identifying attribute)
