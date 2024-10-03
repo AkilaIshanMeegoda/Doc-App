@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Feather } from '@expo/vector-icons';
 import { Colors } from '../../constants/Colors';
@@ -67,10 +67,36 @@ const ReminderDetails = () => {
     }
   };
 
+  // Validation function
+  const validateForm = () => {
+    if (!reminderName) {
+      Alert.alert("Incomplete", "Please enter a reminder name.");
+      return false;
+    }
+    if (!startDate) {
+      Alert.alert("Incomplete", "Please select a starting date.");
+      return false;
+    }
+    if (!endDate) {
+      Alert.alert("Incomplete", "Please select an ending date.");
+      return false;
+    }
+    if (reminderTimes.some(time => time === null)) {
+      Alert.alert("Incomplete", "Please select a time.");
+      return false;
+    }
+    return true;
+  };
+
   // Function to handle setting the reminder and scheduling notifications
   const handleSetReminder = async () => {
     if (!user) {
       console.error("User not authenticated");
+      return;
+    }
+
+    // Validate the form before proceeding
+    if (!validateForm()) {
       return;
     }
 
