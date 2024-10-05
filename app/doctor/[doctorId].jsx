@@ -97,7 +97,7 @@ const Doctor = () => {
 
   const handleAppointment = () => {
     router.push({
-      pathname: `/appointments/${doctor.id}`,
+      pathname: `/Appointments/${doctor.id}`,
       params: { doctorId: doctor.id, userEmail: userEmail }
     });
   };
