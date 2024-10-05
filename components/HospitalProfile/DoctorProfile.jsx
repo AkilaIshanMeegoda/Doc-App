@@ -21,13 +21,13 @@ const FontSize = {
   bodyBase_size: 16,
 };
 
-const DoctorProfile = ({ doctor }) => {
+const DoctorProfile = ({ doctor, hospitalId }) => {
   const router = useRouter();
 
   const handleAppointmentPress = () => {
-    router.push(`/doctor/${doctor.id}?userEmail=${doctor.userEmail}`);
-    console.log(doctor.id, doctor.userEmail);
-  };
+    router.push(`/doctor/${doctor.id}?userEmail=${doctor.userEmail}&hospitalId=${hospitalId}`);
+    console.log(doctor.id, doctor.userEmail, hospitalId);
+  };  
 
   return (
     <View style={styles.card}>
