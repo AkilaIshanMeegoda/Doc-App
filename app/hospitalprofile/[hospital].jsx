@@ -127,7 +127,7 @@ const hospital = () => {
           contentContainerStyle={{ flexDirection: "row" }}
         >
           {doctors.map((doctor) => (
-            <DoctorProfile key={doctor.id} doctor={doctor} hospitalId={hospitalId}/>
+            <DoctorProfile key={doctor.id} doctor={doctor} />
           ))}
         </ScrollView>
 

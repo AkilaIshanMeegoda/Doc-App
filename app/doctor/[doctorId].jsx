@@ -23,7 +23,7 @@ import { useUser } from "@clerk/clerk-expo";
 
 const Doctor = () => {
   const navigation = useNavigation();
-  const { doctorId,userEmail, hospitalId } = useLocalSearchParams();
+  const { doctorId,userEmail } = useLocalSearchParams();
   const [doctor, setDoctor] = useState(null);
   const { user } = useUser();
 
