@@ -155,6 +155,16 @@ const UpdateDoctor = () => {
   };
 
   useEffect(() => {
+    navigation.setOptions({
+      title: `Update Doctor Profile`,
+      headerTintColor: '#607AFB', 
+      headerTitleStyle: {
+        color: 'black', 
+      },
+    });
+  }, [navigation]);
+
+  useEffect(() => {
     const fetchHospitalSpecializations = async () => {
       const hospitalQuery = query(
         collection(db, "HospitalList"),
@@ -213,7 +223,7 @@ const UpdateDoctor = () => {
     <ScrollView>
       {/* Doctor update form */}
       <View className="p-6">
-        <Text className="font-[poppins-bold] text-lg">Update doctor profile</Text>
+        <Text className="font-[poppins-bold] text-xl">Update doctor profile</Text>
         <Text className="font-[poppins-medium] text-lg text-gray-500 mt-[-6px]">
           Update details about doctor
         </Text>
