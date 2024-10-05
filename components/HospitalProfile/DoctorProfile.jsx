@@ -1,5 +1,5 @@
-import * as React from "react";
-import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, View, Text, TouchableOpacity, Image, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 
 const Color = {
@@ -23,11 +23,33 @@ const FontSize = {
 
 const DoctorProfile = ({ doctor, hospitalId }) => {
   const router = useRouter();
+  const [averageRating, setAverageRating] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const calculateAverageRating = () => {
+      if (doctor.reviews && doctor.reviews.length > 0) {
+        const totalRating = doctor.reviews.reduce((acc, review) => acc + review.rating, 0);
+        const avgRating = (totalRating / doctor.reviews.length).toFixed(1);
+        setAverageRating(avgRating);
+      } else {
+        setAverageRating(0); // If there are no reviews, set average rating to 0
+      }
+      setLoading(false); // Set loading to false after calculations
+    };
+
+    calculateAverageRating();
+  }, [doctor.reviews]);
 
   const handleAppointmentPress = () => {
     router.push(`/doctor/${doctor.id}?userEmail=${doctor.userEmail}&hospitalId=${hospitalId}`);
     console.log(doctor.id, doctor.userEmail, hospitalId);
-  };  
+  };
+
+  // Show a loading indicator while fetching data
+  if (loading) {
+    return <ActivityIndicator size="large" color="#000" />;
+  }
 
   return (
     <View style={styles.card}>
@@ -62,7 +84,9 @@ const DoctorProfile = ({ doctor, hospitalId }) => {
             style={styles.starIcon}
             source={require("../../assets/images/star1.png")}
           />
-          <Text style={styles.ratingText}>4.5</Text>
+          <Text style={styles.ratingText}>
+            {averageRating !== undefined ? averageRating : "0.0"}
+          </Text>
         </View>
       </View>
     </View>
