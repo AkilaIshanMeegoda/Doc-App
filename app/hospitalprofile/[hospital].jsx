@@ -41,7 +41,7 @@ const hospital = () => {
 
   useEffect(() => {
     navigation.setOptions({
-      title: `Map Page`,
+      title: `Hospital Page`,
       headerTintColor: '#607AFB', 
       headerTitleStyle: {
         color: 'black', 
@@ -127,7 +127,7 @@ const hospital = () => {
           contentContainerStyle={{ flexDirection: "row" }}
         >
           {doctors.map((doctor) => (
-            <DoctorProfile key={doctor.id} doctor={doctor} />
+            <DoctorProfile key={doctor.id} doctor={doctor} hospitalId={hospitalId} />
           ))}
         </ScrollView>
 
