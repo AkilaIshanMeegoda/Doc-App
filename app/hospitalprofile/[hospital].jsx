@@ -41,7 +41,7 @@ const hospital = () => {
 
   useEffect(() => {
     navigation.setOptions({
-      title: `Map Page`,
+      title: `Hospital Page`,
       headerTintColor: '#607AFB', 
       headerTitleStyle: {
         color: 'black', 

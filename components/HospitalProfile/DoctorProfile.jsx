@@ -56,7 +56,7 @@ const DoctorProfile = ({ doctor, hospitalId }) => {
       {/* Doctor Image */}
       <Image
         style={styles.doctorImage}
-        source={require("../../assets/images/doctorimage.png")}
+        source={{ uri: doctor.imageUrl }}
       />
 
       {/* Doctor Name and Specialization */}

@@ -41,7 +41,7 @@ const mappage = () => {
   
   useEffect(() => {
     navigation.setOptions({
-      title: `Home`,
+      title: `Map Page`,
       headerTintColor: '#607AFB', 
       headerTitleStyle: {
         color: 'black', 
