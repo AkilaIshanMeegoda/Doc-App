@@ -1,5 +1,5 @@
 import * as React from "react";
-import { TextInput, Button, View, TouchableOpacity, Text } from "react-native";
+import { TextInput, Button, View, TouchableOpacity, Text, Image } from "react-native";
 import { useSignUp } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import LoginScreen from "./LoginScreen";
@@ -65,7 +65,10 @@ export default function SignUpScreen() {
 
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#F5F6FA", padding: 20 }}>
-      <Text style={{ fontSize: 32, fontWeight: "bold", color: "#607AFB", marginBottom: 40 }}>Create an Account</Text>
+      <Text style={{ fontSize: 32, fontWeight: "bold", color: "#607AFB", marginBottom: 20 }}>Create an Account</Text>
+      <Image source={require('./../../assets/images/signup.jpg')}
+      style={{
+        width:200,height:350,marginBottom:20,borderRadius:20,borderWidth:6,borderColor:'#000'}}/>
 
       {!pendingVerification && (
         <>
@@ -77,8 +80,9 @@ export default function SignUpScreen() {
             style={{
               backgroundColor: "#fff",
               width: "100%",
-              padding: 15,
+              padding: 8,
               borderRadius: 8,
+              paddingHorizontal:15,
               borderColor: "#DADCE0",
               borderWidth: 1,
               marginBottom: 20,
@@ -93,7 +97,8 @@ export default function SignUpScreen() {
             style={{
               backgroundColor: "#fff",
               width: "100%",
-              padding: 15,
+              padding: 8,
+              paddingHorizontal:15,
               borderRadius: 8,
               borderColor: "#DADCE0",
               borderWidth: 1,
