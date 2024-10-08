@@ -1,5 +1,5 @@
 import { useSignIn } from "@clerk/clerk-expo";
-import { Text, TextInput, Button, View, TouchableOpacity } from "react-native";
+import { Text, TextInput, Button, View, TouchableOpacity, Image } from "react-native";
 import React, { useState } from "react";
 import SignUpScreen from "./SignUpScreen"; // Import the SignUpScreen component
 
@@ -39,8 +39,18 @@ export default function Page() {
   // Otherwise, render the SignIn form
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#F5F6FA", padding: 20 }}>
-      <Text style={{ fontSize: 32, fontWeight: "bold", color: "#607AFB", marginBottom: 40 }}>Welcome Back</Text>
-      
+      <View className="flex-row">
+      <Text style={{ fontSize: 40, fontWeight: "bold", color: "#607AFB", marginBottom: 10 ,fontFamily:"outfit"}}>Med</Text>
+      <Text style={{ fontSize: 40, fontWeight: "bold", color: "#000", marginBottom: 10 ,fontFamily:"outfit"}}>link</Text>
+      </View>
+      <Image source={require('./../../assets/images/login.jpg')}
+      style={{
+        width:200,height:350,marginBottom:5,borderRadius:20,borderWidth:6,borderColor:'#000'}}/>
+      <View className="flex-row">
+      <Text style={{ fontSize: 28, fontWeight: "bold", color: "#607AFB" ,fontFamily:"outfit"}}>We Care </Text>
+      <Text style={{ fontSize: 28, fontWeight: "bold", color: "#000" ,fontFamily:"outfit"}}>About</Text>
+      </View>
+      <Text style={{ fontSize: 28, fontWeight: "bold", color: "#607AFB",marginTop:-10, marginBottom: 10}}>Your Health</Text>
       <TextInput
         autoCapitalize="none"
         value={emailAddress}
@@ -49,7 +59,8 @@ export default function Page() {
         style={{
           backgroundColor: "#fff",
           width: "100%",
-          padding: 15,
+          padding: 8,
+          paddingHorizontal:20,
           borderRadius: 8,
           borderColor: "#DADCE0",
           borderWidth: 1,
@@ -66,8 +77,9 @@ export default function Page() {
         style={{
           backgroundColor: "#fff",
           width: "100%",
-          padding: 15,
+          padding: 8,
           borderRadius: 8,
+          paddingHorizontal:20,
           borderColor: "#DADCE0",
           borderWidth: 1,
           marginBottom: 20,
