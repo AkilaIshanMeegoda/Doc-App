@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   hospitalName: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: "bold",
     color: "#000",
     marginBottom: 10,

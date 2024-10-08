@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react';
-import { View, Text, Image, TextInput, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, Image, TextInput, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { useLocalSearchParams, useNavigation } from 'expo-router';
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { db } from '../../configs/FirebaseConfig';
+import { Colors } from '../../constants/Colors';
 import { collection, doc, addDoc, getDoc, getDocs, query, where } from "firebase/firestore";
+import { useUser } from '@clerk/clerk-expo';
 
 const Appointment = () => {
   const { doctorId, userEmail } = useLocalSearchParams();
+  const { user } = useUser();
   const navigation = useNavigation();
+  const router = useRouter();
 
   const [doctor, setDoctor] = useState(null);
   const [selectedDate, setSelectedDate] = useState("");
@@ -15,6 +19,9 @@ const Appointment = () => {
   const [fullName, setFullName] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
   const [Loading, setLoading] = useState(false);
+
+  // Get current user (patient) email
+  const patientEmail = user.primaryEmailAddress.emailAddress;
 
   // Screen navigation bar
   useEffect(() => {
@@ -55,13 +62,38 @@ const Appointment = () => {
     getDoctorById();
   }, [doctorId, userEmail]);
 
+  const validateAppointment = () => {
+    if (!selectedDate) {
+      Alert.alert("Incomplete", "Please select a date");
+      return false;
+    }
+    if (!selectedTime) {
+      Alert.alert("Incomplete", "Please select a time");
+      return false;
+    }
+    if (!fullName) {
+      Alert.alert("Incomplete", "Please enter your name");
+      return false;
+    }
+    if (!mobileNumber) {
+      Alert.alert("Incomplete", "Please enter your mobile number");
+      return false;
+    }
+    if (mobileNumber.length !== 10 || isNaN(mobileNumber)) {
+      Alert.alert("Invalid Number", "Please enter a valid mobile number");
+      return false;
+    }
+    return true;
+  }
+
   const saveAppointmentDetails = async () => {
-    setLoading(true);
+    if (!validateAppointment()) return;
     try {
+      setLoading(true);
       // Query to find the hospital document based on the userEmail (or any other identifying attribute)
       const hospitalQuery = query(
         collection(db, "HospitalList"),
-        where("userEmail", "==", userEmail) // Assuming userEmail links hospital and user
+        where("userEmail", "==", userEmail)
       );
   
       const hospitalSnapshot = await getDocs(hospitalQuery);
@@ -76,6 +108,7 @@ const Appointment = () => {
         await addDoc(appointmentCollectionRef, {
           doctorId: doctorId,
           patientName: fullName,
+          patientEmail: patientEmail,
           patientMobile: mobileNumber,
           appointmentDate: selectedDate,
           appointmentTime: selectedTime,
@@ -88,6 +121,15 @@ const Appointment = () => {
         });
   
         console.log("Appointment saved successfully.");
+        router.push({
+          pathname: "/appointments/AppointmentConfirmation",
+          params: {
+            doctorId: doctorId,
+            userEmail: userEmail,
+            appointmentDate: selectedDate,
+            appointmentTime: selectedTime,
+          }
+        });
       } else {
         console.log("No hospital found for the given user.");
       }
@@ -100,11 +142,10 @@ const Appointment = () => {
     setSelectedTime("");
     setFullName("");
     setMobileNumber("");
-    navigation.goBack()
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       {Loading ? (
         <ActivityIndicator size="large" color="#607AFB" />
       ) : doctor ? (
@@ -114,9 +155,9 @@ const Appointment = () => {
               style={styles.doctorImage}
               source={{ uri: doctor.imageUrl }}
             />
-            <Text style={styles.doctorName}>Dr. {doctor?.name || "Doctor's Name"}</Text>
-            <Text style={styles.hospitalName}>{doctor?.hospital || "Hospital's Name"}</Text>
+            <Text style={styles.doctorName}>Dr.{doctor?.name || "Doctor's Name"}</Text>
             <Text style={styles.specialization}>{doctor?.specialization || "Doctor's Specialization"}</Text>
+            <Text style={styles.hospitalName}>{doctor?.hospital || "Hospital's Name"}</Text>
           </View>
 
           <View style={styles.pickerContainer}>
@@ -169,16 +210,16 @@ const Appointment = () => {
           </TouchableOpacity>
         </>
       ) : (
-        <Text>Loading...</Text>
+        <ActivityIndicator size="large" color="#607AFB" />
       )}
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9F9F9',
+    backgroundColor: Colors.BACKGROUND,
     padding: 20,
   },
   header: {
@@ -235,10 +276,11 @@ const styles = StyleSheet.create({
   },
   button: {
     height: 50,
-    backgroundColor: '#607AFB',
+    backgroundColor: Colors.PRIMARY,
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
+    marginVertical: 34
   },
   buttonText: {
     color: '#FFF',

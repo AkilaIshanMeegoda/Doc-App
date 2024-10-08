@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, StyleSheet, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Feather } from '@expo/vector-icons';
 import { Colors } from '../../constants/Colors';
@@ -21,9 +21,21 @@ const ReminderDetails = () => {
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState({ show: false, index: null });
+  const [loading, setLoading] = useState(false); // Loading state
 
   const { user } = useUser(); // Get the authenticated user information
   const navigation = useNavigation();
+
+  // Screen navigation bar
+  useEffect(() => {
+    navigation.setOptions({
+      title: `Medication Reminder`,
+      headerTintColor: '#607AFB', 
+      headerTitleStyle: {
+        color: 'black', 
+      },
+    });
+  }, [navigation]);
 
   const addMoreTime = () => {
     setReminderTimes([...reminderTimes, null]);
@@ -56,6 +68,27 @@ const ReminderDetails = () => {
     }
   };
 
+  // Validation function
+  const validateForm = () => {
+    if (!reminderName) {
+      Alert.alert("Incomplete", "Please enter a reminder name.");
+      return false;
+    }
+    if (!startDate) {
+      Alert.alert("Incomplete", "Please select a starting date.");
+      return false;
+    }
+    if (!endDate) {
+      Alert.alert("Incomplete", "Please select an ending date.");
+      return false;
+    }
+    if (reminderTimes.some(time => time === null)) {
+      Alert.alert("Incomplete", "Please select a time.");
+      return false;
+    }
+    return true;
+  };
+
   // Function to handle setting the reminder and scheduling notifications
   const handleSetReminder = async () => {
     if (!user) {
@@ -63,35 +96,49 @@ const ReminderDetails = () => {
       return;
     }
 
-    // Check notification permissions
-    const permissionGranted = await requestNotificationPermissions();
-    if (!permissionGranted) {
-      alert('Notification permissions are required for reminders.');
+    // Validate the form before proceeding
+    if (!validateForm()) {
       return;
     }
 
-    defineNotificationActions(); // Define the action button ('Okay') for the notification
+    // Set loading to true while saving
+    setLoading(true);
 
-    // Create reminder data object
-    const reminderData = {
-      reminderName,
-      reminderNotes,
-      startDate,
-      endDate,
-      reminderTimes,
-    };
+    try {
+      // Check notification permissions
+      const permissionGranted = await requestNotificationPermissions();
+      if (!permissionGranted) {
+        alert('Notification permissions are required for reminders.');
+        return;
+      }
 
-    // Save the reminder in Firestore
-    await addReminder(reminderData);
+      defineNotificationActions(); // Define the action button ('Okay') for the notification
 
-    // Schedule notifications
-    if (startDate && endDate && reminderTimes.length > 0) {
-      const timeStrings = reminderTimes.map(time => time?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })); // Format times
-      await scheduleReminderNotifications(startDate, endDate, reminderTimes, reminderName); // Schedule notifications with the formatted times
+      // Create reminder data object
+      const reminderData = {
+        reminderName,
+        reminderNotes,
+        startDate,
+        endDate,
+        reminderTimes,
+      };
+
+      // Save the reminder in Firestore
+      await addReminder(reminderData);
+
+      // Schedule notifications
+      if (startDate && endDate && reminderTimes.length > 0) {
+        const timeStrings = reminderTimes.map(time => time?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })); // Format times
+        await scheduleReminderNotifications(startDate, endDate, reminderTimes, reminderName, reminderNotes); // Schedule notifications with the formatted times
+      }
+
+      // Navigate back after setting reminder
+      navigation.goBack();
+    } catch (error) {
+      console.error("Error while setting reminder:", error);
+    } finally {
+      setLoading(false); // Set loading to false after saving
     }
-
-    // Navigate back after setting reminder
-    navigation.goBack(); 
   };
 
   return (
@@ -112,7 +159,9 @@ const ReminderDetails = () => {
 
       {/* Start Date Picker */}
       <TouchableOpacity onPress={() => setShowStartDatePicker(true)} style={styles.datePicker}>
-        <Text>{startDate ? startDate.toDateString() : 'Starting Date'}</Text>
+        <Text style={startDate ? styles.selectedText : styles.placeholderText}>
+          {startDate ? startDate.toDateString() : 'Starting Date'}
+        </Text>
       </TouchableOpacity>
       {showStartDatePicker && (
         <DateTimePicker
@@ -128,7 +177,9 @@ const ReminderDetails = () => {
 
       {/* End Date Picker */}
       <TouchableOpacity onPress={() => setShowEndDatePicker(true)} style={styles.datePicker}>
-        <Text>{endDate ? endDate.toDateString() : 'Ending Date'}</Text>
+        <Text style={startDate ? styles.selectedText : styles.placeholderText}>
+          {endDate ? endDate.toDateString() : 'Ending Date'}
+        </Text>
       </TouchableOpacity>
       {showEndDatePicker && (
         <DateTimePicker
@@ -149,7 +200,9 @@ const ReminderDetails = () => {
           style={styles.timePicker}
           onPress={() => setShowTimePicker({ show: true, index })}
         >
-          <Text>{time ? time.toLocaleTimeString() : 'Select Time'}</Text>
+          <Text style={startDate ? styles.selectedText : styles.placeholderText}>
+            {time ? time.toLocaleTimeString() : 'Select Time'}
+          </Text>
         </TouchableOpacity>
       ))}
       {showTimePicker.show && (
@@ -165,13 +218,17 @@ const ReminderDetails = () => {
 
       {/* Add More Time Button */}
       <TouchableOpacity onPress={addMoreTime} style={styles.addTimeButton}>
-        <Feather name="plus" size={24} color={Colors.PRIMARY} />
+        <Feather name="plus" size={24} color={Colors.remind.fieldBackground} />
       </TouchableOpacity>
 
-      {/* Set Reminder Button */}
-      <TouchableOpacity onPress={handleSetReminder} style={styles.setReminderButton}>
-        <Text style={styles.setReminderButtonText}>Set Reminder</Text>
-      </TouchableOpacity>
+      {/* Show loading while saving */}
+      {loading ? (
+        <ActivityIndicator size="large" color="#607AFB" />
+      ) : (
+        <TouchableOpacity onPress={handleSetReminder} style={styles.setReminderButton}>
+          <Text style={styles.setReminderButtonText}>Set Reminder</Text>
+        </TouchableOpacity>
+      )}
     </ScrollView>
   );
 };
@@ -179,35 +236,49 @@ const ReminderDetails = () => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
+    paddingTop: 40,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.remind.background,
   },
   input: {
-    borderColor: '#ccc',
+    borderColor: Colors.remind.neutralColor,
     borderWidth: 1,
-    padding: 10,
+    padding: 15,
     marginVertical: 10,
     borderRadius: 8,
+    backgroundColor: Colors.remind.fieldBackground,
+    fontSize: 16,
+    color: '#000000',
+  },
+  selectedText: {
+    color: '#000000',
+  },
+  placeholderText: {
+    color: '#999999',
   },
   datePicker: {
     padding: 15,
-    borderColor: '#ccc',
+    borderColor: Colors.remind.neutralColor,
     borderWidth: 1,
     borderRadius: 8,
     marginVertical: 10,
+    backgroundColor: Colors.remind.fieldBackground,
+    fontSize: 16,
   },
   timePicker: {
     padding: 15,
-    borderColor: '#ccc',
+    borderColor: Colors.remind.neutralColor,
     borderWidth: 1,
     borderRadius: 8,
     marginVertical: 10,
+    backgroundColor: Colors.remind.fieldBackground,
+    fontSize: 16,
   },
   addTimeButton: {
     marginVertical: 10,
     alignSelf: 'center',
     padding: 10,
-    borderRadius: 50,
+    borderRadius: 8,
     backgroundColor: Colors.PRIMARY,
   },
   setReminderButton: {
@@ -218,7 +289,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   setReminderButtonText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontWeight: 'bold',
     fontSize: 16,
   },

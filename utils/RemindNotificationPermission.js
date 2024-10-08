@@ -32,7 +32,8 @@ export async function scheduleReminderNotifications(
   startDate,
   endDate,
   times,
-  reminderName
+  reminderName,
+  reminderNotes
 ) {
   if (!(await requestNotificationPermissions())) {
     return;
@@ -59,7 +60,7 @@ export async function scheduleReminderNotifications(
       await Notifications.scheduleNotificationAsync({
         content: {
           title: reminderName,
-          body: `It's time for your reminder!`,
+          body: reminderNotes,
           sound: true,
           actions: [{ title: "Okay", identifier: "okay" }],
         },

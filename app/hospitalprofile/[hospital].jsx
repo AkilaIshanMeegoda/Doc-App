@@ -1,15 +1,23 @@
-import { View, Text, Image, ScrollView, StyleSheet, Button } from "react-native";
-import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Button,
+} from "react-native";
+import React, { useState, useEffect } from "react";
 import DoctorProfile from "../../components/HospitalProfile/DoctorProfile";
 import HospitalProfile from "../../components/HospitalProfile/HospitalProfile";
 import OptionComponent from "../../components/HospitalProfile/OptionComponent";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useNavigation } from "expo-router";
 import { fetchDoctorsByFilter } from "../../utils/FetchDoctorsByFilter";
 import { Rating } from "react-native-ratings";
-import Toast from 'react-native-toast-message';
-import { doc, updateDoc, arrayUnion } from 'firebase/firestore'; // Use updateDoc and arrayUnion to allow adding multiple reviews
+import Toast from "react-native-toast-message";
+import { doc, updateDoc, arrayUnion } from "firebase/firestore"; // Use updateDoc and arrayUnion to allow adding multiple reviews
 import { db } from "../../configs/FirebaseConfig";
 import { useUser } from "@clerk/clerk-expo";
+import { TouchableOpacity } from "react-native";
 
 const hospital = () => {
   const { hospitalId, specialization, doctorName } = useLocalSearchParams();
@@ -17,7 +25,7 @@ const hospital = () => {
   const [rating, setRating] = useState(0);
   const [reviewText, setReviewText] = useState(""); // Optional: Add review text
   const { user } = useUser(); // Retrieve user from hook
-
+  const navigation = useNavigation();
   // Fetch doctors when the component mounts or params change
   useEffect(() => {
     const fetchData = async () => {
@@ -31,6 +39,16 @@ const hospital = () => {
     fetchData();
   }, [hospitalId, specialization, doctorName]);
 
+  useEffect(() => {
+    navigation.setOptions({
+      title: `Hospital Page`,
+      headerTintColor: '#607AFB', 
+      headerTitleStyle: {
+        color: 'black', 
+      },
+    });
+  }, [navigation]);
+
   // Handle rating completion
   const ratingCompleted = (ratingValue) => {
     console.log("Rating is: " + ratingValue);
@@ -39,75 +57,77 @@ const hospital = () => {
 
   // Handle review submission
   // Handle review submission
-const submitReview = async () => {
-  console.log("Submitting review...");
-  console.log("User object: ", user); // Log the user object to inspect its structure
+  const submitReview = async () => {
+    console.log("Submitting review...");
+    console.log("User object: ", user); // Log the user object to inspect its structure
 
-  if (rating === 0) {
-    Toast.show({
-      type: 'error',
-      text1: 'Error',
-      text2: 'Please provide a rating before submitting.',
-      position: 'bottom',
-    });
-    return;
-  }
-
-  try {
-    const userEmail = user?.primaryEmailAddress?.emailAddress || user?.emailAddress || ""; // Safely access the email address
-
-    if (!userEmail) {
-      throw new Error("User email not found");
+    if (rating === 0) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Please provide a rating before submitting.",
+        position: "bottom",
+      });
+      return;
     }
 
-    const reviewData = {
-      userId: userEmail, // Use the correct email address
-      rating: rating,
-      reviewText: reviewText, // Optional: include text review
-      createdAt: new Date(),
-    };
+    try {
+      const userEmail =
+        user?.primaryEmailAddress?.emailAddress || user?.emailAddress || ""; // Safely access the email address
 
-    console.log("hi i did a review ", reviewData);
+      if (!userEmail) {
+        throw new Error("User email not found");
+      }
 
-    // Store the review in Firestore under the "Hospital" collection
-    const reviewDocRef = doc(db, "HospitalList", hospitalId);
-    await updateDoc(reviewDocRef, {
-      reviews: arrayUnion(reviewData),
-    });
+      const reviewData = {
+        userId: userEmail, // Use the correct email address
+        rating: rating,
+        reviewText: reviewText, // Optional: include text review
+        createdAt: new Date(),
+      };
 
-    Toast.show({
-      type: 'success',
-      text1: 'Review Added',
-      text2: 'Your review has been added successfully!',
-      position: 'bottom',
-    });
+      console.log("hi i did a review ", reviewData);
 
-    // Reset the rating and review text after submission
-    setRating(0);
-    setReviewText("");
+      // Store the review in Firestore under the "Hospital" collection
+      const reviewDocRef = doc(db, "HospitalList", hospitalId);
+      await updateDoc(reviewDocRef, {
+        reviews: arrayUnion(reviewData),
+      });
 
-  } catch (error) {
-    console.error("Error adding review: ", error);
-    Toast.show({
-      type: 'error',
-      text1: 'Error',
-      text2: 'There was a problem adding your review.',
-      position: 'bottom',
-    });
-  }
-};
+      Toast.show({
+        type: "success",
+        text1: "Review Added",
+        text2: "Your review has been added successfully!",
+        position: "bottom",
+      });
 
+      // Reset the rating and review text after submission
+      setRating(0);
+      setReviewText("");
+    } catch (error) {
+      console.error("Error adding review: ", error);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "There was a problem adding your review.",
+        position: "bottom",
+      });
+    }
+  };
 
   return (
     <ScrollView>
       <View style={{ flex: 1 }}>
         {/* Hospital Profile */}
         <HospitalProfile hospitalId={hospitalId} />
-        
+
         {/* Doctors List */}
-        <ScrollView horizontal={true} contentContainerStyle={{ flexDirection: "row" }}>
+        <ScrollView
+          horizontal={true}
+          contentContainerStyle={{ flexDirection: "row" }}
+        >
           {doctors.map((doctor) => (
-            <DoctorProfile key={doctor.id} doctor={doctor} />
+            <DoctorProfile key={doctor.id} doctor={doctor} hospitalId={hospitalId} />
           ))}
         </ScrollView>
 
@@ -140,7 +160,13 @@ const submitReview = async () => {
           </View> */}
 
           {/* Submit Button */}
-          <Button title="Submit Review" onPress={submitReview} />
+          <View style={styles.CenterSubmitButton}>
+          <TouchableOpacity style={styles.Submitframe}>
+            <Text style={[styles.SubmitText, styles.SubmitFlexBox]} onPress={submitReview}>
+              Submit
+            </Text>
+          </TouchableOpacity>
+          </View>
 
           {/* Toast Notification */}
           <Toast />
@@ -148,20 +174,21 @@ const submitReview = async () => {
       </View>
     </ScrollView>
   );
-};
+}; 
 
 // Styles for the component
 const styles = StyleSheet.create({
   addAReview: {
-    fontFamily: "poppins-medium", 
+    fontFamily: "poppins-medium",
     fontWeight: "500",
     fontSize: 14,
     color: "#000",
     marginBottom: 8,
+    marginTop: -12,
   },
   starsContainer: {
     backgroundColor: "#fff",
-    paddingVertical: 15,
+    paddingVertical: 2,
     paddingHorizontal: 20,
     borderRadius: 20,
     shadowColor: "#000",
@@ -187,6 +214,27 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     fontSize: 14,
+  },
+  Submitframe: {
+    borderRadius: 20,
+    backgroundColor: "#4169e1",
+    width: 100,
+    height: 35,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 8,
+  },
+  SubmitFlexBox: {
+    textAlign: "center",
+    lineHeight: 24,
+  },
+  SubmitText: {
+    fontSize: 16,
+    fontFamily: "poppins",
+    color: "#fff",
+  },
+  CenterSubmitButton: {
+    alignItems: "center",
   },
 });
 
