@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
   },
   ratingContainer: {
     flexDirection: "row",
-    alignItems: "center",
+    marginTop: 45,
     justifyContent: "center",
     backgroundColor: Color.colorWhitesmoke_100,
     paddingHorizontal: 8,

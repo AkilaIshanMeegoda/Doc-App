@@ -1,5 +1,5 @@
-import * as React from "react";
-import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, View, Text, TouchableOpacity, Image, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 
 const Color = {
@@ -21,31 +21,62 @@ const FontSize = {
   bodyBase_size: 16,
 };
 
-const DoctorProfile = ({ doctor }) => {
+const DoctorProfile = ({ doctor, hospitalId }) => {
   const router = useRouter();
+  const [averageRating, setAverageRating] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const calculateAverageRating = () => {
+      if (doctor.reviews && doctor.reviews.length > 0) {
+        const totalRating = doctor.reviews.reduce((acc, review) => acc + review.rating, 0);
+        const avgRating = (totalRating / doctor.reviews.length).toFixed(1);
+        setAverageRating(avgRating);
+      } else {
+        setAverageRating(0); // If there are no reviews, set average rating to 0
+      }
+      setLoading(false); // Set loading to false after calculations
+    };
+
+    calculateAverageRating();
+  }, [doctor.reviews]);
 
   const handleAppointmentPress = () => {
-    router.push(`/doctor/${doctor.id}?userEmail=${doctor.userEmail}`);
-    console.log(doctor.id, doctor.userEmail);
+    router.push(`/doctor/${doctor.id}?userEmail=${doctor.userEmail}&hospitalId=${hospitalId}`);
+    console.log(doctor.id, doctor.userEmail, hospitalId);
   };
+
+  // Show a loading indicator while fetching data
+  if (loading) {
+    return <ActivityIndicator size="large" color="#000" />;
+  }
 
   return (
     <View style={styles.card}>
       {/* Doctor Image */}
       <Image
         style={styles.doctorImage}
-        source={require("../../assets/images/doctorimage.png")}
+        source={{ uri: doctor.imageUrl }}
       />
 
       {/* Doctor Name and Specialization */}
       <View style={styles.textContainer}>
-        <Text style={styles.doctorName}>{doctor.name || "Dr. David Johnson"}</Text>
-        <Text style={styles.specialization}>{doctor.specialization || "Heart Surgeon"}</Text>
+        <Text style={styles.doctorName}>
+          {doctor.name || "Dr. David Johnson"}
+        </Text>
+        <View style={styles.specializationButton}>
+          <Text style={styles.specialization}>
+            {doctor.specialization || "Heart Surgeon"}
+          </Text>
+        </View>
       </View>
 
       {/* Appointment Button and Rating */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.appointmentButton} onPress={handleAppointmentPress}>
+        <TouchableOpacity
+          style={styles.appointmentButton}
+          onPress={handleAppointmentPress}
+        >
           <Text style={styles.appointmentText}>Appointment</Text>
         </TouchableOpacity>
         <View style={styles.ratingFrame}>
@@ -53,7 +84,9 @@ const DoctorProfile = ({ doctor }) => {
             style={styles.starIcon}
             source={require("../../assets/images/star1.png")}
           />
-          <Text style={styles.ratingText}>4.5</Text>
+          <Text style={styles.ratingText}>
+            {averageRating !== undefined ? averageRating : "0.0"}
+          </Text>
         </View>
       </View>
     </View>
@@ -82,21 +115,27 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   textContainer: {
-    alignItems: "flex-start", 
-    width: "100%", 
+    alignItems: "flex-start",
+    width: "100%",
     paddingLeft: 10, // Adjusted padding
   },
   doctorName: {
-    fontSize: 18, // Reduced font size
+    fontSize: 16, // Reduced font size
     fontWeight: "bold",
     color: "#000",
     textAlign: "left",
   },
   specialization: {
-    fontSize: 14, // Reduced font size
+    fontSize: 13, // Reduced font size
     color: "#7d7d7d",
     textAlign: "left",
     marginVertical: 4, // Slightly reduced vertical margin
+  },
+  specializationButton: {
+    backgroundColor: "#dfdfdf",
+    borderRadius: 30,
+    paddingVertical: 2, // Reduced vertical padding
+    paddingHorizontal: 5, // Reduced horizontal padding
   },
   footer: {
     flexDirection: "row",
@@ -126,7 +165,7 @@ const styles = StyleSheet.create({
   },
   starIcon: {
     width: 18, // Reduced icon size
-    height: 18, 
+    height: 18,
     marginRight: 4,
   },
   ratingText: {
