@@ -5,9 +5,11 @@ import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { db } from '../../configs/FirebaseConfig';
 import { Colors } from '../../constants/Colors';
 import { collection, doc, addDoc, getDoc, getDocs, query, where } from "firebase/firestore";
+import { useUser } from '@clerk/clerk-expo';
 
 const Appointment = () => {
   const { doctorId, userEmail } = useLocalSearchParams();
+  const { user } = useUser();
   const navigation = useNavigation();
   const router = useRouter();
 
@@ -17,6 +19,9 @@ const Appointment = () => {
   const [fullName, setFullName] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
   const [Loading, setLoading] = useState(false);
+
+  // Get current user (patient) email
+  const patientEmail = user.primaryEmailAddress.emailAddress;
 
   // Screen navigation bar
   useEffect(() => {
@@ -103,6 +108,7 @@ const Appointment = () => {
         await addDoc(appointmentCollectionRef, {
           doctorId: doctorId,
           patientName: fullName,
+          patientEmail: patientEmail,
           patientMobile: mobileNumber,
           appointmentDate: selectedDate,
           appointmentTime: selectedTime,
@@ -149,7 +155,7 @@ const Appointment = () => {
               style={styles.doctorImage}
               source={{ uri: doctor.imageUrl }}
             />
-            <Text style={styles.doctorName}>Dr. {doctor?.name || "Doctor's Name"}</Text>
+            <Text style={styles.doctorName}>Dr.{doctor?.name || "Doctor's Name"}</Text>
             <Text style={styles.specialization}>{doctor?.specialization || "Doctor's Specialization"}</Text>
             <Text style={styles.hospitalName}>{doctor?.hospital || "Hospital's Name"}</Text>
           </View>
