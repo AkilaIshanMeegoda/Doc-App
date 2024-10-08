@@ -1,11 +1,60 @@
-import { View, Text, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, FlatList } from "react-native";
 import Feather from "@expo/vector-icons/Feather"; // For icons
 import { Colors } from "../../constants/Colors";
 import { useRouter } from "expo-router"; // Import useRouter
+import { db } from '../../configs/FirebaseConfig'; // Import Firebase config
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import AppointmentListCard from '../../components/AppointmentList/AppointmentListCard'; 
+import { useUser } from "@clerk/clerk-expo";
 
-const patientPortal = () => {
+
+
+const PatientPortal = () => {
   const router = useRouter(); // Initialize router
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { user } = useUser();
+  const userEmail = user?.primaryEmailAddress.emailAddress  ; // Use optional chaining
+
+
+
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      if (typeof userEmail !== 'string' || userEmail.trim() === '') {
+        console.error('Invalid userEmail:', userEmail);
+        setLoading(false);
+        return;
+      }
+  
+      try {
+        const appointmentsQuery = query(
+          collection(db, 'HospitalList'), // Collection containing appointments
+          where('patientEmail', '==', userEmail)
+        );
+  
+        const appointmentSnapshots = await getDocs(appointmentsQuery);
+  
+        const appointmentsData = [];
+        for (const docSnapshot of appointmentSnapshots.docs) {
+          const appointmentListRef = collection(docSnapshot.ref, 'AppointmentList');
+          const appointmentDocs = await getDocs(appointmentListRef);
+          appointmentDocs.forEach((appointment) => {
+            appointmentsData.push({ id: appointment.id, ...appointment.data() });
+          });
+        }
+  
+        setAppointments(appointmentsData);
+      } catch (error) {
+        console.error('Error fetching appointments:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchAppointments();
+  }, [userEmail]);
+  
   return (
     <View
       style={{
@@ -26,7 +75,7 @@ const patientPortal = () => {
           }}
         >
           Access various patient-related sections like appointment history,
-          documents and health metrics.
+          documents, and health metrics.
         </Text>
       </View>
 
@@ -42,6 +91,8 @@ const patientPortal = () => {
         >
           Navigation
         </Text>
+
+        {/* Document Management */}
         <TouchableOpacity
           style={{
             flexDirection: "row",
@@ -77,6 +128,8 @@ const patientPortal = () => {
             color={Colors.patientPortal.iconColor}
           />
         </TouchableOpacity>
+
+        {/* Health Metrics */}
         <TouchableOpacity
           style={{
             flexDirection: "row",
@@ -115,7 +168,7 @@ const patientPortal = () => {
       </View>
 
       {/* Appointment History */}
-      <View style={{ marginTop: 10 }}>
+      <View style={{ marginTop: 20 }}>
         <Text
           style={{
             fontSize: 18,
@@ -126,9 +179,20 @@ const patientPortal = () => {
         >
           Appointment History
         </Text>
+        {loading ? (
+          <Text>Loading appointments...</Text>
+        ) : appointments.length === 0 ? (
+          <Text>No appointments found</Text>
+        ) : (
+          <FlatList
+            data={appointments}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => <AppointmentListCard appointment={item} />}
+          />
+        )}
       </View>
     </View>
   );
 };
 
-export default patientPortal;
+export default PatientPortal;
