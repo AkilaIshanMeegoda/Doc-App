@@ -1,22 +1,47 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
-import { Colors } from '../../constants/Colors';
-import { router } from 'expo-router';
-import { collection, query, where, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
-import { db } from '../../configs/FirebaseConfig';
-import { useUser } from '@clerk/clerk-expo';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Alert,
+} from "react-native";
+import { Colors } from "../../constants/Colors";
+import { router, useNavigation } from "expo-router";
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
+import { db } from "../../configs/FirebaseConfig";
+import { useUser } from "@clerk/clerk-expo";
 import Feather from "@expo/vector-icons/Feather";
 
 const Remind = () => {
+  const navigation = useNavigation();
   const [reminders, setReminders] = useState([]);
   const { user } = useUser(); // Clerk hook to get current user
   const userId = user?.id; // Get the user's ID
 
   useEffect(() => {
+    navigation.setOptions({
+      title: `Medication Reminder`,
+      headerTintColor: "#607AFB",
+      headerTitleStyle: {
+        color: "black",
+      },
+    });
+  }, [navigation]);
+
+  useEffect(() => {
     if (userId) {
       const q = query(
-        collection(db, 'reminders'),
-        where('userId', '==', userId)
+        collection(db, "reminders"),
+        where("userId", "==", userId)
       );
       const unsubscribe = onSnapshot(q, (snapshot) => {
         const userReminders = snapshot.docs.map((doc) => ({
@@ -33,18 +58,18 @@ const Remind = () => {
   // Function to delete a reminder
   const handleDeleteReminder = (reminderId) => {
     Alert.alert(
-      'Delete Reminder',
-      'Are you sure you want to delete this reminder?',
+      "Delete Reminder",
+      "Are you sure you want to delete this reminder?",
       [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Delete', 
-          style: 'destructive', 
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
           onPress: async () => {
             try {
-              await deleteDoc(doc(db, 'reminders', reminderId));
+              await deleteDoc(doc(db, "reminders", reminderId));
             } catch (error) {
-              console.error('Error deleting reminder: ', error);
+              console.error("Error deleting reminder: ", error);
             }
           },
         },
@@ -66,10 +91,11 @@ const Remind = () => {
           // If no reminders are set, show the notice
           <View style={styles.reminderNoticeContainer}>
             <Text style={styles.reminderNotice}>
-              No medication reminders {'\n'} have been set yet.
+              No medication reminders {"\n"} have been set yet.
             </Text>
             <Text style={styles.reminderNotice}>
-              You can set a reminder using {'\n'} the <Text style={{ fontWeight: 'bold' }}>'Add Reminder'</Text> button.
+              You can set a reminder using {"\n"} the{" "}
+              <Text style={{ fontWeight: "bold" }}>'Add Reminder'</Text> button.
             </Text>
           </View>
         ) : (
@@ -79,19 +105,28 @@ const Remind = () => {
               <View key={reminder.id} style={styles.reminderCard}>
                 <View style={styles.reminderCardContent}>
                   <View style={styles.reminderContent}>
-                    <Text style={styles.reminderName}>{reminder.reminderName}</Text>
+                    <Text style={styles.reminderName}>
+                      {reminder.reminderName}
+                    </Text>
                     <Text style={styles.reminderDates}>
-                      {formatReminderDates(reminder.startDate, reminder.endDate)}
+                      {formatReminderDates(
+                        reminder.startDate,
+                        reminder.endDate
+                      )}
                     </Text>
                     <Text style={styles.reminderDates}>
                       {formatReminderTimes(reminder.reminderTimes)}
                     </Text>
-                    <Text style={styles.reminderNote}>{reminder.reminderNotes}</Text>
+                    <Text style={styles.reminderNote}>
+                      {reminder.reminderNotes}
+                    </Text>
                   </View>
 
                   {/* Delete Icon */}
                   <View style={styles.deleteIcon}>
-                    <TouchableOpacity onPress={() => handleDeleteReminder(reminder.id)}>
+                    <TouchableOpacity
+                      onPress={() => handleDeleteReminder(reminder.id)}
+                    >
                       <Feather name="trash" size={24} color={Colors.DANGER} />
                     </TouchableOpacity>
                   </View>
@@ -107,8 +142,18 @@ const Remind = () => {
 
 // Helper function to format dates
 const formatReminderDates = (startDate, endDate) => {
-  const start = startDate ? new Date(startDate.seconds * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
-  const end = endDate ? new Date(endDate.seconds * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+  const start = startDate
+    ? new Date(startDate.seconds * 1000).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      })
+    : "";
+  const end = endDate
+    ? new Date(endDate.seconds * 1000).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      })
+    : "";
   return `${start} - ${end}`;
 };
 
@@ -116,21 +161,27 @@ const formatReminderDates = (startDate, endDate) => {
 const formatReminderTimes = (times) => {
   return times
     .filter((time) => time) // Filter out null times
-    .map((time) => new Date(time.seconds * 1000).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }))
-    .join(', ');
+    .map((time) =>
+      new Date(time.seconds * 1000).toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+      })
+    )
+    .join(", ");
 };
 
 const styles = StyleSheet.create({
   scrollViewContent: {
     flexGrow: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+    justifyContent: "flex-start",
+    alignItems: "center",
   },
   container: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+    width: "100%",
+    height: "100%",
+    justifyContent: "flex-start",
+    alignItems: "center",
     paddingTop: 40,
     backgroundColor: Colors.remind.background,
   },
@@ -142,22 +193,22 @@ const styles = StyleSheet.create({
     marginBottom: 20, // Add some spacing between button and reminders
   },
   buttonText: {
-    color: '#fff',
-    textAlign: 'center',
+    color: "#fff",
+    textAlign: "center",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   reminderNoticeContainer: {
     paddingTop: 50,
   },
   reminderNotice: {
     color: Colors.remind.textSecondary,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 18,
     paddingTop: 20,
   },
   reminderList: {
-    width: '100%',
+    width: "100%",
     paddingHorizontal: 20,
     paddingTop: 16,
   },
@@ -168,22 +219,22 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.remind.neutralColor,
     marginBottom: 15,
-    width: '90%',
-    alignSelf: 'center',
+    width: "90%",
+    alignSelf: "center",
   },
   reminderCardContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
   },
   reminderContent: {
     flex: 1,
-    maxWidth: '80%',
+    maxWidth: "80%",
   },
   reminderName: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: Colors.primaryText,
     marginBottom: 5,
   },

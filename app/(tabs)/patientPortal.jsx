@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, FlatList, ActivityIndicator, RefreshControl } from "react-native";
 import Feather from "@expo/vector-icons/Feather"; // For icons
 import { Colors } from "../../constants/Colors";
-import { useRouter } from "expo-router"; // Import useRouter
+import { useNavigation, useRouter } from "expo-router"; // Import useRouter
 import { db } from "../../configs/FirebaseConfig"; // Import Firebase config
 import { collection, query, getDocs } from "firebase/firestore";
 import AppointmentListCard from "../../components/AppointmentList/AppointmentListCard";
@@ -11,12 +11,23 @@ import LottieView from "lottie-react-native";
 
 
 const PatientPortal = () => {
+  const navigation = useNavigation();
   const router = useRouter(); // Initialize router
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false); // State for refreshing
   const { user } = useUser();
   const userEmail = user?.primaryEmailAddress?.emailAddress;
+
+  useEffect(() => {
+    navigation.setOptions({
+      title: `Patient Portal`,
+      headerTintColor: "#607AFB",
+      headerTitleStyle: {
+        color: "black",
+      },
+    });
+  }, [navigation]);
 
   const fetchAppointments = async () => {
     setLoading(true); 
@@ -74,6 +85,8 @@ const PatientPortal = () => {
       </View>
     );
   }
+
+  
 
   return (
     <View
