@@ -1,6 +1,6 @@
-import { useLocalSearchParams, useNavigation } from 'expo-router';
+import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Colors } from '../../constants/Colors';
 import { db } from '../../configs/FirebaseConfig';
 import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
@@ -49,10 +49,14 @@ const AppointmentConfirmation = () => {
         getDoctorById();
       }, [doctorId, userEmail]);
 
+      const handleNavigationHome = () => {
+        router.push('/(tabs)/home');
+      }
+
     return (
         <View style={styles.container}>
             <Image 
-                source={require('../../assets/images/confirmation.png')} // Adjust the path to the correct image path
+                source={require('../../assets/images/confirmation.png')}
                 style={styles.image}
             />
             <Text style={styles.thankYouText}>Thank You!</Text>
@@ -64,7 +68,7 @@ const AppointmentConfirmation = () => {
                         source={{ uri: doctor?.imageUrl }}
                     />
                     <View style={styles.doctorText}>
-                        <Text style={styles.doctorName}>Dr. {doctor?.name || "Doctor's Name"}</Text>
+                        <Text style={styles.doctorName}>Dr.{doctor?.name || "Doctor's Name"}</Text>
                         <Text style={styles.specialization}>{doctor?.specialization || "Doctor's Specialization"}</Text>
                         <Text style={styles.hospitalName}>{doctor?.hospital || "Hospital's Name"}</Text>
                     </View>
@@ -80,6 +84,10 @@ const AppointmentConfirmation = () => {
                     </View>
                 </View>
             </View>
+
+            <TouchableOpacity onPress={handleNavigationHome}>
+                <Text style={styles.backToHomeText}>Back to home &gt;</Text>
+            </TouchableOpacity>
         </View>
     );
 };
@@ -118,8 +126,8 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 1.41,
         elevation: 2,
-        width: '95%',
-        alignItems: 'center',
+        width: '85%',
+        alignItems: 'justify',
     },
     doctorInfo: {
         flexDirection: 'row',
@@ -146,16 +154,15 @@ const styles = StyleSheet.create({
     hospitalName: {
         fontSize: 14,
         color: '#777',
-        marginTop: 5,
     },
     appointmentInfo: {
         flexDirection: 'row',
         alignItems: 'center',
     },
     calendarIcon: {
-        width: 35,
-        height: 35,
-        marginRight: 10,
+        width: 50,
+        height: 50,
+        marginRight: 13,
     },
     appointmentText: {
         alignItems: 'flex-start',
@@ -168,6 +175,12 @@ const styles = StyleSheet.create({
     appointmentTime: {
         fontSize: 14,
         color: '#777',
+    },
+    backToHomeText: {
+        marginTop: 26,
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: Colors.PRIMARY,
     },
 });
 

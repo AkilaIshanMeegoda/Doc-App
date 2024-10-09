@@ -50,7 +50,7 @@ export default function MapComponent({ hospitalIds }) {
 
             if (coordinates) {
               fetchedHospitals.push({
-                id: data.id,
+                id: hospitalId,
                 name: data.name,
                 coordinates,
               });
