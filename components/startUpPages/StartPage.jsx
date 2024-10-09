@@ -1,15 +1,20 @@
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import React, { useState } from "react";
 import StartPage2 from "./StartPage2";
+import LoginScreen from "./LoginScreen"
 
 // Import the local image
 const onboardImage = require('./../../assets/images/startup1.png'); // Adjust the path as needed
 
 const StartPage = () => {
   const [showLogin, setShowLogin] = useState(false); 
+  const [skip, setSkip] = useState(false); 
 
   if (showLogin) {
     return <StartPage2 />;
+  }
+  if (skip) {
+    return <LoginScreen />;
   }
 
   return (
@@ -42,11 +47,11 @@ const StartPage = () => {
       <Image 
         source={onboardImage} 
         style={{ 
-          width: 200, 
-          height: 300, 
+          width: 230, 
+          height: 400, 
           marginBottom: 20, 
           resizeMode: 'cover', // Change to cover for better fit
-          borderRadius: 20 
+          borderRadius: 20,
         }} 
       />
 
@@ -89,18 +94,30 @@ const StartPage = () => {
       <TouchableOpacity 
         style={{
           backgroundColor: '#5A67F2',
-          paddingVertical: 15,
-          paddingHorizontal: 80,
+          paddingVertical: 10,
+          paddingHorizontal: 70,
           borderRadius: 30
         }}
         onPress={() => setShowLogin(true)} // Navigate to StartPage2
       >
-        <Text style={{
-          color: '#FFF',
-          fontWeight: '600',
-          fontSize: 16
-        }}>
+        <Text className="text-center font-[poppins-medium] text-md text-white">
           Continue
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+        className="w-48"
+        style={{
+          backgroundColor: '#FF6464',
+          paddingVertical: 10,
+          paddingHorizontal: 60,
+          borderRadius: 30,
+          marginTop:10,
+        }}
+        onPress={() => setSkip(true)} // Navigate to StartPage2
+      >
+        <Text className="text-center font-[poppins-medium] text-md text-white">
+          Skip
         </Text>
       </TouchableOpacity>
     </View>
