@@ -1,4 +1,4 @@
-import { Stack } from "expo-router";
+import { Slot, Stack } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import {
   ClerkProvider,
@@ -9,7 +9,7 @@ import {
 } from "@clerk/clerk-expo"; // Use Clerk hooks
 import { useEffect, useState } from "react";
 import { Text } from "react-native";
-import LoginScreen from "../components/LoginScreen";
+import StartPage from "../components/startUpPages/StartPage"
 import { useFonts } from "expo-font";
 import { configureNotificationBehavior } from "../utils/RemindNotificationPermission";
 
@@ -66,7 +66,7 @@ export default function RootLayout() {
         <AuthenticatedStack />
       </SignedIn>
       <SignedOut>
-        <LoginScreen />
+        <StartPage/>
       </SignedOut>
     </ClerkProvider>
   );

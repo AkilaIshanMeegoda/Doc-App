@@ -1,14 +1,34 @@
-import { ActivityIndicator, View, Text, Image, TextInput, ScrollView, TouchableOpacity, ToastAndroid } from "react-native";
+import {
+  ActivityIndicator,
+  View,
+  Text,
+  Image,
+  TextInput,
+  ScrollView,
+  TouchableOpacity,
+  ToastAndroid,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import RNPickerSelect from "react-native-picker-select";
 import { MultipleSelectList } from "react-native-dropdown-select-list";
 import * as ImagePicker from "expo-image-picker";
 import { db, storage } from "./../../../configs/FirebaseConfig";
-import { addDoc, collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  setDoc,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useUser } from "@clerk/clerk-expo";
 import { Colors } from "../../../constants/Colors";
 import { useLocalSearchParams, useNavigation } from "expo-router";
+import LottieView from "lottie-react-native";
 
 const UpdateDoctor = () => {
   const { doctorId } = useLocalSearchParams();
@@ -24,7 +44,7 @@ const UpdateDoctor = () => {
   const [description, setDescription] = useState(null);
   const [selected, setSelected] = useState([]);
   const [daySelected, setDaySelected] = useState([]);
-  const [isLoading, setIsLoading] = useState(true); 
+  const [isLoading, setIsLoading] = useState(true);
   const day = [
     { key: "1", value: "Monday" },
     { key: "2", value: "Tuesday" },
@@ -104,7 +124,10 @@ const UpdateDoctor = () => {
         const doctorSnapshot = await getDoc(doctorDocRef);
 
         if (doctorSnapshot.exists()) {
-          const doctorData = { id: doctorSnapshot.id, ...doctorSnapshot.data() };
+          const doctorData = {
+            id: doctorSnapshot.id,
+            ...doctorSnapshot.data(),
+          };
           setDoctor(doctorData);
           setDocName(doctorData.name || "");
           setSpecialization(doctorData.specialization || "");
@@ -148,7 +171,10 @@ const UpdateDoctor = () => {
       await saveDoctorDetails(downloadUrl);
     } catch (error) {
       console.error("Error updating doctor details: ", error);
-      ToastAndroid.show(`Failed to update doctor details: ${error.message}`, ToastAndroid.LONG);
+      ToastAndroid.show(
+        `Failed to update doctor details: ${error.message}`,
+        ToastAndroid.LONG
+      );
     } finally {
       setIsLoading(false); // stop loading
     }
@@ -157,9 +183,9 @@ const UpdateDoctor = () => {
   useEffect(() => {
     navigation.setOptions({
       title: `Update Doctor Profile`,
-      headerTintColor: '#607AFB', 
+      headerTintColor: "#607AFB",
       headerTitleStyle: {
-        color: 'black', 
+        color: "black",
       },
     });
   }, [navigation]);
@@ -213,8 +239,14 @@ const UpdateDoctor = () => {
 
   if (isLoading) {
     return (
-      <View className="items-center justify-center flex-1">
-        <ActivityIndicator size="large" color={Colors.PRIMARY} />
+      <View style={{ alignItems: "center", paddingVertical: 32 }}>
+        <LottieView
+          loop
+          autoPlay
+          className="mt-32"
+          source={require("../../../assets/loading.json")} // Path to the local json file
+          style={{ width: 200, height: 200 }}
+        />
       </View>
     );
   }
@@ -223,18 +255,28 @@ const UpdateDoctor = () => {
     <ScrollView>
       {/* Doctor update form */}
       <View className="p-6">
-        <Text className="font-[poppins-bold] text-xl">Update doctor profile</Text>
+        <Text className="font-[poppins-bold] text-xl">
+          Update doctor profile
+        </Text>
         <Text className="font-[poppins-medium] text-lg text-gray-500 mt-[-6px]">
           Update details about doctor
         </Text>
 
         <TouchableOpacity onPress={() => onImagePick()} className="flex-row">
           {!image ? (
-            <Image className="w-20 h-20 mt-4 rounded-full" source={require("../../../assets/images/photo.png")} />
+            <Image
+              className="w-20 h-20 mt-4 rounded-full"
+              source={require("../../../assets/images/photo.png")}
+            />
           ) : (
-            <Image source={{ uri: image }} className="w-20 h-20 mt-4 rounded-full" />
+            <Image
+              source={{ uri: image }}
+              className="w-20 h-20 mt-4 rounded-full"
+            />
           )}
-          <Text className="font-[poppins-medium] text-lg mt-10 ml-2">Edit doctor image</Text>
+          <Text className="font-[poppins-medium] text-lg mt-10 ml-2">
+            Edit doctor image
+          </Text>
         </TouchableOpacity>
 
         <View>
