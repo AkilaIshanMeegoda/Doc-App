@@ -22,14 +22,17 @@ import {
 } from "firebase/firestore";
 import { db, storage } from "../../configs/FirebaseConfig";
 import LottieView from "lottie-react-native";
+import { useNavigation } from "expo-router";
 
 const Profile = () => {
+  const navigation = useNavigation();
   const [name, setName] = useState(null);
   const [email, setEmail] = useState(null);
   const [image, setImage] = useState(null);
   const [address, setAddress] = useState(null);
   const [contact, setContact] = useState(null);
   const [loading, setLoading] = useState(true); // State for general loading
+  const [saving, setSaving] = useState(false); // State for saving loading
   const [imageLoading, setImageLoading] = useState(false); // State for image loading
   const { user } = useUser();
   const { signOut } = useAuth();
@@ -52,6 +55,7 @@ const Profile = () => {
   };
 
   const handleSaveDetails = async () => {
+    setSaving(true); // Start loading when saving begins
     const fileName = Date.now().toString() + ".jpg";
     const resp = await fetch(image);
     const blob = await resp.blob();
@@ -64,7 +68,12 @@ const Profile = () => {
       .then(() => {
         getDownloadURL(imageRef).then(async (downloadUrl) => {
           console.log(downloadUrl);
-          saveUserDetails(downloadUrl);
+          await saveUserDetails(downloadUrl);
+          setSaving(false); // Stop loading after save
+          ToastAndroid.show(
+            "User details saved successfully...",
+            ToastAndroid.LONG
+          );
         });
       });
   };
@@ -98,6 +107,7 @@ const Profile = () => {
   const saveUserDetails = async (imageUrl) => {
     if (!name || !email || !address || !contact) {
       ToastAndroid.show("Please fill out all fields.", ToastAndroid.LONG);
+      setSaving(false); // Stop loading if validation fails
       return;
     }
 
@@ -117,11 +127,6 @@ const Profile = () => {
         contact,
         imageUrl,
       });
-
-      ToastAndroid.show(
-        "User details updated successfully...",
-        ToastAndroid.LONG
-      );
     } else {
       await addDoc(collection(db, "Users"), {
         name,
@@ -130,9 +135,18 @@ const Profile = () => {
         contact,
         imageUrl,
       });
-      ToastAndroid.show("New user added successfully...", ToastAndroid.LONG);
     }
   };
+
+  useEffect(() => {
+    navigation.setOptions({
+      title: `Profile`,
+      headerTintColor: "#607AFB",
+      headerTitleStyle: {
+        color: "black",
+      },
+    });
+  }, [navigation]);
 
   return (
     <View className="flex-1">
@@ -143,6 +157,17 @@ const Profile = () => {
             autoPlay
             className="mt-32"
             source={require("../../assets/loading.json")} // Path to the local json file
+            style={{ width: 200, height: 200 }}
+          />
+        </View>
+      ) : saving ? (
+        // Show loading animation while saving
+        <View style={{ alignItems: "center", paddingVertical: 32 }}>
+          <LottieView
+            loop
+            autoPlay
+            className="mt-32"
+            source={require("../../assets/loading.json")} // Replace with your saving animation
             style={{ width: 200, height: 200 }}
           />
         </View>

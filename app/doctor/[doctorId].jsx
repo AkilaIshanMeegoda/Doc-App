@@ -253,8 +253,10 @@ const Doctor = () => {
             </View>
 
             {/* Review Section */}
-            <View style={styles.reviewSection}>
-              <Text style={styles.addAReview}>Add a Review</Text>
+            <View>
+              <Text className="font-[poppins-bold] text-[17px] mt-4 mb-2">
+                Add a Review
+              </Text>
               <View style={styles.starsContainer}>
                 <Rating
                   showRating={false}
@@ -268,10 +270,10 @@ const Doctor = () => {
               </View>
 
               {/* Submit Button */}
-              <View style={styles.CenterSubmitButton}>
-                <TouchableOpacity style={styles.Submitframe}>
+              <View className="mt-2" style={styles.CenterSubmitButton}>
+                <TouchableOpacity >
                   <Text
-                    style={[styles.SubmitText, styles.SubmitFlexBox]}
+                    className="bg-[#607AFB] mt-4 px-4 py-2 text-white text-center rounded-lg font-[poppins-bold]"
                     onPress={submitReview}
                   >
                     Submit
