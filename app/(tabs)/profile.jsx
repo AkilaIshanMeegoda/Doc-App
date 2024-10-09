@@ -22,8 +22,10 @@ import {
 } from "firebase/firestore";
 import { db, storage } from "../../configs/FirebaseConfig";
 import LottieView from "lottie-react-native";
+import { useNavigation } from "expo-router";
 
 const Profile = () => {
+  const navigation = useNavigation();
   const [name, setName] = useState(null);
   const [email, setEmail] = useState(null);
   const [image, setImage] = useState(null);
@@ -133,6 +135,16 @@ const Profile = () => {
       ToastAndroid.show("New user added successfully...", ToastAndroid.LONG);
     }
   };
+
+  useEffect(() => {
+    navigation.setOptions({
+      title: `Profile`,
+      headerTintColor: "#607AFB",
+      headerTitleStyle: {
+        color: "black",
+      },
+    });
+  }, [navigation]);
 
   return (
     <View className="flex-1">

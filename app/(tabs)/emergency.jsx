@@ -13,8 +13,10 @@ import Entypo from "@expo/vector-icons/Entypo";
 import { Share, Alert ,Linking} from "react-native";
 import * as Location from "expo-location";
 import { useState } from "react";
+import { useNavigation } from "expo-router";
 
 const emergency = () => {
+  const navigation = useNavigation();
   const [location, setLocation] = useState(null);
 
   const fetchLocation = async () => {
@@ -57,6 +59,16 @@ const emergency = () => {
   }, []);
   const scaleAnimation = useRef(new Animated.Value(1)).current;
   const opacityAnimation = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    navigation.setOptions({
+      title: `Emergency`,
+      headerTintColor: "#607AFB",
+      headerTitleStyle: {
+        color: "black",
+      },
+    });
+  }, [navigation]);
 
   useEffect(() => {
     const blinkAnimation = Animated.loop(

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useRouter } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { collection, query, getDocs } from "firebase/firestore";
@@ -7,7 +7,7 @@ import { db } from "../../configs/FirebaseConfig";
 
 const Home = () => {
   const router = useRouter();
-  
+  const navigation = useNavigation();
   // State variables
   const [name, setName] = useState("");
   const [specialization, setSpecialization] = useState(null);
@@ -77,6 +77,16 @@ const Home = () => {
       }
     });
   };
+
+  useEffect(() => {
+    navigation.setOptions({
+      title: `Home`,
+      headerTintColor: "#607AFB",
+      headerTitleStyle: {
+        color: "black",
+      },
+    });
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
