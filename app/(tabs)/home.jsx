@@ -89,7 +89,7 @@ const Home = () => {
   }, [navigation]);
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} >
       <Image
         style={styles.vnk44ui9ie1Icon}
         contentFit="cover"
