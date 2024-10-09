@@ -12,8 +12,16 @@ import {
 import { useAuth, useUser } from "@clerk/clerk-expo";
 import * as ImagePicker from "expo-image-picker";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { addDoc, collection, getDocs, query, updateDoc, where } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { db, storage } from "../../configs/FirebaseConfig";
+import LottieView from "lottie-react-native";
 
 const Profile = () => {
   const [name, setName] = useState(null);
@@ -129,7 +137,15 @@ const Profile = () => {
   return (
     <View className="flex-1">
       {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" className="mt-4" />
+        <View style={{ alignItems: "center", paddingVertical: 32 }}>
+          <LottieView
+            loop
+            autoPlay
+            className="mt-32"
+            source={require("../../assets/loading.json")} // Path to the local json file
+            style={{ width: 200, height: 200 }}
+          />
+        </View>
       ) : (
         <>
           <TouchableOpacity onPress={() => onImagePick()}>

@@ -1,8 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { TouchableOpacity, StyleSheet, View, Text, Linking, ActivityIndicator, Share } from "react-native";
+import {
+  TouchableOpacity,
+  StyleSheet,
+  View,
+  Text,
+  Linking,
+  ActivityIndicator,
+  Share,
+} from "react-native";
 import Feather from "react-native-vector-icons/Feather";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../configs/FirebaseConfig";
+import LottieView from "lottie-react-native";
 
 const Color = {
   colorBlack: "#000",
@@ -46,7 +55,17 @@ const OptionComponent = ({ hospitalId }) => {
   }, [hospitalId]);
 
   if (loading) {
-    return <ActivityIndicator size="large" color={Color.colorBlack} />;
+    return (
+      <View style={{ alignItems: "center", paddingVertical: 32 }}>
+        <LottieView
+          loop
+          autoPlay
+          className="mt-32"
+          source={require("../../assets/loading.json")} // Path to the local json file
+          style={{ width: 200, height: 200 }}
+        />
+      </View>
+    );
   }
 
   if (!hospitalData) {
@@ -74,7 +93,10 @@ const OptionComponent = ({ hospitalId }) => {
   return (
     <View style={styles.container}>
       {/* Phone Icon */}
-      <TouchableOpacity style={styles.iconContainer} onPress={() => handlePress(`tel:${hospitalData.contact}`)}>
+      <TouchableOpacity
+        style={styles.iconContainer}
+        onPress={() => handlePress(`tel:${hospitalData.contact}`)}
+      >
         <View style={styles.iconWrapper}>
           <Feather name="phone" size={25} color="green" />
         </View>
@@ -82,7 +104,10 @@ const OptionComponent = ({ hospitalId }) => {
       </TouchableOpacity>
 
       {/* Message Icon */}
-      <TouchableOpacity style={styles.iconContainer} onPress={() => handlePress(`sms:${hospitalData.contact}`)}>
+      <TouchableOpacity
+        style={styles.iconContainer}
+        onPress={() => handlePress(`sms:${hospitalData.contact}`)}
+      >
         <View style={styles.iconWrapper}>
           <Feather name="mail" size={25} color="blue" />
         </View>
@@ -90,7 +115,10 @@ const OptionComponent = ({ hospitalId }) => {
       </TouchableOpacity>
 
       {/* Website Icon */}
-      <TouchableOpacity style={styles.iconContainer} onPress={() => handlePress(hospitalData.website)}>
+      <TouchableOpacity
+        style={styles.iconContainer}
+        onPress={() => handlePress(hospitalData.website)}
+      >
         <View style={styles.iconWrapper}>
           <Feather name="globe" size={25} color="red" />
         </View>
@@ -110,22 +138,22 @@ const OptionComponent = ({ hospitalId }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     paddingHorizontal: 10,
     paddingVertical: 20,
   },
   iconContainer: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   iconWrapper: {
     width: 55, // Width of the white card
     height: 55, // Height of the white card
     borderRadius: 15, // Rounded corners for the white card
-    backgroundColor: '#fff', // White background for the icon card
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000', // Shadow for iOS
+    backgroundColor: "#fff", // White background for the icon card
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000", // Shadow for iOS
     shadowOffset: { width: 0, height: 2 }, // Offset for shadow
     shadowOpacity: 0.1, // Opacity of the shadow
     shadowRadius: 4, // Blur radius of the shadow
@@ -134,9 +162,9 @@ const styles = StyleSheet.create({
   label: {
     marginTop: 5,
     fontSize: FontSize.size_xs,
-    fontWeight: '500',
+    fontWeight: "500",
     color: Color.colorBlack,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });
 

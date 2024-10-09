@@ -1,11 +1,30 @@
-import { useEffect, useState } from 'react';
-import { View, Text, Image, TextInput, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView, Alert } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
-import { db } from '../../configs/FirebaseConfig';
-import { Colors } from '../../constants/Colors';
-import { collection, doc, addDoc, getDoc, getDocs, query, where } from "firebase/firestore";
-import { useUser } from '@clerk/clerk-expo';
+import { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  Image,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+  ScrollView,
+  Alert,
+} from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import { db } from "../../configs/FirebaseConfig";
+import { Colors } from "../../constants/Colors";
+import {
+  collection,
+  doc,
+  addDoc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
+import { useUser } from "@clerk/clerk-expo";
+import LottieView from "lottie-react-native";
 
 const Appointment = () => {
   const { doctorId, userEmail } = useLocalSearchParams();
@@ -27,13 +46,13 @@ const Appointment = () => {
   useEffect(() => {
     navigation.setOptions({
       title: `Make Appointment`,
-      headerTintColor: '#607AFB', 
+      headerTintColor: "#607AFB",
       headerTitleStyle: {
-        color: 'black', 
+        color: "black",
       },
     });
   }, [navigation, doctorId]);
-  
+
   useEffect(() => {
     const getDoctorById = async () => {
       const hospitalQuery = query(
@@ -41,15 +60,18 @@ const Appointment = () => {
         where("userEmail", "==", userEmail)
       );
       const hospitalSnapshot = await getDocs(hospitalQuery);
-  
+
       if (!hospitalSnapshot.empty) {
         const hospitalDocRef = hospitalSnapshot.docs[0].ref;
-  
+
         const doctorDocRef = doc(hospitalDocRef, "DoctorList", doctorId);
         const doctorSnapshot = await getDoc(doctorDocRef);
-  
+
         if (doctorSnapshot.exists()) {
-          const doctorData = { id: doctorSnapshot.id, ...doctorSnapshot.data() };
+          const doctorData = {
+            id: doctorSnapshot.id,
+            ...doctorSnapshot.data(),
+          };
           setDoctor(doctorData);
         } else {
           console.log("No doctor found with the given doctorId");
@@ -84,7 +106,7 @@ const Appointment = () => {
       return false;
     }
     return true;
-  }
+  };
 
   const saveAppointmentDetails = async () => {
     if (!validateAppointment()) return;
@@ -95,15 +117,18 @@ const Appointment = () => {
         collection(db, "HospitalList"),
         where("userEmail", "==", userEmail)
       );
-  
+
       const hospitalSnapshot = await getDocs(hospitalQuery);
-  
+
       if (!hospitalSnapshot.empty) {
         const hospitalDocRef = hospitalSnapshot.docs[0].ref; // Get the reference of the first hospital doc
-  
+
         // Reference to 'AppointmentList' sub-collection in the hospital document
-        const appointmentCollectionRef = collection(hospitalDocRef, "AppointmentList");
-  
+        const appointmentCollectionRef = collection(
+          hospitalDocRef,
+          "AppointmentList"
+        );
+
         // Save the appointment details to the 'AppointmentList' sub-collection
         await addDoc(appointmentCollectionRef, {
           doctorId: doctorId,
@@ -114,12 +139,12 @@ const Appointment = () => {
           appointmentTime: selectedTime,
           userEmail: userEmail,
           doctorName: doctor.name,
-          doctorImage:doctor.imageUrl,
+          doctorImage: doctor.imageUrl,
           doctorSpecialization: doctor.specialization,
           hospitalName: doctor.hospital,
           createdAt: new Date(), // Optional: Track when the appointment was created
         });
-  
+
         console.log("Appointment saved successfully.");
         router.push({
           pathname: "/appointments/AppointmentConfirmation",
@@ -128,7 +153,7 @@ const Appointment = () => {
             userEmail: userEmail,
             appointmentDate: selectedDate,
             appointmentTime: selectedTime,
-          }
+          },
         });
       } else {
         console.log("No hospital found for the given user.");
@@ -147,7 +172,15 @@ const Appointment = () => {
   return (
     <ScrollView style={styles.container}>
       {Loading ? (
-        <ActivityIndicator size="large" color="#607AFB" />
+        <View style={{ alignItems: "center", paddingVertical: 32 }}>
+          <LottieView
+            loop
+            autoPlay
+            className="mt-32"
+            source={require("../../assets/loading.json")} // Path to the local json file
+            style={{ width: 200, height: 200 }}
+          />
+        </View>
       ) : doctor ? (
         <>
           <View style={styles.header}>
@@ -155,9 +188,15 @@ const Appointment = () => {
               style={styles.doctorImage}
               source={{ uri: doctor.imageUrl }}
             />
-            <Text style={styles.doctorName}>Dr.{doctor?.name || "Doctor's Name"}</Text>
-            <Text style={styles.specialization}>{doctor?.specialization || "Doctor's Specialization"}</Text>
-            <Text style={styles.hospitalName}>{doctor?.hospital || "Hospital's Name"}</Text>
+            <Text style={styles.doctorName}>
+              Dr.{doctor?.name || "Doctor's Name"}
+            </Text>
+            <Text style={styles.specialization}>
+              {doctor?.specialization || "Doctor's Specialization"}
+            </Text>
+            <Text style={styles.hospitalName}>
+              {doctor?.hospital || "Hospital's Name"}
+            </Text>
           </View>
 
           <View style={styles.pickerContainer}>
@@ -205,12 +244,23 @@ const Appointment = () => {
           />
 
           {/* Confirm Appointment Button */}
-          <TouchableOpacity style={styles.button} onPress={saveAppointmentDetails}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={saveAppointmentDetails}
+          >
             <Text style={styles.buttonText}>Confirm Appointment</Text>
           </TouchableOpacity>
         </>
       ) : (
-        <ActivityIndicator size="large" color="#607AFB" />
+        <View style={{ alignItems: "center", paddingVertical: 32 }}>
+          <LottieView
+            loop
+            autoPlay
+            className="mt-32"
+            source={require("../../assets/loading.json")} // Path to the local json file
+            style={{ width: 200, height: 200 }}
+          />
+        </View>
       )}
     </ScrollView>
   );
@@ -223,7 +273,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   header: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 30,
   },
   doctorImage: {
@@ -234,58 +284,58 @@ const styles = StyleSheet.create({
   },
   doctorName: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
     marginBottom: 5,
   },
   hospitalName: {
     fontSize: 16,
-    color: '#777',
+    color: "#777",
     marginBottom: 2,
   },
   specialization: {
     fontSize: 14,
-    color: '#777',
+    color: "#777",
   },
   pickerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 20,
   },
   pickerWrapper: {
     flex: 1,
     marginRight: 10,
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#DDD',
+    borderColor: "#DDD",
   },
   picker: {
     height: 50,
-    width: '100%',
-    color: '#333',
+    width: "100%",
+    color: "#333",
   },
   input: {
     height: 50,
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
     borderRadius: 8,
     paddingHorizontal: 15,
     borderWidth: 1,
-    borderColor: '#DDD',
+    borderColor: "#DDD",
     marginBottom: 20,
   },
   button: {
     height: 50,
     backgroundColor: Colors.PRIMARY,
     borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: 34
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 34,
   },
   buttonText: {
-    color: '#FFF',
+    color: "#FFF",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });
 
