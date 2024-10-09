@@ -27,6 +27,7 @@ import { useUser } from "@clerk/clerk-expo";
 import AddDoctorHeader from "../../components/Admin/AddDoctorHeader";
 import { Colors } from "../../constants/Colors";
 import { useNavigation } from "expo-router";
+import LottieView from "lottie-react-native";
 
 const addDoctor = () => {
   const navigation = useNavigation();
@@ -123,7 +124,10 @@ const addDoctor = () => {
       await saveDoctorDetails(downloadUrl);
     } catch (error) {
       console.error("Error updating doctor details: ", error);
-      ToastAndroid.show(`Failed to update doctor details: ${error.message}`, ToastAndroid.LONG);
+      ToastAndroid.show(
+        `Failed to update doctor details: ${error.message}`,
+        ToastAndroid.LONG
+      );
     } finally {
       setIsLoading(false); // stop loading
     }
@@ -177,14 +181,20 @@ const addDoctor = () => {
       setSelected([]);
       setDaySelected([]);
       setImage(null);
-      navigation.goBack()
+      navigation.goBack();
     }
   };
 
   if (isLoading) {
     return (
-      <View className="items-center justify-center flex-1">
-        <ActivityIndicator size="large" color={Colors.PRIMARY} />
+      <View style={{ alignItems: "center", paddingVertical: 32 }}>
+        <LottieView
+          loop
+          autoPlay
+          className="mt-32"
+          source={require("../../assets/loading.json")} // Path to the local json file
+          style={{ width: 200, height: 200 }}
+        />
       </View>
     );
   }

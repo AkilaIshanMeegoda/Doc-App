@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, Image, ActivityIndicator } from "react-native";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../configs/FirebaseConfig";
+import LottieView from "lottie-react-native";
 
 const HospitalProfile = ({ hospitalId }) => {
   const [hospitalData, setHospitalData] = useState(null);
@@ -20,8 +21,14 @@ const HospitalProfile = ({ hospitalId }) => {
 
           const reviews = data.reviews || [];
           if (Array.isArray(reviews)) {
-            const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
-            const avgRating = reviews.length > 0 ? (totalRating / reviews.length).toFixed(1) : 0;
+            const totalRating = reviews.reduce(
+              (acc, review) => acc + review.rating,
+              0
+            );
+            const avgRating =
+              reviews.length > 0
+                ? (totalRating / reviews.length).toFixed(1)
+                : 0;
             setAverageRating(avgRating);
           }
         }
@@ -38,7 +45,17 @@ const HospitalProfile = ({ hospitalId }) => {
   }, [hospitalId]);
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#000" />;
+    return (
+      <View style={{ alignItems: "center", paddingVertical: 32 }}>
+        <LottieView
+          loop
+          autoPlay
+          className="mt-32"
+          source={require("../../assets/loading.json")} // Path to the local json file
+          style={{ width: 200, height: 200 }}
+        />
+      </View>
+    );
   }
 
   if (!hospitalData) {
@@ -106,7 +123,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     padding: 10,
     elevation: 3,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,

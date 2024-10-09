@@ -42,8 +42,8 @@ const StartPage2 = () => {
       <Image 
         source={onboardImage2} 
         style={{ 
-          width: 200, 
-          height: 300, 
+          width: 230, 
+          height: 400, 
           marginBottom: 20, 
           resizeMode: 'cover', // Change to cover for better fit
           borderRadius: 20 
@@ -89,17 +89,13 @@ const StartPage2 = () => {
       <TouchableOpacity 
         style={{
           backgroundColor: '#5A67F2',
-          paddingVertical: 15,
-          paddingHorizontal: 80,
+          paddingVertical: 10,
+          paddingHorizontal: 70,
           borderRadius: 30
         }}
-        onPress={() => setShowLogin(true)} // Navigate to StartPage3
+        onPress={() => setShowLogin(true)} // Navigate to StartPage2
       >
-        <Text style={{
-          color: '#FFF',
-          fontWeight: '600',
-          fontSize: 16
-        }}>
+        <Text className="text-center font-[poppins-medium] text-md text-white">
           Continue
         </Text>
       </TouchableOpacity>
