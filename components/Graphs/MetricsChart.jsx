@@ -24,32 +24,33 @@ const MetricsChart = ({ metrics }) => {
     );
   }
 
-  // Extract blood pressure and diabetes level data, reversing the order
-  const bloodPressureData = metrics
-    .map((metric) => parseFloat(metric.bloodPressure))
-    .reverse();
-  const diabetesData = metrics
-    .map((metric) => parseFloat(metric.diabetesLevel))
-    .reverse();
+  // Reverse metrics once to improve performance
+  const reversedMetrics = metrics.slice().reverse();
 
-  // Labels for X-axis, reversing the order
-  const labels = metrics
-    .map((metric) => {
-      if (metric.submittedAt && metric.submittedAt.seconds) {
-        const date = new Date(metric.submittedAt.seconds * 1000);
-        return `${date.getDate()}/${date.getMonth() + 1}`;
-      }
-      return "";
-    })
-    .reverse();
+  // Extract blood pressure and diabetes data
+  const bloodPressureData = reversedMetrics.map((metric) =>
+    parseFloat(metric.bloodPressure)
+  ).filter(value => !isNaN(value)); // Filter out invalid numbers
+  const diabetesData = reversedMetrics.map((metric) =>
+    parseFloat(metric.diabetesLevel)
+  ).filter(value => !isNaN(value)); // Filter out invalid numbers
+
+  // Labels for X-axis
+  const labels = reversedMetrics.map((metric) => {
+    if (metric.submittedAt && metric.submittedAt.seconds) {
+      const date = new Date(metric.submittedAt.seconds * 1000);
+      return `${date.getDate()}/${date.getMonth() + 1}`;
+    }
+    return "";
+  });
 
   // Normal ranges
   const normalBloodPressure = [90, 120]; // Example: Normal range for systolic BP
   const normalDiabetesLevel = [70, 130]; // Example: Normal range for diabetes level
 
   // Get the last logged values from the reversed arrays
-  const lastBloodPressure = bloodPressureData[0]; // Now the most recent is first
-  const lastDiabetes = diabetesData[0]; // Now the most recent is first
+  const lastBloodPressure = bloodPressureData[0] || 0; // Default to 0 if no data
+  const lastDiabetes = diabetesData[0] || 0; // Default to 0 if no data
 
   // Calculate percentage difference from normal range for blood pressure
   const bloodPressurePercentageDiff =
@@ -98,7 +99,6 @@ const MetricsChart = ({ metrics }) => {
         Blood Pressure
       </Text>
       <Text style={{ color: "#808080" }}>
-        {" "}
         Current difference from Normal Range: {bloodPressurePercentageDiff.toFixed(2)}%
       </Text>
       {/* Blood Pressure Line Chart with Horizontal Scroll */}
@@ -135,7 +135,7 @@ const MetricsChart = ({ metrics }) => {
         Diabetes Level
       </Text>
       <Text style={{ color: "#808080" }}>
-        Current difference from Normal Range: {diabetesPercentageDiff.toFixed(2)}%{" "}
+        Current difference from Normal Range: {diabetesPercentageDiff.toFixed(2)}%
       </Text>
       {/* Diabetes Level Line Chart with Horizontal Scroll */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
