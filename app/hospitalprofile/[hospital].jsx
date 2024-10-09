@@ -17,7 +17,7 @@ import Toast from "react-native-toast-message";
 import { doc, updateDoc, arrayUnion, setDoc, getDoc } from "firebase/firestore";
 import { db } from "../../configs/FirebaseConfig";
 import { useUser } from "@clerk/clerk-expo";
-import { MaterialIcons } from '@expo/vector-icons'; // Importing Material Icons for delete button
+import { MaterialIcons } from "@expo/vector-icons"; // Importing Material Icons for delete button
 
 const Hospital = () => {
   const { hospitalId, specialization, doctorName } = useLocalSearchParams();
@@ -47,9 +47,9 @@ const Hospital = () => {
   useEffect(() => {
     navigation.setOptions({
       title: `Hospital Page`,
-      headerTintColor: '#607AFB',
+      headerTintColor: "#607AFB",
       headerTitleStyle: {
-        color: 'black',
+        color: "black",
       },
     });
   }, [navigation]);
@@ -163,9 +163,16 @@ const Hospital = () => {
     <ScrollView>
       <View style={{ flex: 1 }}>
         <HospitalProfile hospitalId={hospitalId} />
-        <ScrollView horizontal={true} contentContainerStyle={{ flexDirection: "row" }}>
+        <ScrollView
+          horizontal={true}
+          contentContainerStyle={{ flexDirection: "row" }}
+        >
           {doctors.map((doctor) => (
-            <DoctorProfile key={doctor.id} doctor={doctor} hospitalId={hospitalId} />
+            <DoctorProfile
+              key={doctor.id}
+              doctor={doctor}
+              hospitalId={hospitalId}
+            />
           ))}
         </ScrollView>
         <OptionComponent hospitalId={hospitalId} />
@@ -208,14 +215,22 @@ const Hospital = () => {
                       imageSize={20}
                       style={styles.ratingStyle}
                     />
-                    {/* User-friendly delete button */}
+                  </View>
+
+                  {/* Wrap the review text and delete button together */}
+                  <View style={styles.reviewContent}>
+                    <Text style={styles.reviewText}>{review.reviewText}</Text>
+
                     {review.userId === userEmail && (
                       <TouchableOpacity onPress={() => deleteReview(review)}>
-                        <MaterialIcons name="delete" size={24} color="#FF5252" />
+                        <MaterialIcons
+                          name="delete"
+                          size={24}
+                          color="#FF5252"
+                        />
                       </TouchableOpacity>
                     )}
                   </View>
-                  <Text style={styles.reviewText}>{review.reviewText}</Text>
                 </View>
               ))
             ) : (
@@ -267,6 +282,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     minHeight: 40,
+    backgroundColor: "#fff",
+    fontWeight: "600",
   },
   submitButton: {
     backgroundColor: "#607AFB",
@@ -296,7 +313,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 1,
-    },
+  },
   reviewHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -314,6 +331,11 @@ const styles = StyleSheet.create({
   noReviewsText: {
     fontStyle: "italic",
     color: "#aaa",
+  },
+  reviewContent: {
+    flexDirection: 'row', // Arrange text and icon in a row
+    justifyContent: 'space-between', // Ensure space between the text and delete icon
+    alignItems: 'center', // Align them properly in the center
   },
 });
 
