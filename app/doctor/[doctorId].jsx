@@ -6,8 +6,9 @@ import {
   ScrollView,
   TouchableOpacity,
   LogBox,
-  StyleSheet
+  StyleSheet,
 } from "react-native";
+import LottieView from "lottie-react-native";
 import React, { useEffect, useState } from "react";
 import {
   collection,
@@ -17,7 +18,7 @@ import {
   query,
   where,
   updateDoc,
-  arrayUnion
+  arrayUnion,
 } from "firebase/firestore";
 import { db } from "../../configs/FirebaseConfig";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -28,7 +29,7 @@ import { Rating } from "react-native-ratings";
 
 const Doctor = () => {
   const navigation = useNavigation();
-  const { doctorId,userEmail,hospitalId } = useLocalSearchParams();
+  const { doctorId, userEmail, hospitalId } = useLocalSearchParams();
   const [doctor, setDoctor] = useState(null);
   const { user } = useUser();
   const [rating, setRating] = useState(0);
@@ -37,15 +38,14 @@ const Doctor = () => {
   useEffect(() => {
     getDoctorById();
     console.log("Doctor ID from params:", doctorId);
-
   }, []);
 
   useEffect(() => {
     navigation.setOptions({
       title: `Doctor Profile`,
-      headerTintColor: '#607AFB', 
+      headerTintColor: "#607AFB",
       headerTitleStyle: {
-        color: 'black', 
+        color: "black",
       },
     });
   }, [navigation, doctorId]);
@@ -98,7 +98,7 @@ const Doctor = () => {
   const handleAppointment = () => {
     router.push({
       pathname: `/appointments/${doctor.id}`,
-      params: { doctorId: doctor.id, userEmail: userEmail }
+      params: { doctorId: doctor.id, userEmail: userEmail },
     });
   };
 
@@ -142,7 +142,13 @@ const Doctor = () => {
       console.log("hi i did a review ", reviewData);
 
       // Store the review in Firestore under the "Hospital" collection
-      const doctorDocRef = doc(db, "HospitalList", hospitalId, "DoctorList", doctorId);
+      const doctorDocRef = doc(
+        db,
+        "HospitalList",
+        hospitalId,
+        "DoctorList",
+        doctorId
+      );
       await updateDoc(doctorDocRef, {
         reviews: arrayUnion(reviewData),
       });
@@ -239,9 +245,7 @@ const Doctor = () => {
               <Text className="font-[poppins] text-[14px]">
                 {doctor.description || "No description available."}
               </Text>
-              <TouchableOpacity
-                onPress={handleAppointment}
-              >
+              <TouchableOpacity onPress={handleAppointment}>
                 <Text className="bg-[#607AFB] mt-4 p-3 text-white text-center rounded-lg font-[poppins-bold]">
                   Make an appointment
                 </Text>
@@ -249,37 +253,49 @@ const Doctor = () => {
             </View>
 
             {/* Review Section */}
-        <View style={styles.reviewSection}>
-          <Text style={styles.addAReview}>Add a Review</Text>
-          <View style={styles.starsContainer}>
-            <Rating
-              showRating={false}
-              onFinishRating={ratingCompleted}
-              imageSize={24}
-              ratingColor="#FFD700"
-              ratingBackgroundColor="#e0e0e0"
-              style={styles.ratingStyle}
-              startingValue={rating}
-            />
-          </View>
+            <View>
+              <Text className="font-[poppins-bold] text-[17px] mt-4 mb-2">
+                Add a Review
+              </Text>
+              <View style={styles.starsContainer}>
+                <Rating
+                  showRating={false}
+                  onFinishRating={ratingCompleted}
+                  imageSize={24}
+                  ratingColor="#FFD700"
+                  ratingBackgroundColor="#e0e0e0"
+                  style={styles.ratingStyle}
+                  startingValue={rating}
+                />
+              </View>
 
-          {/* Submit Button */}
-          <View style={styles.CenterSubmitButton}>
-          <TouchableOpacity style={styles.Submitframe}>
-            <Text style={[styles.SubmitText, styles.SubmitFlexBox]} onPress={submitReview}>
-              Submit
-            </Text>
-          </TouchableOpacity>
-          </View>
+              {/* Submit Button */}
+              <View className="mt-2" style={styles.CenterSubmitButton}>
+                <TouchableOpacity >
+                  <Text
+                    className="bg-[#607AFB] mt-4 px-4 py-2 text-white text-center rounded-lg font-[poppins-bold]"
+                    onPress={submitReview}
+                  >
+                    Submit
+                  </Text>
+                </TouchableOpacity>
+              </View>
 
-          {/* Toast Notification */}
-          <Toast />
-        </View>
-        
+              {/* Toast Notification */}
+              <Toast />
+            </View>
           </View>
         </View>
       ) : (
-        <Text className="p-4 text-center">Loading...</Text>
+        <View style={{ alignItems: "center", paddingVertical: 32 }}>
+          <LottieView
+            loop
+            autoPlay
+            className="mt-32"
+            source={require("../../assets/loading.json")} // Path to the local json file
+            style={{ width: 200, height: 200 }}
+          />
+        </View>
       )}
     </ScrollView>
   );

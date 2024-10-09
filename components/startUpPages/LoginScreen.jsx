@@ -40,15 +40,15 @@ export default function Page() {
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#F5F6FA", padding: 20 }}>
       <View className="flex-row">
-      <Text style={{ fontSize: 40, fontWeight: "bold", color: "#607AFB", marginBottom: 10 ,fontFamily:"outfit"}}>Med</Text>
-      <Text style={{ fontSize: 40, fontWeight: "bold", color: "#000", marginBottom: 10 ,fontFamily:"outfit"}}>link</Text>
+      <Text style={{ fontSize: 40, fontWeight: "bold", color: "#607AFB", marginBottom: 10}}>Med</Text>
+      <Text style={{ fontSize: 40, fontWeight: "bold", color: "#000", marginBottom: 10 }}>link</Text>
       </View>
       <Image source={require('./../../assets/images/login.jpg')}
       style={{
         width:200,height:350,marginBottom:5,borderRadius:20,borderWidth:6,borderColor:'#000'}}/>
       <View className="flex-row">
-      <Text style={{ fontSize: 28, fontWeight: "bold", color: "#607AFB" ,fontFamily:"outfit"}}>We Care </Text>
-      <Text style={{ fontSize: 28, fontWeight: "bold", color: "#000" ,fontFamily:"outfit"}}>About</Text>
+      <Text style={{ fontSize: 28, fontWeight: "bold", color: "#607AFB" }}>We Care </Text>
+      <Text style={{ fontSize: 28, fontWeight: "bold", color: "#000" }}>About</Text>
       </View>
       <Text style={{ fontSize: 28, fontWeight: "bold", color: "#607AFB",marginTop:-10, marginBottom: 10}}>Your Health</Text>
       <TextInput

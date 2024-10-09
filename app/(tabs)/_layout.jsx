@@ -60,7 +60,7 @@ const TabLayout = () => {
                 name="arrow-left"
                 size={24}
                 color={Colors.PRIMARY}
-                style={{ marginLeft: 15, marginBottom: 4 }}
+                style={{ marginLeft: 15}}
               />
             </TouchableOpacity>
           ),
@@ -107,7 +107,7 @@ const TabLayout = () => {
                 name="arrow-left"
                 size={24}
                 color={Colors.PRIMARY}
-                style={{ marginLeft: 15, marginBottom: 4 }}
+                style={{ marginLeft: 15 }}
               />
             </TouchableOpacity>
           ),
