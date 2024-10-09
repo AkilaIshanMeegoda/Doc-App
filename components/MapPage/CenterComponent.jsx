@@ -3,6 +3,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { db } from "../../configs/FirebaseConfig"; // Import your centralized Firestore instance
+import LottieView from "lottie-react-native";
 
 const Color = {
   colorRoyalblue: "#4169e1",
@@ -31,7 +32,7 @@ const CenterComponent = ({ hospitalId }) => {
   useEffect(() => {
     const fetchHospitalData = async () => {
       try {
-        const hospitalRef = doc(db, 'HospitalList', hospitalId);
+        const hospitalRef = doc(db, "HospitalList", hospitalId);
         const hospitalSnap = await getDoc(hospitalRef);
 
         if (hospitalSnap.exists()) {
@@ -42,17 +43,23 @@ const CenterComponent = ({ hospitalId }) => {
           const reviews = hospitalData.reviews || [];
 
           if (Array.isArray(reviews)) {
-            const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
-            const avgRating = reviews.length > 0 ? (totalRating / reviews.length).toFixed(1) : 0;
+            const totalRating = reviews.reduce(
+              (acc, review) => acc + review.rating,
+              0
+            );
+            const avgRating =
+              reviews.length > 0
+                ? (totalRating / reviews.length).toFixed(1)
+                : 0;
 
             setAverageRating(avgRating);
             setReviewCount(reviews.length);
           }
         } else {
-          setError('Hospital not found');
+          setError("Hospital not found");
         }
       } catch (err) {
-        setError('Error fetching hospital data');
+        setError("Error fetching hospital data");
         console.error(err);
       } finally {
         setLoading(false);
@@ -63,7 +70,17 @@ const CenterComponent = ({ hospitalId }) => {
   }, [hospitalId]);
 
   if (loading) {
-    return <Text>Loading...</Text>;
+    return (
+      <View style={{ alignItems: "center", paddingVertical: 32 }}>
+        <LottieView
+          loop
+          autoPlay
+          className="mt-32"
+          source={require("../../assets/loading.json")} // Path to the local json file
+          style={{ width: 200, height: 200 }}
+        />
+      </View>
+    );
   }
 
   if (error) {
@@ -122,13 +139,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   mainStCityville: {
-    fontFamily: 'poppins',
+    fontFamily: "poppins",
     fontSize: FontSize.size_sm,
     color: Color.colorWhitesmoke_100,
     marginTop: 20,
   },
   uploadDocument: {
-    fontFamily: 'poppins-medium',
+    fontFamily: "poppins-medium",
     fontSize: FontSize.bodyBase_size,
     color: Color.colorWhitesmoke_100,
     marginTop: -20,
@@ -148,12 +165,12 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   ratingText: {
-    fontFamily: 'poppins-medium',
+    fontFamily: "poppins-medium",
     fontSize: FontSize.size_sm,
     color: Color.colorGray_100,
   },
   reviewCount: {
-    fontFamily: 'poppins',
+    fontFamily: "poppins",
     fontSize: FontSize.size_sm,
     color: Color.colorGray_100,
     marginLeft: 5,

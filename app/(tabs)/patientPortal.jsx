@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react'; 
+import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, FlatList, ActivityIndicator, RefreshControl } from "react-native";
 import Feather from "@expo/vector-icons/Feather"; // For icons
 import { Colors } from "../../constants/Colors";
 import { useRouter } from "expo-router"; // Import useRouter
-import { db } from '../../configs/FirebaseConfig'; // Import Firebase config
-import { collection, query, getDocs } from 'firebase/firestore';
-import AppointmentListCard from '../../components/AppointmentList/AppointmentListCard'; 
+import { db } from "../../configs/FirebaseConfig"; // Import Firebase config
+import { collection, query, getDocs } from "firebase/firestore";
+import AppointmentListCard from "../../components/AppointmentList/AppointmentListCard";
 import { useUser } from "@clerk/clerk-expo";
+import LottieView from "lottie-react-native";
 
 
 const PatientPortal = () => {
@@ -62,14 +63,26 @@ const PatientPortal = () => {
   // Render loading state
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color={Colors.primary} />
+      <View style={{ alignItems: "center", paddingVertical: 32 }}>
+        <LottieView
+          loop
+          autoPlay
+          className="mt-32"
+          source={require("../../assets/loading.json")} // Path to the local json file
+          style={{ width: 200, height: 200 }}
+        />
       </View>
     );
   }
 
   return (
-    <View style={{ flex: 1, padding: 10, backgroundColor: Colors.patientPortal.background }}>
+    <View
+      style={{
+        flex: 1,
+        padding: 10,
+        backgroundColor: Colors.patientPortal.background,
+      }}
+    >
       {/**Info Text */}
       <View style={{ marginVertical: 20, paddingHorizontal: 10, marginTop: 6 }}>
         <Text
@@ -81,12 +94,14 @@ const PatientPortal = () => {
             fontWeight: "400",
           }}
         >
-          Access various patient-related sections like appointment history, documents, and health metrics.
+          Access various patient-related sections like appointment history,
+          documents, and health metrics.
         </Text>
       </View>
 
       {/* Navigation */}
       <View style={{ marginTop: -5 }}>
+
         <Text style={{ fontSize: 18, fontWeight: "bold", marginBottom: 10, marginLeft: 10 }}>
           Navigation
         </Text>
@@ -108,12 +123,22 @@ const PatientPortal = () => {
           }}
           onPress={() => router.push("/Portal/documentManage")} // Navigate to docManage
         >
-          <Feather name="folder" size={24} color={Colors.patientPortal.iconColor} />
+          <Feather
+            name="folder"
+            size={24}
+            color={Colors.patientPortal.iconColor}
+          />
           <View style={{ flex: 1, marginLeft: 10 }}>
-            <Text style={{ fontSize: 16, fontWeight: "600" }}>Document Management</Text>
+            <Text style={{ fontSize: 16, fontWeight: "600" }}>
+              Document Management
+            </Text>
             <Text>Manage your health documents</Text>
           </View>
-          <Feather name="chevron-right" size={24} color={Colors.patientPortal.iconColor} />
+          <Feather
+            name="chevron-right"
+            size={24}
+            color={Colors.patientPortal.iconColor}
+          />
         </TouchableOpacity>
 
         {/* Health Metrics */}
@@ -133,12 +158,22 @@ const PatientPortal = () => {
           }}
           onPress={() => router.push("/Portal/healthMetric")} // Navigate to healthMetric
         >
-          <Feather name="bar-chart" size={24} color={Colors.patientPortal.iconColor} />
+          <Feather
+            name="bar-chart"
+            size={24}
+            color={Colors.patientPortal.iconColor}
+          />
           <View style={{ flex: 1, marginLeft: 10 }}>
-            <Text style={{ fontSize: 16, fontWeight: "600" }}>Health Metrics</Text>
+            <Text style={{ fontSize: 16, fontWeight: "600" }}>
+              Health Metrics
+            </Text>
             <Text>Log and view your health metrics</Text>
           </View>
-          <Feather name="chevron-right" size={24} color={Colors.patientPortal.iconColor} />
+          <Feather
+            name="chevron-right"
+            size={24}
+            color={Colors.patientPortal.iconColor}
+          />
         </TouchableOpacity>
       </View>
 

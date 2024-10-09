@@ -53,53 +53,55 @@ const Remind = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.push("/Reminder/addReminder")}
-      >
-        <Text style={styles.buttonText}>Add Reminder</Text>
-      </TouchableOpacity>
+    <ScrollView contentContainerStyle={styles.scrollViewContent}>
+      <View style={styles.container}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => router.push("/Reminder/addReminder")}
+        >
+          <Text style={styles.buttonText}>Add Reminder</Text>
+        </TouchableOpacity>
 
-      {reminders.length === 0 ? (
-        // If no reminders are set, show the notice
-        <View style={styles.reminderNoticeContainer}>
-          <Text style={styles.reminderNotice}>
-            No medication reminders {'\n'} have been set yet.
-          </Text>
-          <Text style={styles.reminderNotice}>
-            You can set a reminder using {'\n'} the <Text style={{ fontWeight: 'bold' }}>'Add Reminder'</Text> button.
-          </Text>
-        </View>
-      ) : (
-        // If there are reminders, display them as cards
-        <ScrollView contentContainerStyle={styles.reminderList}>
-          {reminders.map((reminder) => (
-            <View key={reminder.id} style={styles.reminderCard}>
-              <View style={styles.reminderCardContent}>
-                <View>
-                  <Text style={styles.reminderName}>{reminder.reminderName}</Text>
-                  <Text style={styles.reminderDates}>
-                    {formatReminderDates(reminder.startDate, reminder.endDate)}
-                  </Text>
-                  <Text style={styles.reminderDates}>
-                    {formatReminderTimes(reminder.reminderTimes)}
-                  </Text>
-                  <Text style={styles.reminderNote}>{reminder.reminderNotes}</Text>
-                </View>
+        {reminders.length === 0 ? (
+          // If no reminders are set, show the notice
+          <View style={styles.reminderNoticeContainer}>
+            <Text style={styles.reminderNotice}>
+              No medication reminders {'\n'} have been set yet.
+            </Text>
+            <Text style={styles.reminderNotice}>
+              You can set a reminder using {'\n'} the <Text style={{ fontWeight: 'bold' }}>'Add Reminder'</Text> button.
+            </Text>
+          </View>
+        ) : (
+          // If there are reminders, display them as cards
+          <View style={styles.reminderList}>
+            {reminders.map((reminder) => (
+              <View key={reminder.id} style={styles.reminderCard}>
+                <View style={styles.reminderCardContent}>
+                  <View style={styles.reminderContent}>
+                    <Text style={styles.reminderName}>{reminder.reminderName}</Text>
+                    <Text style={styles.reminderDates}>
+                      {formatReminderDates(reminder.startDate, reminder.endDate)}
+                    </Text>
+                    <Text style={styles.reminderDates}>
+                      {formatReminderTimes(reminder.reminderTimes)}
+                    </Text>
+                    <Text style={styles.reminderNote}>{reminder.reminderNotes}</Text>
+                  </View>
 
-                {/* Delete Icon */}
-                <View>
-                  <TouchableOpacity onPress={() => handleDeleteReminder(reminder.id)}>
-                    <Feather name="trash" size={24} color={Colors.DANGER} />
-                  </TouchableOpacity>
+                  {/* Delete Icon */}
+                  <View style={styles.deleteIcon}>
+                    <TouchableOpacity onPress={() => handleDeleteReminder(reminder.id)}>
+                      <Feather name="trash" size={24} color={Colors.DANGER} />
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
-            </View>
-          ))}
-        </ScrollView>
-      )}
-    </View>
+            ))}
+          </View>
+        )}
+      </View>
+    </ScrollView>
   );
 };
 
@@ -119,8 +121,14 @@ const formatReminderTimes = (times) => {
 };
 
 const styles = StyleSheet.create({
+  scrollViewContent: {
+    flexGrow: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
   container: {
-    flex: 1,
+    width: '100%',
+    height: '100%',
     justifyContent: 'flex-start',
     alignItems: 'center',
     paddingTop: 40,
@@ -131,6 +139,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 70,
     borderRadius: 8,
+    marginBottom: 20, // Add some spacing between button and reminders
   },
   buttonText: {
     color: '#fff',
@@ -148,8 +157,9 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   reminderList: {
-    paddingTop: 30,
+    width: '100%',
     paddingHorizontal: 20,
+    paddingTop: 16,
   },
   reminderCard: {
     backgroundColor: Colors.remind.cardBackground,
@@ -163,9 +173,13 @@ const styles = StyleSheet.create({
   },
   reminderCardContent: {
     flexDirection: 'row',
-    justifyContent: 'space-between', // Space between text and icon
+    justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
+  },
+  reminderContent: {
+    flex: 1,
+    maxWidth: '80%',
   },
   reminderName: {
     fontSize: 18,
@@ -184,7 +198,8 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   deleteIcon: {
-    paddingLeft: 10,
+    // paddingRight: 16,
+    // marginRight: 10,
   },
 });
 

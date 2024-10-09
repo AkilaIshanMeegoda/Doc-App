@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, Image, ActivityIndicator } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
+} from "react-native";
 import { useRouter } from "expo-router";
+import LottieView from "lottie-react-native";
 
 const Color = {
   colorBlack: "#000",
@@ -29,7 +37,10 @@ const DoctorProfile = ({ doctor, hospitalId }) => {
   useEffect(() => {
     const calculateAverageRating = () => {
       if (doctor.reviews && doctor.reviews.length > 0) {
-        const totalRating = doctor.reviews.reduce((acc, review) => acc + review.rating, 0);
+        const totalRating = doctor.reviews.reduce(
+          (acc, review) => acc + review.rating,
+          0
+        );
         const avgRating = (totalRating / doctor.reviews.length).toFixed(1);
         setAverageRating(avgRating);
       } else {
@@ -42,51 +53,61 @@ const DoctorProfile = ({ doctor, hospitalId }) => {
   }, [doctor.reviews]);
 
   const handleAppointmentPress = () => {
-    router.push(`/doctor/${doctor.id}?userEmail=${doctor.userEmail}&hospitalId=${hospitalId}`);
+    router.push(
+      `/doctor/${doctor.id}?userEmail=${doctor.userEmail}&hospitalId=${hospitalId}`
+    );
     console.log(doctor.id, doctor.userEmail, hospitalId);
   };
 
-  // Show a loading indicator while fetching data
-  if (loading) {
-    return <ActivityIndicator size="large" color="#000" />;
-  }
-
   return (
-    <View style={styles.card}>
-      {/* Doctor Image */}
-      <Image
-        style={styles.doctorImage}
-        source={{ uri: doctor.imageUrl }}
-      />
-
-      {/* Doctor Name and Specialization */}
-      <View style={styles.textContainer}>
-        <Text style={styles.doctorName}>
-          {doctor.name || "Dr. David Johnson"}
-        </Text>
-        <View style={styles.specializationButton}>
-          <Text style={styles.specialization}>
-            {doctor.specialization || "Heart Surgeon"}
-          </Text>
-        </View>
-      </View>
-
-      {/* Appointment Button and Rating */}
-      <View style={styles.footer}>
-        <TouchableOpacity
-          style={styles.appointmentButton}
-          onPress={handleAppointmentPress}
-        >
-          <Text style={styles.appointmentText}>Appointment</Text>
-        </TouchableOpacity>
-        <View style={styles.ratingFrame}>
-          <Image
-            style={styles.starIcon}
-            source={require("../../assets/images/star1.png")}
+    <View style={styles.container}>
+      {/* Show a full-screen loading indicator while fetching data */}
+      {loading && (
+        <View style={{ alignItems: "center", paddingVertical: 32 }}>
+          <LottieView
+            loop
+            autoPlay
+            className="mt-32"
+            source={require("../../assets/loading.json")} // Path to the local json file
+            style={{ width: 200, height: 200 }}
           />
-          <Text style={styles.ratingText}>
-            {averageRating !== undefined ? averageRating : "0.0"}
+        </View>
+      )}
+
+      {/* Doctor Profile Card */}
+      <View style={styles.card}>
+        {/* Doctor Image */}
+        <Image style={styles.doctorImage} source={{ uri: doctor.imageUrl }} />
+
+        {/* Doctor Name and Specialization */}
+        <View style={styles.textContainer}>
+          <Text style={styles.doctorName}>
+            {doctor.name || "Dr. David Johnson"}
           </Text>
+          <View style={styles.specializationButton}>
+            <Text style={styles.specialization}>
+              {doctor.specialization || "Heart Surgeon"}
+            </Text>
+          </View>
+        </View>
+
+        {/* Appointment Button and Rating */}
+        <View style={styles.footer}>
+          <TouchableOpacity
+            style={styles.appointmentButton}
+            onPress={handleAppointmentPress}
+          >
+            <Text style={styles.appointmentText}>Appointment</Text>
+          </TouchableOpacity>
+          <View style={styles.ratingFrame}>
+            <Image
+              style={styles.starIcon}
+              source={require("../../assets/images/star1.png")}
+            />
+            <Text style={styles.ratingText}>
+              {averageRating !== undefined ? averageRating : "0.0"}
+            </Text>
+          </View>
         </View>
       </View>
     </View>
@@ -94,6 +115,22 @@ const DoctorProfile = ({ doctor, hospitalId }) => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.7)", // Slightly transparent background
+    zIndex: 1, // Ensures it appears above everything
+  },
   card: {
     width: 180, // Reduced width
     backgroundColor: "#fff",
