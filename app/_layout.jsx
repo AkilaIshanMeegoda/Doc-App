@@ -8,7 +8,7 @@ import {
   useUser,
 } from "@clerk/clerk-expo"; // Use Clerk hooks
 import { useEffect, useState } from "react";
-import { Text } from "react-native";
+import { LogBox, Text } from "react-native";
 import StartPage from "../components/startUpPages/StartPage"
 import { useFonts } from "expo-font";
 import { configureNotificationBehavior } from "../utils/RemindNotificationPermission";
@@ -47,6 +47,7 @@ if (!publishableKey) {
 }
 
 export default function RootLayout() {
+  LogBox.ignoreAllLogs()
   useEffect(() => {
     configureNotificationBehavior(); // Configure notification behavior when app starts
   }, []);
