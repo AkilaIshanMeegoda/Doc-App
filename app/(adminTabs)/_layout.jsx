@@ -3,8 +3,10 @@ import React from "react";
 import { Tabs, useNavigation } from "expo-router";
 import Feather from "@expo/vector-icons/Feather";
 import { Colors } from "../../constants/Colors";
+import { LogBox } from "react-native";
 
 const AdminTabLayout = () => {
+  LogBox.ignoreAllLogs()
   const navigation = useNavigation();
   return (
     <Tabs
