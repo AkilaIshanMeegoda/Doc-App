@@ -20,6 +20,7 @@ import {
 import { db } from "../../configs/FirebaseConfig";
 import { useUser } from "@clerk/clerk-expo";
 import Feather from "@expo/vector-icons/Feather";
+import LottieView from "lottie-react-native";
 
 const Remind = () => {
   const navigation = useNavigation();
@@ -90,6 +91,13 @@ const Remind = () => {
         {reminders.length === 0 ? (
           // If no reminders are set, show the notice
           <View style={styles.reminderNoticeContainer}>
+            <LottieView
+              loop
+              autoPlay
+              source={require("../../assets/empty.json")} // Ensure this path is correct
+              style={{ width: 200, height: 250 }}
+              resizeMode="cover" // Add this to ensure it scales properly
+            />
             <Text style={styles.reminderNotice}>
               No medication reminders {"\n"} have been set yet.
             </Text>

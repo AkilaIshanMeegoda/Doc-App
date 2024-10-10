@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import { StyleSheet, View, ActivityIndicator } from "react-native";
+import { StyleSheet, View, ActivityIndicator, Text } from "react-native";
 import { db } from "../../configs/FirebaseConfig"; // Import Firebase config
 import { doc, getDoc } from "firebase/firestore";
 import LottieView from "lottie-react-native";

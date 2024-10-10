@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useNavigation, useRouter } from 'expo-router';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image } from "react-native";
+import { useNavigation, useRouter } from "expo-router";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Image,
+} from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { collection, query, getDocs } from "firebase/firestore";
 import { db } from "../../configs/FirebaseConfig";
@@ -31,11 +38,11 @@ const Home = () => {
 
       querySnapshot.forEach((hospitalDoc) => {
         const hospitalData = hospitalDoc.data();
-        console.log('Hospital Data:', hospitalData);
+        console.log("Hospital Data:", hospitalData);
 
         // Collect specializations
         if (Array.isArray(hospitalData.specialization)) {
-          hospitalData.specialization.forEach(spec => {
+          hospitalData.specialization.forEach((spec) => {
             allSpecializations.add(spec);
           });
         }
@@ -50,9 +57,18 @@ const Home = () => {
       });
 
       // Convert sets to arrays
-      const specializationArray = [...allSpecializations].map(item => ({ label: item, value: item }));
-      const hospitalArray = [...allHospitals].map(item => ({ label: item, value: item }));
-      const areaArray = [...allAreas].map(item => ({ label: item, value: item }));
+      const specializationArray = [...allSpecializations].map((item) => ({
+        label: item,
+        value: item,
+      }));
+      const hospitalArray = [...allHospitals].map((item) => ({
+        label: item,
+        value: item,
+      }));
+      const areaArray = [...allAreas].map((item) => ({
+        label: item,
+        value: item,
+      }));
 
       setSpecializations(specializationArray);
       setHospitals(hospitalArray);
@@ -68,13 +84,13 @@ const Home = () => {
 
   const handleSearch = () => {
     router.push({
-      pathname: '/mappage/[settings]',
+      pathname: "/mappage/[settings]",
       params: {
         name,
         area,
         specialization,
-        hospitalName
-      }
+        hospitalName,
+      },
     });
   };
 
@@ -89,71 +105,82 @@ const Home = () => {
   }, [navigation]);
 
   return (
-    <View style={styles.container} >
+    <View>
       <Image
         style={styles.vnk44ui9ie1Icon}
         contentFit="cover"
         source={require("../../assets/images/home.png")}
       />
-      <Text style={[styles.findTheBest, styles.findFlexBoxTop]}>Find the Best Doctors</Text>
+      <Text style={[styles.findTheBest, styles.findFlexBoxTop]}>
+        Find the Best Doctors
+      </Text>
 
-      <View style={styles.formContainer}>
-        <TextInput 
-          style={styles.input}
-          placeholder="Name of Doctor"
-          value={name}
-          onChangeText={setName}
-        />
-        
-        <DropDownPicker
-          open={openSpecialization}
-          value={specialization}
-          items={specializations}
-          setOpen={setOpenSpecialization}
-          setValue={(callback) => {
-            setSpecialization(prev => (prev === callback() ? null : callback()));
-          }}
-          setItems={setSpecializations}
-          placeholder="Select Specialization"
-          containerStyle={{ width: '100%', marginTop: 12 }}
-          zIndex={3000}
-          zIndexInverse={1000}
-        />
+      <View className="p-4 py-12">
+        <View style={styles.formContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Name of Doctor"
+            value={name}
+            onChangeText={setName}
+          />
 
-        <DropDownPicker
-          open={openHospital}
-          value={hospitalName}
-          items={hospitals}
-          setOpen={setOpenHospital}
-          setValue={(callback) => {
-            setHospitalName(prev => (prev === callback() ? null : callback()));
-          }}
-          setItems={setHospitals}
-          placeholder="Select Doctor Center"
-          containerStyle={{ width: '100%', marginTop: 12 }}
-          zIndex={2000}
-          zIndexInverse={5000} // Ensures the hospital dropdown opens in front
-        />
-        
-        <DropDownPicker
-          open={openArea}
-          value={area}
-          items={areas}
-          setOpen={setOpenArea}
-          setValue={(callback) => {
-            setArea(prev => (prev === callback() ? null : callback()));
-          }}
-          setItems={setAreas}
-          placeholder="Select Area"
-          containerStyle={{ width: '100%', marginTop: 12 }}
-          zIndex={1000}
-          zIndexInverse={6000} // Higher inverse to ensure it opens in front
-        />
+          <DropDownPicker
+            open={openSpecialization}
+            value={specialization}
+            items={specializations}
+            setOpen={setOpenSpecialization}
+            setValue={(callback) => {
+              setSpecialization((prev) =>
+                prev === callback() ? null : callback()
+              );
+            }}
+            setItems={setSpecializations}
+            placeholder="Select Specialization"
+            containerStyle={{ width: "100%", marginTop: 12 }}
+            zIndex={3000}
+            zIndexInverse={1000}
+          />
+
+          <DropDownPicker
+            open={openHospital}
+            value={hospitalName}
+            items={hospitals}
+            setOpen={setOpenHospital}
+            setValue={(callback) => {
+              setHospitalName((prev) =>
+                prev === callback() ? null : callback()
+              );
+            }}
+            setItems={setHospitals}
+            placeholder="Select Doctor Center"
+            containerStyle={{ width: "100%", marginTop: 12 }}
+            zIndex={2000}
+            zIndexInverse={5000} // Ensures the hospital dropdown opens in front
+          />
+
+          <DropDownPicker
+            open={openArea}
+            value={area}
+            items={areas}
+            setOpen={setOpenArea}
+            setValue={(callback) => {
+              setArea((prev) => (prev === callback() ? null : callback()));
+            }}
+            setItems={setAreas}
+            placeholder="Select Area"
+            containerStyle={{ width: "100%", marginTop: 12 }}
+            zIndex={1000}
+            zIndexInverse={6000} // Higher inverse to ensure it opens in front
+          />
+        </View>
+        <View className="items-center">
+          <TouchableOpacity onPress={handleSearch} style={styles.frame}>
+            <Text style={[styles.findMyDoctor, styles.findFlexBox]}>
+              Find my Doctor
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
-
-      <TouchableOpacity onPress={handleSearch} style={styles.frame}>
-        <Text style={[styles.findMyDoctor, styles.findFlexBox]}>Find my Doctor</Text>
-      </TouchableOpacity>
     </View>
   );
 };
@@ -194,7 +221,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 240,
-    width: '100%', // Ensure the form takes full width
+    width: "100%", // Ensure the form takes full width
     paddingHorizontal: 20, // Add horizontal padding
   },
   input: {
@@ -204,7 +231,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginTop: 12,
     padding: 10,
-    width: '100%', // Use full width for input
+    width: "100%", // Use full width for input
   },
   findMyDoctor: {
     fontSize: 16,
@@ -214,7 +241,7 @@ const styles = StyleSheet.create({
   frame: {
     borderRadius: 6,
     backgroundColor: "#4169e1",
-    width: 309,
+    width: 290,
     height: 48,
     justifyContent: "center",
     alignItems: "center",
