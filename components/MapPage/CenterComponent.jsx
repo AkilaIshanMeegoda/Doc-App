@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { db } from "../../configs/FirebaseConfig"; // Import your centralized Firestore instance
 import LottieView from "lottie-react-native";
+import { Colors } from "../../constants/Colors";
 
 const Color = {
   colorRoyalblue: "#4169e1",
@@ -86,14 +87,14 @@ const CenterComponent = ({ hospitalId }) => {
   }
 
   return (
-    <View className="px-8 py-1 shadow-2xl">
+    <View className="py-1 shadow-2xl">
       <View style={styles.centerCard}>
         <Image
           style={styles.hospitalIcon}
           source={require("../../assets/images/maphospital.png")}
         />
         <View style={styles.centerDetails}>
-          <Text className="font-[poppins-bold]">{hospital.name}</Text>
+          <Text className="font-[poppins-bold] text-white">{hospital.name}</Text>
           <Text style={styles.mainStCityville}>{hospital.area}</Text>
         </View>
 
@@ -117,7 +118,7 @@ const styles = StyleSheet.create({
   },
   centerCard: {
     flexDirection: "row",
-    backgroundColor: "#fff",
+    backgroundColor: Colors.PRIMARY,
     borderRadius: Border.br_3xs,
     padding: 10,
     marginBottom: 10,
@@ -145,7 +146,7 @@ const styles = StyleSheet.create({
   mainStCityville: {
     fontFamily: "poppins",
     fontSize: FontSize.size_sm,
-    color: "black",
+    color: "white",
     marginTop: 20,
   },
   uploadDocument: {
