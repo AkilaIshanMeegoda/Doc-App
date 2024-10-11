@@ -1,10 +1,11 @@
 import * as React from "react";
-import { TextInput, Button, View, TouchableOpacity, Text, Image } from "react-native";
+import { TextInput, Button, View, TouchableOpacity, Text, Image, LogBox } from "react-native";
 import { useSignUp } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import LoginScreen from "./LoginScreen";
 
 export default function SignUpScreen() {
+  LogBox.ignoreAllLogs()
   const { isLoaded, signUp, setActive } = useSignUp();
   const router = useRouter();
 

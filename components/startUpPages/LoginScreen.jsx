@@ -1,9 +1,10 @@
 import { useSignIn } from "@clerk/clerk-expo";
-import { Text, TextInput, Button, View, TouchableOpacity, Image } from "react-native";
+import { Text, TextInput, Button, View, TouchableOpacity, Image, LogBox } from "react-native";
 import React, { useState } from "react";
 import SignUpScreen from "./SignUpScreen"; // Import the SignUpScreen component
 
 export default function Page() {
+  LogBox.ignoreAllLogs()
   const { signIn, setActive, isLoaded } = useSignIn();
 
   const [emailAddress, setEmailAddress] = React.useState("");

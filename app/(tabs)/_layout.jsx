@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, LogBox } from "react-native";
 import React from "react";
 import { Tabs, useNavigation } from "expo-router";
 import Feather from "@expo/vector-icons/Feather";
@@ -6,6 +6,7 @@ import { Colors } from "../../constants/Colors";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 const TabLayout = () => {
+  LogBox.ignoreAllLogs()
   const navigation = useNavigation();
   return (
     <Tabs>

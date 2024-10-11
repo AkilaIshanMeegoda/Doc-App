@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   CenterSubmitButton: {
-    alignItems: "center",
+    alignItems: "left",
   },
 });
 
