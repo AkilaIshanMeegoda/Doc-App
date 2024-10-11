@@ -61,7 +61,7 @@ const AdminTabLayout = () => {
       <Tabs.Screen
         name="adminProfile"
         options={{
-          headerTitle: "Edit Profile",
+          headerTitle: "Logout",
           headerTitleStyle: {
             fontFamily: "poppins-medium",
             fontSize: 20,
