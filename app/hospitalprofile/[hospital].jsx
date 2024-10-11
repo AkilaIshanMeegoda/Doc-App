@@ -161,10 +161,12 @@ const Hospital = () => {
 
   return (
     <ScrollView>
-      <View style={{ flex: 1 }}>
+      <View className="flex-1 p-5">
         <HospitalProfile hospitalId={hospitalId} />
+        <Text className="font-[poppins-bold] text-xl ml-2">Doctors</Text>
         <ScrollView
           horizontal={true}
+          showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ flexDirection: "row" }}
         >
           {doctors.map((doctor) => (
@@ -215,21 +217,20 @@ const Hospital = () => {
                       imageSize={20}
                       style={styles.ratingStyle}
                     />
-                  </View>
+                    {/* Wrap the review text and delete button together */}
+                    <View style={styles.reviewContent}>
+                      <Text style={styles.reviewText}>{review.reviewText}</Text>
 
-                  {/* Wrap the review text and delete button together */}
-                  <View style={styles.reviewContent}>
-                    <Text style={styles.reviewText}>{review.reviewText}</Text>
-
-                    {review.userId === userEmail && (
-                      <TouchableOpacity onPress={() => deleteReview(review)}>
-                        <MaterialIcons
-                          name="delete"
-                          size={24}
-                          color="#FF5252"
-                        />
-                      </TouchableOpacity>
-                    )}
+                      {review.userId === userEmail && (
+                        <TouchableOpacity onPress={() => deleteReview(review)}>
+                          <MaterialIcons
+                            name="delete"
+                            size={24}
+                            color="#FF5252"
+                          />
+                        </TouchableOpacity>
+                      )}
+                    </View>
                   </View>
                 </View>
               ))
@@ -315,7 +316,6 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   reviewHeader: {
-    flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
@@ -333,9 +333,9 @@ const styles = StyleSheet.create({
     color: "#aaa",
   },
   reviewContent: {
-    flexDirection: 'row', // Arrange text and icon in a row
-    justifyContent: 'space-between', // Ensure space between the text and delete icon
-    alignItems: 'center', // Align them properly in the center
+    flexDirection: "row", // Arrange text and icon in a row
+    justifyContent: "space-between", // Ensure space between the text and delete icon
+    alignItems: "center", // Align them properly in the center
   },
 });
 
