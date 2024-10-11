@@ -11,6 +11,7 @@ import {
 import DropDownPicker from "react-native-dropdown-picker";
 import { collection, query, getDocs } from "firebase/firestore";
 import { db } from "../../configs/FirebaseConfig";
+import { Colors } from "../../constants/Colors";
 
 const Home = () => {
   const router = useRouter();
@@ -115,7 +116,7 @@ const Home = () => {
         Find the Best Doctors
       </Text>
 
-      <View className="p-4 py-12">
+      <View className="py-12 ">
         <View style={styles.formContainer}>
           <TextInput
             style={styles.input}
@@ -240,8 +241,8 @@ const styles = StyleSheet.create({
   },
   frame: {
     borderRadius: 6,
-    backgroundColor: "#4169e1",
-    width: 290,
+    backgroundColor: Colors.PRIMARY,
+    width: 320,
     height: 48,
     justifyContent: "center",
     alignItems: "center",

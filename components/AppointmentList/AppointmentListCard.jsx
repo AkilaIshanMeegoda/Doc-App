@@ -30,9 +30,12 @@ const AppointmentListCard = ({ appointment }) => {
         {/* Doctor Info */}
         <View className="flex-row items-center mb-2">
           <Ionicons name="medkit-outline" size={20} color="blue" />
-          <Text className="pr-8 ml-2 text-gray-600">
-            {appointment.doctorName} - {appointment.doctorSpecialization}
-          </Text>
+          <View className="flex-row">
+            <Text className="ml-2 text-gray-600">
+              {appointment.doctorName} -
+            </Text>
+            <Text className="mt-0.5 mr-8 text-xs">{" "}{appointment.doctorSpecialization}</Text>
+          </View>
         </View>
 
         {/* Appointment Date */}
