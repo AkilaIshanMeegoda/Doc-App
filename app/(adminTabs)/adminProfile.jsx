@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { useAuth, useUser } from "@clerk/clerk-expo";
 import { useNavigation } from "@react-navigation/native";
+import LottieView from "lottie-react-native";
 
 const profile = () => {
   const { user } = useUser();
@@ -23,47 +24,19 @@ const profile = () => {
   console.log(user.primaryEmailAddress.emailAddress);
 
   return (
-    <View className="flex-1">
-      <Image
-        className="w-32 h-32 mx-auto mt-4"
-        source={require("../../assets/images/photo.png")}
+    <View className="items-center flex-1">
+      <LottieView
+        loop
+        autoPlay
+        className="mt-32"
+        source={require("../../assets/logout.json")} // Path to the local json file
+        style={{ width: 200, height: 200 }}
       />
-
-      <View className="flex-1 p-6">
-        <Text className="font-[poppins-medium] text-xl ml-4">Name</Text>
-        <TextInput
-          className="p-2 px-4 mb-2 bg-white border-2 border-gray-200 rounded-xl font-[poppins-medium] text-md"
-          placeholder="Enter your name"
-        />
-        <Text className="font-[poppins-medium] text-xl ml-4">Email</Text>
-        <TextInput
-          className="p-2 px-4 mb-2 bg-white border-2 border-gray-200 rounded-xl font-[poppins-medium] text-md"
-          placeholder="Enter your email"
-        />
-        <Text className="font-[poppins-medium] text-xl ml-4">Address</Text>
-        <TextInput
-          className="p-2 px-4 mb-2 bg-white border-2 border-gray-200 rounded-xl font-[poppins-medium] text-md"
-          placeholder="Enter your address"
-        />
-        <Text className="font-[poppins-medium] text-xl ml-4">
-          Contact Number
+      <TouchableOpacity onPress={() => handleSignOut()}>
+        <Text className="bg-red-600 mt-4 p-3 text-white text-center rounded-lg font-[poppins-bold] w-40">
+          Log Out
         </Text>
-        <TextInput
-          className="p-2 px-4 mb-2 bg-white border-2 border-gray-200 rounded-xl font-[poppins-medium] text-md"
-          placeholder="Enter your contact number"
-        />
-
-        <TouchableOpacity>
-          <Text className="bg-[#607AFB] mt-4 p-3 text-white text-center rounded-lg font-[poppins-bold]">
-            Save Profile
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleSignOut()}>
-          <Text className="bg-red-600 mt-4 p-3 text-white text-center rounded-lg font-[poppins-bold]">
-            Log Out
-          </Text>
-        </TouchableOpacity>
-      </View>
+      </TouchableOpacity>
     </View>
   );
 };
