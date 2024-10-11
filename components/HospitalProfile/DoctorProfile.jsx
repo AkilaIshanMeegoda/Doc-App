@@ -170,12 +170,12 @@ const styles = StyleSheet.create({
   },
   specializationButton: {
     backgroundColor: "#dfdfdf",
-    borderRadius: 30,
-    paddingVertical: 2, // Reduced vertical padding
-    paddingHorizontal: 5, // Reduced horizontal padding
+    borderRadius: 30, 
+    paddingHorizontal: 5,
   },
   footer: {
     flexDirection: "row",
+    paddingHorizontal:10,
     justifyContent: "space-between",
     alignItems: "center",
     marginTop: 12, // Reduced margin at the top
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
   },
   appointmentButton: {
     backgroundColor: "#5271FF",
-    borderRadius: 30,
+    borderRadius: 8,
     paddingVertical: 6, // Reduced vertical padding
     paddingHorizontal: 12, // Reduced horizontal padding
   },
