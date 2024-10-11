@@ -107,6 +107,7 @@ const HospitalProfile = ({ hospitalId }) => {
 const styles = StyleSheet.create({
   container: {
     marginTop: 10,
+    marginBottom:20,
     marginHorizontal: 10,
   },
   hospitalName: {

@@ -16,7 +16,8 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.akila2001.docapp"
     },
     "web": {
       "bundler": "metro",
@@ -27,6 +28,11 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b74c74e0-f32c-420f-ac9f-f29b6f1c3920"
+      }
     }
   }
 }

@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, ActivityIndicator } from "react-native";
 import React from "react";
 import { useEffect, useState } from "react";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
@@ -72,13 +72,7 @@ const CenterComponent = ({ hospitalId }) => {
   if (loading) {
     return (
       <View style={{ alignItems: "center", paddingVertical: 32 }}>
-        <LottieView
-          loop
-          autoPlay
-          className="mt-32"
-          source={require("../../assets/loading.json")} // Path to the local json file
-          style={{ width: 200, height: 200 }}
-        />
+        <ActivityIndicator />
       </View>
     );
   }
@@ -92,14 +86,14 @@ const CenterComponent = ({ hospitalId }) => {
   }
 
   return (
-    <View style={styles.centerContainer}>
+    <View className="px-8 py-1 shadow-2xl">
       <View style={styles.centerCard}>
         <Image
           style={styles.hospitalIcon}
           source={require("../../assets/images/maphospital.png")}
         />
         <View style={styles.centerDetails}>
-          <Text style={styles.uploadDocument}>{hospital.name}</Text>
+          <Text className="font-[poppins-bold]">{hospital.name}</Text>
           <Text style={styles.mainStCityville}>{hospital.area}</Text>
         </View>
 
@@ -123,12 +117,22 @@ const styles = StyleSheet.create({
   },
   centerCard: {
     flexDirection: "row",
-    backgroundColor: Color.colorRoyalblue,
+    backgroundColor: "#fff",
     borderRadius: Border.br_3xs,
     padding: 10,
     marginBottom: 10,
     alignItems: "center",
+
+    // iOS Shadow
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+
+    // Android Shadow
+    elevation: 5,
   },
+
   hospitalIcon: {
     width: 74,
     height: 74,
@@ -141,13 +145,13 @@ const styles = StyleSheet.create({
   mainStCityville: {
     fontFamily: "poppins",
     fontSize: FontSize.size_sm,
-    color: Color.colorWhitesmoke_100,
+    color: "black",
     marginTop: 20,
   },
   uploadDocument: {
-    fontFamily: "poppins-medium",
-    fontSize: FontSize.bodyBase_size,
-    color: Color.colorWhitesmoke_100,
+    fontFamily: "poppins-bold",
+    fontSize: 14,
+    color: "black",
     marginTop: -20,
   },
   ratingContainer: {
