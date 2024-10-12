@@ -188,8 +188,8 @@ const Hospital = () => {
               imageSize={24}
               ratingColor="#FFD700"
               ratingBackgroundColor="#e0e0e0"
-              style={styles.ratingStyle}
               startingValue={rating}
+              className="py-2"
             />
           </View>
           <View style={styles.textInputContainer}>
