@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
   ActivityIndicator,
+  ScrollView,
 } from "react-native";
 import { useAuth, useUser } from "@clerk/clerk-expo";
 import * as ImagePicker from "expo-image-picker";
@@ -149,7 +150,7 @@ const Profile = () => {
   }, [navigation]);
 
   return (
-    <View className="flex-1">
+    <ScrollView className="flex-1">
       {loading ? (
         <View style={{ alignItems: "center", paddingVertical: 32 }}>
           <LottieView
@@ -235,7 +236,7 @@ const Profile = () => {
           </View>
         </>
       )}
-    </View>
+    </ScrollView>
   );
 };
 

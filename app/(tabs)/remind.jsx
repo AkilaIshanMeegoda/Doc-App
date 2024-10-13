@@ -95,7 +95,7 @@ const Remind = () => {
               loop
               autoPlay
               source={require("../../assets/empty.json")} // Ensure this path is correct
-              style={{ width: 200, height: 250 }}
+              style={{ width: 200, height: 250 ,marginLeft:20}}
               resizeMode="cover" // Add this to ensure it scales properly
             />
             <Text style={styles.reminderNotice}>

@@ -188,8 +188,8 @@ const Hospital = () => {
               imageSize={24}
               ratingColor="#FFD700"
               ratingBackgroundColor="#e0e0e0"
-              style={styles.ratingStyle}
               startingValue={rating}
+              className="py-2"
             />
           </View>
           <View style={styles.textInputContainer}>
@@ -208,29 +208,37 @@ const Hospital = () => {
             <Text style={styles.reviewsTitle}>All Reviews</Text>
             {reviews.length > 0 ? (
               reviews.map((review, index) => (
-                <View key={index} style={styles.reviewItem}>
-                  <View style={styles.reviewHeader}>
-                    <Text style={styles.reviewUser}>{review.userId}</Text>
-                    <Rating
-                      readonly
-                      startingValue={review.rating}
-                      imageSize={20}
-                      style={styles.ratingStyle}
-                    />
-                    {/* Wrap the review text and delete button together */}
-                    <View style={styles.reviewContent}>
-                      <Text style={styles.reviewText}>{review.reviewText}</Text>
-
-                      {review.userId === userEmail && (
-                        <TouchableOpacity onPress={() => deleteReview(review)}>
-                          <MaterialIcons
-                            name="delete"
-                            size={24}
-                            color="#FF5252"
-                          />
-                        </TouchableOpacity>
-                      )}
+                <View key={index} style={styles.reviewItem} className="flex-row">
+                  <View>
+                    <View style={styles.reviewHeader}>
+                      <Text style={styles.reviewUser}>{review.userId}</Text>
+                      <Rating
+                        readonly
+                        startingValue={review.rating}
+                        imageSize={20}
+                        style={styles.ratingStyle}
+                      />
+                      {/* Wrap the review text and delete button together */}
+                      <View style={styles.reviewContent}>
+                        <Text style={styles.reviewText}>
+                          {review.reviewText}
+                        </Text>
+                      </View>
                     </View>
+                  </View>
+                  <View>
+                    {review.userId === userEmail && (
+                      <TouchableOpacity
+                        onPress={() => deleteReview(review)}
+                        style={styles.deleteicon}
+                      >
+                        <MaterialIcons
+                          name="delete"
+                          size={24}
+                          color="#FF5252"
+                        />
+                      </TouchableOpacity>
+                    )}
                   </View>
                 </View>
               ))
@@ -273,6 +281,7 @@ const styles = StyleSheet.create({
   },
   ratingStyle: {
     paddingVertical: 10,
+    marginLeft: -110,
   },
   textInputContainer: {
     marginVertical: 10,
@@ -317,7 +326,7 @@ const styles = StyleSheet.create({
   },
   reviewHeader: {
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "left",
   },
   reviewUser: {
     fontWeight: "bold",
@@ -336,6 +345,9 @@ const styles = StyleSheet.create({
     flexDirection: "row", // Arrange text and icon in a row
     justifyContent: "space-between", // Ensure space between the text and delete icon
     alignItems: "center", // Align them properly in the center
+  },
+  deleteicon: {
+    marginLeft: 40,
   },
 });
 
